@@ -75,7 +75,9 @@ consensus.pyRAD <- function(pyIn, from = NA, to = NA, fastaNames = T, writeFile 
   return(out)
   }
   
-blast.pyRAD <- function(pyConsensus, ...) {}
+blast.pyRAD <- function(pyConsensus, ...) {
+## note written; placeholder for a function to help automate RAD blasts
+}
 
 read.pyRAD <- function(filename, reportInterval = 20000, breakLinesSeparate = TRUE, doSummary = TRUE, makeSeqMat = TRUE, ...) {
 ## reads the all.aligned file out of pyRAD, parses into names, loci, sequences
