@@ -79,7 +79,7 @@ blast.pyRAD <- function(pyConsensus, ...) {
 ## note written; placeholder for a function to help automate RAD blasts
 }
 
-read.pyRAD <- function(filename, reportInterval = 20000, breakLinesSeparate = TRUE, doSummary = TRUE, makeSeqMat = TRUE, ...) {
+read.pyRAD <- function(filename, reportInterval = 20000, breakLinesSeparate = FALSE, doSummary = TRUE, makeSeqMat = TRUE, ...) {
 ## reads the all.aligned file out of pyRAD, parses into names, loci, sequences
 ## updated with breakLinesSeparate in Oct 2012 because pyRAD switched to single-line summaries at the end of each aligned file
 ## updated 2012-11-16 to keep breaklines intact
@@ -119,7 +119,7 @@ read.pyRAD <- function(filename, reportInterval = 20000, breakLinesSeparate = TR
     dat.locus.index[dat.firstLocusLines[i]:dat.lastLocusLines[i]] <- names(dat.breakLines.vector)[i] <- paste("locus.", i, sep = "")
 	if(i / reportInterval - i %/% reportInterval == 0) {
   	   message(paste('...', i, 'of', length(dat.firstLocusLines), 
- 	   '-- Estimated time remaining =', ((Sys.time() - start.time) / i) * (length(dat.firstLocusLines) - i), attr(Sys.time() - start.time, 'units')
+ 	   '-- Estimated time remaining =', round(((Sys.time() - start.time) / i) * (length(dat.firstLocusLines) - i), 1), attr(Sys.time() - start.time, 'units')
   	   ))
 	}
   }
@@ -171,11 +171,11 @@ summary.pyRAD.loci <- function(object, var.only = FALSE, ...) {
   out
   }
 
-overlap.report <- function(dat, repPattern = "2.") {
+overlap.report <- function(dat, repPattern = "_re", origPattern = "_h") {
 ## reports on how replicate individuals fall out in the loci
   if(class(dat) == 'summary.pyRAD.loci') dat <- dat$inds.mat
   reps <- grep(repPattern, row.names(dat), fixed = TRUE, value = TRUE)
-  orig <- sapply(reps, function(x) strsplit(x, repPattern, fixed = TRUE)[[1]][2])
+  orig <- gsub(repPattern, origPattern, reps, fixed = TRUE)
   out <- matrix(NA, nrow = length(orig), ncol = 5, dimnames = list(orig, c("Original", "Replicate", "Intersection", "Union", "Not intersection")))
   for(i in 1:length(orig)) {
     message(paste("Doing names", orig[i]))
