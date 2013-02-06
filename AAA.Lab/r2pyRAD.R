@@ -8,7 +8,7 @@
 #source("http://bioconductor.org/biocLite.R")
 #biocLite("Biostrings")
 
-rad2phy <- function(pyDat, inds, loci, outfile = 'pyMat.out.phy', padding = 50) {
+rad2phy <- function(pyDat, inds = row.names(pyDat), loci = dimnames(pyDat)[[2]], outfile = 'pyMat.out.phy', padding = 50) {
 ## makes a phylip-style data matrix from rad.mat output, limiting by individuals and loci
   if(class(pyDat) != "rad.mat") warning("I'm expecting output from rad.mat")
   outfile = file(outfile, "wt")
