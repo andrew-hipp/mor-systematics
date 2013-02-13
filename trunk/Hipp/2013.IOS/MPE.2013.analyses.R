@@ -52,7 +52,7 @@ text(d6m4p2.wRE.jaccard.MDS.k2$points, row.names(d6m4p2.wRE.jaccard.MDS.k2$point
 cols <- rep('red', dim(d6m40p2.wRE.jaccard.MDS.k3$points)[1])
 cols[grep("_re", row.names(d6m4p2.wRE.jaccard.MDS.k3$points), fixed = TRUE)] <- 'black'
 limits  = apply(d6m4p2.wRE.jaccard.MDS.k3$points, 2, range)
-scatterplot3d(d6m4p2.wRE.jaccard.MDS.k3$points, pch = 19, color = cols, cex.symbols = 2, type = 'h', xlim = limits[, 1], ylim = limits[, 2], zlim = limits[, 3], highlight.3d = F, main = 'd6m10p2.wRE, K = 3')
+scatterplot3d(d6m4p2.wRE.jaccard.MDS.k3$points, pch = 19, color = cols, cex.symbols = 2, type = 'h', xlim = limits[, 1], ylim = limits[, 2], zlim = limits[, 3], highlight.3d = F, main = 'd6m4p2.wRE, K = 3')
 
 ########################################
 ## plots below reported on, not included
