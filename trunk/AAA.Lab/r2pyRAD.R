@@ -185,7 +185,7 @@ overlap.report <- function(dat, repPattern = "_re", origPattern = "_h") {
 	out[orig[i], "Union"] <- sum(colSums(dat[c(orig[i], reps[i]), ]) %in% 1:2, na.rm = T)
 	}
   out[, "Not intersection"] <- out[, "Union"] - out[, "Intersection"]
-  out[, "Overlap proportion"] <- round(out[, "Intersection"] / out[, "Union"])
+  out[, "Overlap proportion"] <- round(out[, "Intersection"] / out[, "Union"], 3)
   return(out)
   }
 
