@@ -188,7 +188,7 @@ overlap.report <- function(dat, repPattern = "_re", origPattern = "_h") {
   out[, "Not intersection"] <- out[, "Union"] - out[, "Intersection"]
   out[, "Overlap proportion"] <- round(out[, "Intersection"] / out[, "Union"], 3)
   out[, "Original loci replicated"] <- round(out[, "Intersection"] / out[, "Original"], 3)
-  out[, "Increase, original to replicate"] <- round(out[, "Replicate"]/ out[, "Original"], 3)
+  out[, "Increase, original to replicate"] <- round(out[, "Replicate"] / out[, "Original"], 3)
   return(out)
   }
 
