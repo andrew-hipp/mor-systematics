@@ -27,6 +27,28 @@ loci.by.threshold <- function(x = blast.results.concat, threshold = -15) {
   return(out)
   }
 
+## Making a data matrix for the EST-linked markers
 oaks.d6m4.mat <- rad2mat(oaks.d6m4)
 rad2phy(oaks.d6m4.mat, loci = loci.by.threshold(), outfile = 'oaks.dna.d6m4.blast.e-15.phy')
 rad2phy(oaks.d6m4.mat, loci = loci.by.threshold(threshold = -25), outfile = 'oaks.dna.d6m4.blast.e-25.phy')
+
+## Subsampling loci to see how phylogeny based on non-EST linked markers compares
+## PROBLEMATIC: mean length of the EST-linked markers is longer, so this results in a shorter data matrix
+subsampled.loci <- lapply(rep(8833,10), sample, x = dimnames(oaks.d6m4.mat)[[2]][!dimnames(oaks.d6m4.mat)[[2]] %in% blast.results.concat[[1]]])
+for(i in 1:10) rad2phy(oaks.d6m4.mat, loci = subsampled.loci[[i]], outfile = paste('oaks.dna.d6m4.blast.subsample.', i,'.phy', sep = ''))
+
+do.EST.phylo <- function(dat = oaks.d6m4.mat, lengths = oaks.d6m4.lengths, blast = blast.results.concat, t.hold = -15, minLength = 85, maxLength = 95, sampleReps = 10) {
+  if(is.na(lengths)) lengths <- lengths.report(dat,0) # as written, this will fail if lengths = NA, b/c lengths.report needs a pyRAD object, whereas this function needs a pyRAD.mat object
+  sizeFilteredLoci <- names(lengths[lengths >= minLength & lengths <= maxLength])
+  estLoci <- loci.by.threshold(blast, t.hold)
+  estLoci <- estLoci[which(estLoci %in% sizeFilteredLoci)]
+  otherLoci <- sizeFilteredLoci[!sizeFilteredLoci %in% unique(blast[[1]])]
+  rad2phy(dat, loci = estLoci, outfile = paste('oak.ests.tHold.', t.hold, '.m', maxLength, '.', minLength, '.', format(Sys.time(), "%Y-%d-%m"), '.phy', sep = ''))
+  for(i in 1:sampleReps) {
+    message(paste("*** writing rep", i))
+	sampledLoci <- sample(otherLoci, length(estLoci))
+	rad2phy(dat, loci = sampledLoci, outfile = paste('oak.otherLoci.tHold.', t.hold, '.m', maxLength, '.', minLength, '.rep', i, '.', format(Sys.time(), "%Y-%d-%m"), '.phy', sep = ''))
+	}
+  return(0)
+  }
+  
