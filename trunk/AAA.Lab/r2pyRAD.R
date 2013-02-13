@@ -189,6 +189,7 @@ overlap.report <- function(dat, repPattern = "_re", origPattern = "_h") {
   }
 
 lengths.report <- function(dat, numtodo = 10, reportInterval = 2000, high.mem = TRUE) {
+## set numtodo to 0 if you want to do all loci
   if(class(dat) != 'pyRAD.loci') stop("This function runs on a pyRAD data object")
   last.lines <- dat$cons - 1
   num.loci <- length(last.lines)
