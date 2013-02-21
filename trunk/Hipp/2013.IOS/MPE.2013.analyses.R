@@ -8,7 +8,18 @@ source(r2pyrad)
 ## get data in, summarize
 d6m10p2.wRE <- read.pyRAD('../eatonAnalyses/c88_d6m10p2_wRE.readloci.txt')
 d6m4p2.wRE <- read.pyRAD('../eatonAnalyses/c88_d6m4p2_wRE.readloci.txt')
+d6m10p2.wRE.mat <- rad2mat(d6m10p2.wRE)
 
+## get blast results in, concatenate matrices
+blasts.2013.02.21 <- dir('./blasts.2013-02-21/', full = T)
+blast.results <- lapply(blasts.2013.02.21, read.delim, header = F, as.is = T)
+names(blast.results)<- dir('./blasts.2013-02-21/', full = F)
+blast.results.concat <- blast.results[[1]]
+for(i in 2:length(blast.results)) blast.results.concat <- rbind(blast.results.concat, blast.results[[i]])
+blast.results.concat$log.eValue <- log10(as.numeric(blast.results.concat[[4]]))
+blast.results.concat <- blast.results.concat[-which(is.na(blast.results.concat$log.eValue)), ]
+
+## do some summaries
 overlap.report.d6m10p2.wRE <- overlap.report(d6m10p2.wRE$radSummary$inds.mat)
 layout(matrix(1:9,3,3))
 apply(overlap.report.d6m10p2.wRE[, c(3,5)], 1, function(x) pie(x, radius = sum(x)/32000, col = c('black', 'white'), labels =""))
@@ -73,35 +84,27 @@ cols[grep("_re", row.names(d6m10p2.wRE.jaccard.MDS.k3.withOddballs$points), fixe
 limits  = apply(d6m10p2.wRE.jaccard.MDS.k3.withOddballs$points, 2, range)
 scatterplot3d(d6m10p2.wRE.jaccard.MDS.k3.withOddballs$points, pch = 19, color = cols, cex.symbols = 2, type = 'h', xlim = limits[, 1], ylim = limits[, 2], zlim = limits[, 3], highlight.3d = F)
 
-
-## read in and concatenate blast results to EST databases
-blast.results <- lapply(dir('../../../OAK-RAD-ANNOTATIONS/QuercusFeb0513/', full = T, patt = 'blastN'), read.delim, header = F, as.is = T)
-names(blast.results)<- (dir('../../../OAK-RAD-ANNOTATIONS/QuercusFeb0513/', full = F, patt = 'blastN')
-blast.results.concat <- blast.results[[1]]
-for(i in 2:length(blast.results)) blast.results.concat <- rbind(blast.results.concat, blast.results[[i]])
-
 loci.by.threshold <- function(x = blast.results.concat, threshold = -15) {
-  out = sort(unique(x[[1]][x[[4]]< (1 * 10^threshold)]))
+  out = sort(unique(x[[1]][x$log.eValue < threshold]))
   return(out)
   }
 
-## Making a data matrix for the EST-linked markers
-oaks.d6m4.mat <- rad2mat(oaks.d6m4)
-rad2phy(oaks.d6m4.mat, loci = loci.by.threshold(), outfile = 'oaks.dna.d6m4.blast.e-15.phy')
-rad2phy(oaks.d6m4.mat, loci = loci.by.threshold(threshold = -25), outfile = 'oaks.dna.d6m4.blast.e-25.phy')
-
-## Subsampling loci to see how phylogeny based on non-EST linked markers compares
-## PROBLEMATIC: mean length of the EST-linked markers is longer, so this results in a shorter data matrix
-subsampled.loci <- lapply(rep(8833,10), sample, x = dimnames(oaks.d6m4.mat)[[2]][!dimnames(oaks.d6m4.mat)[[2]] %in% blast.results.concat[[1]]])
-for(i in 1:10) rad2phy(oaks.d6m4.mat, loci = subsampled.loci[[i]], outfile = paste('oaks.dna.d6m4.blast.subsample.', i,'.phy', sep = ''))
-
-do.EST.phylo <- function(dat = oaks.d6m4.mat, lengths = oaks.d6m4.lengths, blast = blast.results.concat, t.hold = -15, minLength = 85, maxLength = 95, sampleReps = 10) {
-  if(is.na(lengths)) lengths <- lengths.report(dat,0) # as written, this will fail if lengths = NA, b/c lengths.report needs a pyRAD object, whereas this function needs a pyRAD.mat object
+do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary$locus.lengths, blast = blast.results.concat, t.hold = -15, minLength = 50, maxLength = 55, sampleReps = 0, makeDirs = TRUE) {
+  if(is.na(lengths[1])) lengths <- lengths.report(dat,0) # as written, this will fail if lengths = NA, b/c lengths.report needs a pyRAD object, whereas this function needs a pyRAD.mat object
   sizeFilteredLoci <- names(lengths[lengths >= minLength & lengths <= maxLength])
   estLoci <- loci.by.threshold(blast, t.hold)
   estLoci <- estLoci[which(estLoci %in% sizeFilteredLoci)]
   otherLoci <- sizeFilteredLoci[!sizeFilteredLoci %in% unique(blast[[1]])]
-  rad2phy(dat, loci = estLoci, outfile = paste('oak.ests.tHold.', t.hold, '.m', maxLength, '.', minLength, '.', format(Sys.time(), "%Y-%d-%m"), '.phy', sep = ''))
+  if(makeDirs) {
+    outDir <- paste('./oak.ests.tHold.', t.hold, '.', format(Sys.time(), "%Y-%d-%m"), '/', sep = '')
+	dir.create(outDir)
+	}
+  else outDir <- ""
+  analysisFile <- file(paste(outDir, 'oak.ests.tHold.', t.hold, '.', format(Sys.time(), "%Y-%d-%m"), '.bat', sep = ''), open = "wt")
+  outfileName <- paste(outDir, 'oak.ests.tHold.', t.hold, '.m', maxLength, '.', minLength, '.', format(Sys.time(), "%Y-%d-%m"), '.phy', sep = '')
+  rad2phy(dat, loci = estLoci, outfile = outfileName)
+  writeLines(paste('raxmlHPC-PTHREADS -f a -T 4 -x 123555 -# 200 -s ', outfileName, ' -m GTRGAMMA -n ', outfileName, '.tre', sep = ''), con = analysisFile)
+  if (sampleReps == 0) return(0) #aborts if no sample reps are requested
   for(i in 1:sampleReps) {
     message(paste("*** writing rep", i))
 	sampledLoci <- sample(otherLoci, length(estLoci))
@@ -109,4 +112,27 @@ do.EST.phylo <- function(dat = oaks.d6m4.mat, lengths = oaks.d6m4.lengths, blast
 	}
   return(0)
   }
+
+## Make a helpful barplot:
+ barplot(sapply(-1:-30, function(x) length(loci.by.threshold(threshold = x))), names.arg=-1:-30, xlab = "log10(e-value)", ylab = "Number of loci for which best blast is this good or better")
+ 
   
+## OLD -- Redone on 2013-02-21
+
+## read in and concatenate blast results to EST databases
+#blast.results <- lapply(dir('../../../OAK-RAD-ANNOTATIONS/QuercusFeb0513/', full = T, patt = 'blastN'), read.delim, header = F, as.is = T)
+#names(blast.results)<- (dir('../../../OAK-RAD-ANNOTATIONS/QuercusFeb0513/', full = F, patt = 'blastN')
+#blast.results.concat <- blast.results[[1]]
+#for(i in 2:length(blast.results)) blast.results.concat <- rbind(blast.results.concat, blast.results[[i]])
+
+
+## Making a data matrix for the EST-linked markers
+# oaks.d6m4.mat <- rad2mat(oaks.d6m4)
+# rad2phy(oaks.d6m4.mat, loci = loci.by.threshold(), outfile = 'oaks.dna.d6m4.blast.e-15.phy')
+# rad2phy(oaks.d6m4.mat, loci = loci.by.threshold(threshold = -25), outfile = 'oaks.dna.d6m4.blast.e-25.phy')
+
+## Subsampling loci to see how phylogeny based on non-EST linked markers compares
+## PROBLEMATIC: mean length of the EST-linked markers is longer, so this results in a shorter data matrix
+# subsampled.loci <- lapply(rep(8833,10), sample, x = dimnames(oaks.d6m4.mat)[[2]][!dimnames(oaks.d6m4.mat)[[2]] %in% blast.results.concat[[1]]])
+# for(i in 1:10) rad2phy(oaks.d6m4.mat, loci = subsampled.loci[[i]], outfile = paste('oaks.dna.d6m4.blast.subsample.', i,'.phy', sep = ''))
+
