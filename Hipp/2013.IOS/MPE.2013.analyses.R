@@ -95,20 +95,23 @@ do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary
   estLoci <- loci.by.threshold(blast, t.hold)
   estLoci <- estLoci[which(estLoci %in% sizeFilteredLoci)]
   otherLoci <- sizeFilteredLoci[!sizeFilteredLoci %in% unique(blast[[1]])]
-  if(makeDirs) {
-    outDir <- paste('./oak.ests.tHold.', t.hold, '.', format(Sys.time(), "%Y-%d-%m"), '/', sep = '')
-	dir.create(outDir)
-	}
-  else outDir <- ""
-  analysisFile <- file(paste(outDir, 'oak.ests.tHold.', t.hold, '.', format(Sys.time(), "%Y-%d-%m"), '.bat', sep = ''), open = "wt")
-  outfileName <- paste(outDir, 'oak.ests.tHold.', t.hold, '.m', maxLength, '.', minLength, '.', format(Sys.time(), "%Y-%d-%m"), '.phy', sep = '')
+  if(makeDirs) dir.create(paste('./oak.ests.tHold.', t.hold, '.', format(Sys.time(), "%Y-%d-%m"), '/', sep = ''))
+  analysisFile <- file(paste('oak.ests.tHold.', t.hold, '.', format(Sys.time(), "%Y-%d-%m"), '.bat', sep = ''), open = "wt")
+  outfileName <- paste('oak.ests.tHold.', t.hold, '.m', maxLength, '.', minLength, '.', format(Sys.time(), "%Y-%d-%m"), '.phy', sep = '')
   rad2phy(dat, loci = estLoci, outfile = outfileName)
   writeLines(paste('raxmlHPC-PTHREADS -f a -T 4 -x 123555 -# 200 -s ', outfileName, ' -m GTRGAMMA -n ', outfileName, '.tre', sep = ''), con = analysisFile)
   if (sampleReps == 0) return(0) #aborts if no sample reps are requested
   for(i in 1:sampleReps) {
     message(paste("*** writing rep", i))
 	sampledLoci <- sample(otherLoci, length(estLoci))
-	rad2phy(dat, loci = sampledLoci, outfile = paste('oak.otherLoci.tHold.', t.hold, '.m', maxLength, '.', minLength, '.rep', i, '.', format(Sys.time(), "%Y-%d-%m"), '.phy', sep = ''))
+	outfileName <- paste('oak.otherLoci.tHold.', t.hold, '.m', maxLength, '.', minLength, '.rep', i, '.', format(Sys.time(), "%Y-%d-%m"), '.phy', sep = '')
+	rad2phy(dat, loci = sampledLoci, outfile = outfileName)
+    if(makeDirs) {
+	  dirOut <- paste('./oak.others.tHold.', t.hold, '.rep', i, '.', format(Sys.time(), "%Y-%d-%m"), '/', sep = '')
+	  dir.create(dirOut)
+	  }
+	else dirOut <- ''
+	writeLines(paste('raxmlHPC-PTHREADS -f a -T 4 -x 123555 -# 200 -w ', dirOut, ' -s ', outfileName, ' -m GTRGAMMA -n ', outfileName, '.tre', sep = ''), con = analysisFile)
 	}
   return(0)
   }
