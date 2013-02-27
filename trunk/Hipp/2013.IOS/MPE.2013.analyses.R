@@ -89,7 +89,67 @@ loci.by.threshold <- function(x = blast.results.concat, threshold = -15) {
   return(out)
   }
 
+make.tree.distMat <- function(treelist, ...) {
+  require(phangorn)
+  outmat.sd <- outmat.bsd <- outmat.pd <- outmat.qpd <- outmat.RF <- matrix(NA, length(treelist), length(treelist), dimnames = list(names(treelist), names(treelist)))
+  for(i in 2:length(treelist)) {
+    for(j in 1:(i-1)) {
+	  temp <- phangorn::treedist(treelist[[i]], treelist[[j]]) ## to differentiate from vegan
+	  outmat.sd[i,j] <- temp['symmetric.difference']
+	  outmat.bsd[i,j] <- temp['branch.score.difference']
+	  outmat.pd[i,j] <- temp['path.difference']
+	  outmat.qpd[i,j] <- temp['quadratic.path.difference']
+	  outmat.RF[i,j] <- RF.dist(treelist[[i]], treelist[[j]])
+	  }
+	}
+  out <- list(symmetric.difference = outmat.sd, branch.score.difference = outmat.bsd, path.difference = outmat.pd, quadratic.path.difference = outmat.qpd, RF = outmat.RF)
+  return(out)
+  }
+
+make.tree.scores <- function(dna.files, tree.files, dna.format = 'sequential', tree = "none",...) {
+## ARGUMENTS
+##   dna.files: a vector of files to analyze either on the single tree provided (not currently implemented) or on:
+##   tree.files: a vector of tree files corresponding to the dna.files, same order
+##   dna.format: format of the dna files, using read.dna
+##   tree: a phylogeny of class phylo; not currently implemented
+  require(phangorn)
+  missingData <- c('n', '-', 'N')
+  N = length(dna.files)
+  cols.prettyNames <- c('Steps', 'Variable', 'Parsimony informative', 'CI', 'CI on informative characters only', 'Aligned length', 'Percent N or -', 'Mean bootstraps', 'Standard deviation of bootstraps')
+  cols <- c('steps', 'var', 'inf', 'ci', 'ci.inf', 'length', 'missing', 'boots.mean', 'boots.sd')
+  outMat <- matrix(NA, nrow = N, ncol = length(cols), dimnames = list(names(dna.files), cols))
+  for(i in 1:N) {
+    message(paste('Doing file', i))
+	dna.dat <- read.dna(dna.files[[i]], format = dna.format)
+	dna.phyDat <- as.phyDat(dna.dat)
+	dna.dat.char <- as.character(dna.phyDat)
+	tree <- read.tree(tree.files[[i]])
+	outMat[i, 'steps'] <- parsimony(tree, dna.phyDat)
+	outMat[i, 'ci'] <- sum(phangorn:::lowerBound(dna.phyDat) * attr(dna.phyDat, 'weight')) / outMat[i, 'steps']
+	uniques <- apply(dna.dat.char, 2, 
+					 function(x) {
+					   uniqueSet <- unique(x)[!unique(x) %in% missingData]
+					   if(length(uniqueSet) < 2) return(c(F, F))
+					   else {
+					     uniqueLengths <- sapply(uniqueSet, function(y) sum(x == y))
+						 if(sum(uniqueLengths > 1) > 1) return(c(T, T))
+                         else return(c(T, F))
+                         }
+                       }
+                     )					   
+	outMat[i, c('var', 'inf')] <- apply(uniques, 1, sum)  
+	outMat[i, 'length'] <- sum(attr(dna.phyDat, 'weight'))
+    outMat[i, 'missing'] <- sum(dna.dat.char %in% missingData) / cumprod(dim(dna.dat.char))[2]
+	outMat[i, 'boots.mean'] <- mean(as.numeric(tree$node.label), na.rm = T)
+	outMat[i, 'boots.sd'] <- sd(as.numeric(tree$node.label), na.rm = T)
+	}
+  dimnames(outMat)[[2]] <- cols.prettyNames
+  return(outMat)
+  }
+					   
+
 do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary$locus.lengths, blast = blast.results.concat, t.hold = -15, minLength = 50, maxLength = 55, sampleReps = 0, makeDirs = TRUE) {
+## this needs to spit out paths and loci for each analysis
   if(is.na(lengths[1])) lengths <- lengths.report(dat,0) # as written, this will fail if lengths = NA, b/c lengths.report needs a pyRAD object, whereas this function needs a pyRAD.mat object
   sizeFilteredLoci <- names(lengths[lengths >= minLength & lengths <= maxLength])
   estLoci <- loci.by.threshold(blast, t.hold)
