@@ -106,7 +106,7 @@ make.tree.distMat <- function(treelist, ...) {
   return(out)
   }
 
-make.tree.scores <- function(dna.files, tree.files, dna.format = 'sequential', tree = "none",...) {
+make.tree.scores <- function(dna.files, tree.files = NA, dna.format = 'sequential', tree = "none",...) {
 ## ARGUMENTS
 ##   dna.files: a vector of files to analyze either on the single tree provided (not currently implemented) or on:
 ##   tree.files: a vector of tree files corresponding to the dna.files, same order
@@ -115,17 +115,27 @@ make.tree.scores <- function(dna.files, tree.files, dna.format = 'sequential', t
   require(phangorn)
   missingData <- c('n', '-', 'N')
   N = length(dna.files)
-  cols.prettyNames <- c('Steps', 'Variable', 'Parsimony informative', 'CI', 'CI on informative characters only', 'Aligned length', 'Percent N or -', 'Mean bootstraps', 'Standard deviation of bootstraps')
-  cols <- c('steps', 'var', 'inf', 'ci', 'ci.inf', 'length', 'missing', 'boots.mean', 'boots.sd')
+  if(is.na(tree.files[1])) {
+    warning("No tree files entered; only matrix stats returned.")
+	trees = F
+	}
+  cols.prettyNames <- c('Steps', 'Variable', 'Parsimony informative', 'CI', 'CI on informative characters only', 'Aligned length', 'Percent N or -', 'Percent of tree in terminals', 'Mean bootstraps', 'Standard deviation of bootstraps')
+  cols <- c('steps', 'var', 'inf', 'ci', 'ci.inf', 'length', 'missing', 'tree.terms', 'boots.mean', 'boots.sd')
   outMat <- matrix(NA, nrow = N, ncol = length(cols), dimnames = list(names(dna.files), cols))
   for(i in 1:N) {
     message(paste('Doing file', i))
 	dna.dat <- read.dna(dna.files[[i]], format = dna.format)
 	dna.phyDat <- as.phyDat(dna.dat)
 	dna.dat.char <- as.character(dna.phyDat)
-	tree <- read.tree(tree.files[[i]])
-	outMat[i, 'steps'] <- parsimony(tree, dna.phyDat)
-	outMat[i, 'ci'] <- sum(phangorn:::lowerBound(dna.phyDat) * attr(dna.phyDat, 'weight')) / outMat[i, 'steps']
+	if(trees) {
+	  tree <- read.tree(tree.files[[i]])
+	  outMat[i, 'steps'] <- parsimony(tree, dna.phyDat)
+	  outMat[i, 'ci'] <- sum(phangorn:::lowerBound(dna.phyDat) * attr(dna.phyDat, 'weight')) / outMat[i, 'steps']
+	  outMat[i, 'length'] <- sum(attr(dna.phyDat, 'weight'))
+	  outMat[i, 'boots.mean'] <- mean(as.numeric(tree$node.label), na.rm = T)
+	  outMat[i, 'boots.sd'] <- sd(as.numeric(tree$node.label), na.rm = T)
+	  outMat[i, 'tree.terms'] <- sum(tree$edge.length[mrca.branches(tree)]) / sum(tree$edge.length) 
+	  }
 	uniques <- apply(dna.dat.char, 2, 
 					 function(x) {
 					   uniqueSet <- unique(x)[!unique(x) %in% missingData]
@@ -138,16 +148,23 @@ make.tree.scores <- function(dna.files, tree.files, dna.format = 'sequential', t
                        }
                      )					   
 	outMat[i, c('var', 'inf')] <- apply(uniques, 1, sum)  
-	outMat[i, 'length'] <- sum(attr(dna.phyDat, 'weight'))
     outMat[i, 'missing'] <- sum(dna.dat.char %in% missingData) / cumprod(dim(dna.dat.char))[2]
-	outMat[i, 'boots.mean'] <- mean(as.numeric(tree$node.label), na.rm = T)
-	outMat[i, 'boots.sd'] <- sd(as.numeric(tree$node.label), na.rm = T)
 	}
   dimnames(outMat)[[2]] <- cols.prettyNames
   return(outMat)
   }
-					   
 
+mrca.branches <- function(tree, repPattern = "_re", origPattern = "_h") {
+# returns the branches subtending the mrca of the pairs in the mrcaList
+  reps <- grep(repPattern, tree$tip.label, fixed = TRUE, value = TRUE)
+  orig <- gsub(repPattern, origPattern, reps, fixed = TRUE)
+  mrca.mat <- cbind(reps, orig)
+  mrca.tr <- mrca(tree)
+  out <- apply(mrca.mat, 1, function(x) which(tree$edge[, 2] == mrca.tr[x[1], x[2]]))
+  return(out)
+  }
+  
+					   
 do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary$locus.lengths, blast = blast.results.concat, t.hold = -15, minLength = 50, maxLength = 55, sampleReps = 0, makeDirs = TRUE) {
 ## this needs to spit out paths and loci for each analysis
   if(is.na(lengths[1])) lengths <- lengths.report(dat,0) # as written, this will fail if lengths = NA, b/c lengths.report needs a pyRAD object, whereas this function needs a pyRAD.mat object
