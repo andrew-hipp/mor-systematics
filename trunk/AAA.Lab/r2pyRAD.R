@@ -223,7 +223,10 @@ filter.by <- function(dat, taxa) {
 hybrid.test <- function(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
                         f1s = c('>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E',
 						         '>2893Gx2830D1A', '>2893Gx2830D1C'))								 
-{
+### TO DO:
+##    don't analyze Ns and -s
+##    Check for variability after screening out everyone except for the parents and offspring
+								 {
 require(Biostrings)
   ## go through all loci and find for each (1) the parent genotypes, 
   ##(2) the expected F1 genotypes are and their ratios, 
@@ -247,6 +250,10 @@ require(Biostrings)
 	seqLength <- dim(seqsMat)[2]
 	seqConsensus <- substr(dat$break.vectors[locusCounter], nchar(dat$break.vectors[locusCounter]) - seqLength + 1, nchar(dat$break.vectors[locusCounter]))
     variable.sites <- which(strsplit(seqConsensus, "")[[1]] %in% variableSiteCharacters)
+	if(length(variable.sites) == 0) {
+	  message("No variable sites... moving on.")
+	  next
+	  }
 	message(paste("Found", length(variable.sites), "variable sites"))
 	seqsMat <- as.matrix(seqsMat[c(parents, dimnames(seqsMat)[[1]][dimnames(seqsMat)[[1]] %in% f1s]), variable.sites]) # only includes parents and children
 	#browser()
@@ -262,6 +269,7 @@ require(Biostrings)
 	matsOut[[locusCounter]] <- seqsMat
 	colNames <- c(colNames, paste(locusCounter, "_", seq(dim(seqsMat)[2] / 2), sep = ""))
 	}
+  browser()
   message(paste("Columns in summary matrix:", length(colNames)))
   summaryMat <- matrix(NA, nrow = length(c("differ", f1s)), ncol = length(colNames), dimnames = list(c("Parents differ", f1s), colNames))
   colCounter <- 1

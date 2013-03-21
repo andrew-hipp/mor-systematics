@@ -127,7 +127,7 @@ make.tree.scores <- function(dna.files, tree.files = NA, dna.format = 'sequentia
 	dna.dat <- read.dna(dna.files[[i]], format = dna.format)
 	dna.phyDat <- as.phyDat(dna.dat)
 	dna.dat.char <- as.character(dna.phyDat)
-	if(trees) {
+	if(!identical(trees, F)) {
 	  tree <- read.tree(tree.files[[i]])
 	  outMat[i, 'steps'] <- parsimony(tree, dna.phyDat)
 	  outMat[i, 'ci'] <- sum(phangorn:::lowerBound(dna.phyDat) * attr(dna.phyDat, 'weight')) / outMat[i, 'steps']
@@ -161,6 +161,8 @@ mrca.branches <- function(tree, repPattern = "_re", origPattern = "_h") {
   mrca.mat <- cbind(reps, orig)
   mrca.tr <- mrca(tree)
   out <- apply(mrca.mat, 1, function(x) which(tree$edge[, 2] == mrca.tr[x[1], x[2]]))
+  print(out)
+  out = unlist(out)
   return(out)
   }
   
