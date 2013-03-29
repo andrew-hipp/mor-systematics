@@ -11,9 +11,10 @@ d6m4p2.wRE <- read.pyRAD('../eatonAnalyses/c88_d6m4p2_wRE.readloci.txt')
 d6m10p2.wRE.mat <- rad2mat(d6m10p2.wRE)
 
 ## get blast results in, concatenate matrices
-blasts.2013.02.21 <- dir('./blasts.2013-02-21/', full = T)
-blast.results <- lapply(blasts.2013.02.21, read.delim, header = F, as.is = T)
-names(blast.results)<- dir('./blasts.2013-02-21/', full = F)
+blasts.2013.02.21 <- dir('./blasts.2013-02-21/', full = T) ## redone 2013-03-28 b/c these include non-EST sequences
+blasts.2013.02.21.estOnly <- dir('./blasts.2013-02-21/', patt = 'EST.SEQUENCES', full = T) 
+blast.results <- lapply(blasts.2013.02.21.estOnly, read.delim, header = F, as.is = T)
+names(blast.results)<- dir('./blasts.2013-02-21/', patt = 'EST.SEQUENCES', full = F)
 blast.results.concat <- blast.results[[1]]
 for(i in 2:length(blast.results)) blast.results.concat <- rbind(blast.results.concat, blast.results[[i]])
 blast.results.concat$log.eValue <- log10(as.numeric(blast.results.concat[[4]]))
@@ -172,6 +173,7 @@ do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary
   if(is.na(lengths[1])) lengths <- lengths.report(dat,0) # as written, this will fail if lengths = NA, b/c lengths.report needs a pyRAD object, whereas this function needs a pyRAD.mat object
   sizeFilteredLoci <- names(lengths[lengths >= minLength & lengths <= maxLength])
   estLoci <- loci.by.threshold(blast, t.hold)
+  lociSampled <- vector('list', sampleReps)
   estLoci <- estLoci[which(estLoci %in% sizeFilteredLoci)]
   otherLoci <- sizeFilteredLoci[!sizeFilteredLoci %in% unique(blast[[1]])]
   if(makeDirs) dir.create(paste('./oak.ests.tHold.', t.hold, '.', format(Sys.time(), "%Y-%d-%m"), '/', sep = ''))
@@ -191,8 +193,9 @@ do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary
 	  }
 	else dirOut <- ''
 	writeLines(paste('raxmlHPC-PTHREADS -f a -T 4 -x 123555 -# 200 -w ', dirOut, ' -s ', outfileName, ' -m GTRGAMMA -n ', outfileName, '.tre', sep = ''), con = analysisFile)
+	lociSampled[[i]] <- sampledLoci
 	}
-  return(0)
+  return(lociSampled)
   }
 
 ## Make a helpful barplot:
