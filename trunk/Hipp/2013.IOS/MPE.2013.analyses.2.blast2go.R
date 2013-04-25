@@ -2,7 +2,7 @@
 ## A Hipp, 22 April 2013
 
 ## read in the datasets that Elisabeth sent
-oak.blasts = lapply(dir('./2013-04-09.data/', full = T), read.delim)
+oak.blasts = lapply(dir('./2013-04-09.data/', full = T), read.delim, as.is = T)
 names(oak.blasts) = c('est.others', 'quercus.all', 'ref.seq.RNA')
 for(i in names(oak.blasts)) oak.blasts[[i]]$data.source <- i
 concat.fields <- c("query", "subject", "subject.accessions", "evalue", "query.start", 
@@ -30,7 +30,7 @@ for(i in unique.loci) {
   temp.desc <- temp.desc[temp.desc != "0"]
   locus.summary.mat[i, 2] <- length(temp.desc)
   locus.summary.mat[i, 3] <- paste(temp.desc, collapse = "||")
-  GOs <- sort(unlist(strsplit(as.character(temp$GOs), "; ")))
+  GOs <- sort(unique(unlist(strsplit(as.character(temp$GOs), "; "))))
   GOs <- GOs[GOs != ""]
   locus.summary.mat[i, 4] <- length(GOs)
   locus.summary.mat[i, 5] <- paste(GOs, collapse = "||")
