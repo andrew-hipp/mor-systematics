@@ -223,7 +223,7 @@ filter.by <- function(dat, taxa) {
 hybrid.test <- function(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
                         f1s = c('>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E',
 						         '>2893Gx2830D1A', '>2893Gx2830D1C'))								 
-### TO DO:
+### TO DO (3/14/2013, AH and AMELirio):
 ##    don't analyze Ns and -s
 ##    Check for variability after screening out everyone except for the parents and offspring
 								 {
