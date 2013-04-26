@@ -31,7 +31,7 @@ for(i in unique.loci) {
   locus.summary.mat[i, 2] <- length(temp.desc)
   locus.summary.mat[i, 3] <- paste(temp.desc, collapse = "||")
   GOs <- sort(unique(unlist(strsplit(as.character(temp$GOs), "; "))))
-  GOs <- GOs[GOs != ""]
+  GOs <- GOs[!GOs %in% c("", "-")]
   locus.summary.mat[i, 4] <- length(GOs)
   locus.summary.mat[i, 5] <- paste(GOs, collapse = "||")
   }
