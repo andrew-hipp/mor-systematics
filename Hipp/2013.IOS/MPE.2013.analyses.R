@@ -4,6 +4,9 @@
 r2pyrad <- 'http://mor-systematics.googlecode.com/svn/trunk/AAA.Lab/r2pyRAD.R'
 source(r2pyrad)
 
+## trees for EST analysis
+dna.temp = sort(dir('./analyses.EST.2013-03-28/', recursive=T, patt = 'reduced', full = T))
+tree.temp = sort(dir('./analyses.EST.2013-03-28/', recursive=T, patt = 'bipartitions.oak', full = T))
 
 ## get data in, summarize
 d6m10p2.wRE <- read.pyRAD('../eatonAnalyses/c88_d6m10p2_wRE.readloci.txt')
@@ -113,6 +116,7 @@ make.tree.scores <- function(dna.files, tree.files = NA, dna.format = 'sequentia
 ##   tree.files: a vector of tree files corresponding to the dna.files, same order
 ##   dna.format: format of the dna files, using read.dna
 ##   tree: a phylogeny of class phylo; not currently implemented
+
   require(phangorn)
   missingData <- c('n', '-', 'N')
   N = length(dna.files)
@@ -129,7 +133,7 @@ make.tree.scores <- function(dna.files, tree.files = NA, dna.format = 'sequentia
 	dna.phyDat <- as.phyDat(dna.dat)
 	dna.dat.char <- as.character(dna.phyDat)
 	if(!identical(trees, F)) {
-	  tree <- read.tree(tree.files[[i]])
+	  tree <- root(read.tree(tree.files[[i]]), ">AC_h")
 	  outMat[i, 'steps'] <- parsimony(tree, dna.phyDat)
 	  outMat[i, 'ci'] <- sum(phangorn:::lowerBound(dna.phyDat) * attr(dna.phyDat, 'weight')) / outMat[i, 'steps']
 	  outMat[i, 'length'] <- sum(attr(dna.phyDat, 'weight'))
@@ -220,4 +224,3 @@ do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary
 ## PROBLEMATIC: mean length of the EST-linked markers is longer, so this results in a shorter data matrix
 # subsampled.loci <- lapply(rep(8833,10), sample, x = dimnames(oaks.d6m4.mat)[[2]][!dimnames(oaks.d6m4.mat)[[2]] %in% blast.results.concat[[1]]])
 # for(i in 1:10) rad2phy(oaks.d6m4.mat, loci = subsampled.loci[[i]], outfile = paste('oaks.dna.d6m4.blast.subsample.', i,'.phy', sep = ''))
-
