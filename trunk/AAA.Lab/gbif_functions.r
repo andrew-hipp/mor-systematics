@@ -28,9 +28,11 @@ download_gbif = function(specieslist, genus) {
   if(class(specieslist) %in% c('matrix', 'list', 'data.frame')) {
     specieslist <- list()
     specieslist <- specieslist$species
-	}
-  gbifdata <- list()  # defines gbifdata as list
-  for (i in 1:length(specieslist)) gbifdata[[i]] <- try(gbif(genus, species=specieslist[i], ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))
+	}  
+  gbifdata <- lapply(specieslist, function(x) try(gbif(genus, species=x, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))
+  # gbifdata <- vector('list', length(specieslist))  # defines gbifdata as list
+  # for (i in 1:length(specieslist)) gbifdata[[i]] <- try(gbif(genus, species=specieslist[i], ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))
+  names(gbifdata) <- specieslist
   return(gbifdata)
  }
 		### Done for Schoenoxiphium, Cymophyllus, Uncinia, Kobresia (on May 14, 2013)
