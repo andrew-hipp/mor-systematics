@@ -74,17 +74,15 @@ map_gbif = function(gbifdata=Schoenoxiphium_cleaned_dups) {
   require(RColorBrewer)
   require(classInt)
   require(mapdata)
-  map2 <- function(x) map("worldHires", xlim = c(min(x$lon)-10, max(x$lon)+10), ylim = c(min(x$lat)-10, max(x$lat)+10)) #nasty little embedded function
-  point2 <- function(x) points(x$lon[x$precise_enough & x$unique_record], x$lat[x$precise_enough & x$unique_record], pch = 16, col= 2, cex = 0.5) #nasty little embedded function
   for (i in 1:length(gbifdata)){  ##Problem #2 needs to be able to skip files without any gbif data; right now it kills the function.... or at least the for loop.
     if(class(i) == "try-error") {
 	  message(paste('Dataset', i, 'is an utter failure'))
 	  next
 	  } # close if
 	pdf(file = paste(gbifdata[[i]]$species[1],'_map_',format(Sys.time(),"%Y-%m-%d"),'.pdf',sep =''))
-    map2(gbifdata[[i]])
-    point2(gbifdata[[i]])
-    title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
+    map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10))
+    points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
+	title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
     dev.off(which = dev.cur())
     # gbifdata[[i]] <- gbifdata[[i]][order(gbifdata[[i]][7]),]
     # gbifdata[[i]] <- edit(gbifdata[[i]]) -- this is a throwback to doing the mapping and data cleanup on the command-line
