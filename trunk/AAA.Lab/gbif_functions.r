@@ -43,17 +43,21 @@ download_gbif = function(specieslist, genus) {
 			#Ex. Schoenoxiphium_cleaned <- clean_gbif(gbifdata = Schoenoxiphium_gbifdata)
 			
 clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
-  for (i in 1:length(gbifdata)) gbifdata[[i]] <- as.data.frame(gbifdata[[i]]) #Create dataframe of gbif data
+  for (i in 1:length(gbifdata)) {
+    if(class(gbifdata[[i]]) == 'try-error') next
+	else gbifdata[[i]] <- as.data.frame(gbifdata[[i]]) #Create dataframe of gbif data
+	}
   xd <- list() #tempfile to use to compare data that will be flagged as unuseable
   for (i in 1:length(gbifdata)) {
-    gbifdata[[i]]$lat <- as.numeric(gbifdata[[i]]$lat)
+    if(class(gbifdata[[i]]) == 'try-error') next
+	gbifdata[[i]]$lat <- as.numeric(gbifdata[[i]]$lat)
     gbifdata[[i]]$calc_error <- ifelse(gbifdata[[i]]$lat==as.integer(gbifdata[[i]]$lat), 100, ifelse((10*gbifdata[[i]]$lat)==as.integer(10*gbifdata[[i]]$lat), 10, ifelse((100*gbifdata[[i]]$lat)==as.integer(100*gbifdata[[i]]$lat), 1, ifelse((1000*gbifdata[[i]]$lat)==as.integer(1000*gbifdata[[i]]$lat), 0.1, ifelse((10000*gbifdata[[i]]$lat)==as.integer(10000*gbifdata[[i]]$lat), 0.01, ifelse((100000*gbifdata[[i]]$lat)==as.integer(100000*gbifdata[[i]]$lat), 0.001, 0.0001))))))
     gbifdata[[i]]$precise_enough <- ifelse(gbifdata[[i]]$calc_error < 10, TRUE, FALSE)
 	gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE) #cleans by lat and long
     # if(clean.by.locality) gbifdata[[i]]$unique_record <- gbifdata[[i]]$unique_record & ifelse(!duplicated(gbifdata[[i]]$cloc), TRUE, FALSE) -- CLEAN UP NULLS FIRST
 	xd[[i]]<-subset(gbifdata[[i]], calc_error < 10)  # can be cleaned out
     } # close i
-  nrowlistx <- lapply(gbifdata, nrow)
+  nrowlistx <- lapply(gbifdata, nrow) #this may fail now
   nrowlistxd <- lapply(xd, nrow)
   number.not.unique <- lapply(gbifdata, function(x) sum(!x$unique_record))
   #nrowlistx <- list()
@@ -80,8 +84,12 @@ map_gbif = function(gbifdata=Schoenoxiphium_cleaned_dups) {
 	  next
 	  } # close if
 	pdf(file = paste(gbifdata[[i]]$species[1],'_map_',format(Sys.time(),"%Y-%m-%d"),'.pdf',sep =''))
-    map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10))
-    points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
+    map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
+    if(class(map.try) == 'try-error') {
+	  message(paste('Dataset', i, 'has some SERIOUS mapping problems. Check it out.'))
+	  next
+	  } # close if
+	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
 	title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
     dev.off(which = dev.cur())
     # gbifdata[[i]] <- gbifdata[[i]][order(gbifdata[[i]][7]),]
