@@ -17,16 +17,18 @@
 #				 				Uncinia_gbifdata <- download_gbif(speciesfile = Unciniaspecies, genus = "Uncinia")
 #				  				Cymophyllus_gbifdata <- download_gbif(speciesfile = Cymophyllus_species, genus = "Cymophyllus")
 
-download_gbif = function(speciesfile, genus) { 
-## 
+download_gbif = function(specieslist, genus) { 
+## We assume that specieslist is either a dataframe or list or matrix with a "species" column, or just a vector of species epithets
   require(rJava) 
   require(rgdal)
   require(sp)
   require(XML)
   require(raster)
   require(dismo)
-  specieslist <- list()
-  specieslist <- speciesfile$species
+  if(class(specieslist) %in% c('matrix', 'list', 'data.frame')) {
+    specieslist <- list()
+    specieslist <- specieslist$species
+	}
   gbifdata <- list()  # defines gbifdata as list
   for (i in 1:length(specieslist)) gbifdata[[i]] <- gbif(genus, species=specieslist[i], ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3)
   return(gbifdata)
