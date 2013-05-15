@@ -87,6 +87,7 @@ map_gbif = function(gbifdata=Schoenoxiphium_cleaned_dups) {
     map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
     if(class(map.try) == 'try-error') {
 	  message(paste('Dataset', i, 'has some SERIOUS mapping problems. Check it out.'))
+	  dev.off()
 	  next
 	  } # close if
 	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
