@@ -29,7 +29,7 @@ download_gbif = function(specieslist, genus) {
     specieslist <- list()
     specieslist <- specieslist$species
 	}  
-  gbifdata <- lapply(specieslist, function(x) try(gbif(genus, species=x, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3)))
+  gbifdata <- lapply(specieslist, function(x) {try(gbif(genus, species=x, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))})
   # gbifdata <- vector('list', length(specieslist))  # defines gbifdata as list
   # for (i in 1:length(specieslist)) gbifdata[[i]] <- try(gbif(genus, species=specieslist[i], ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))
   names(gbifdata) <- specieslist
@@ -46,19 +46,21 @@ clean_gbif = function(gbifdata) {
   for (i in 1:length(gbifdata)) gbifdata[[i]] <- as.data.frame(gbifdata[[i]]) #Create dataframe of gbif data
   xd <- list() #tempfile to use to compare data that will be flagged as unuseable
   for (i in 1:length(gbifdata)) {
-    gbifdata[[i]]$lat<-as.numeric(gbifdata[[i]]$lat)
-    gbifdata[[i]]$calc_error<-ifelse(gbifdata[[i]]$lat==as.integer(gbifdata[[i]]$lat), 100, ifelse((10*gbifdata[[i]]$lat)==as.integer(10*gbifdata[[i]]$lat), 10, ifelse((100*gbifdata[[i]]$lat)==as.integer(100*gbifdata[[i]]$lat), 1, ifelse((1000*gbifdata[[i]]$lat)==as.integer(1000*gbifdata[[i]]$lat), 0.1, ifelse((10000*gbifdata[[i]]$lat)==as.integer(10000*gbifdata[[i]]$lat), 0.01, ifelse((100000*gbifdata[[i]]$lat)==as.integer(100000*gbifdata[[i]]$lat), 0.001, 0.0001))))))
-    gbifdata[[i]]$flag_precision<- ifelse(gbifdata[[i]]$calc_error<10,"USE","LOWPrecision")
-    xd[[i]]<-subset(gbifdata[[i]], calc_error<10)  
-    } #close for   
-nrowlistx <- list()
-nrowlistxd <- list()
-for (i in 1:length(gbifdata)) nrowlistx[[i]] <- nrow(gbifdata[[i]])
-for (i in 1:length(gbifdata)) nrowlistxd[[i]] <- nrow(xd[[i]])
-print("Comparison of # of original rows to # of high precision rows for LAT/LONG Coordinates")
-print(cbind(nrowlistx,nrowlistxd))
-return(gbifdata[])
- }
+    gbifdata[[i]]$lat <- as.numeric(gbifdata[[i]]$lat)
+    gbifdata[[i]]$calc_error <- ifelse(gbifdata[[i]]$lat==as.integer(gbifdata[[i]]$lat), 100, ifelse((10*gbifdata[[i]]$lat)==as.integer(10*gbifdata[[i]]$lat), 10, ifelse((100*gbifdata[[i]]$lat)==as.integer(100*gbifdata[[i]]$lat), 1, ifelse((1000*gbifdata[[i]]$lat)==as.integer(1000*gbifdata[[i]]$lat), 0.1, ifelse((10000*gbifdata[[i]]$lat)==as.integer(10000*gbifdata[[i]]$lat), 0.01, ifelse((100000*gbifdata[[i]]$lat)==as.integer(100000*gbifdata[[i]]$lat), 0.001, 0.0001))))))
+    gbifdata[[i]]$precise_enough <- ifelse(gbifdata[[i]]$calc_error < 10, TRUE, FALSE)
+    xd[[i]]<-subset(gbifdata[[i]], calc_error < 10)  
+    } # close i
+  nrowlistx <- lapply(gbifdata, nrow)
+  nrowlistxd <- lapply(xd, nrow)
+  #nrowlistx <- list()
+  #nrowlistxd <- list()
+  #for (i in 1:length(gbifdata)) nrowlistx[[i]] <- nrow(gbifdata[[i]])
+  #for (i in 1:length(gbifdata)) nrowlistxd[[i]] <- nrow(xd[[i]])
+  print("Comparison of # of original rows to # of high precision rows for LAT/LONG Coordinates")
+  print(cbind(nrowlistx,nrowlistxd))
+  return(gbifdata)
+  }
  
  ##Step 5: -Flags specimens with identical lat/log coordinates as Duplication in new column called flag_dupls
 				#Ex. Schoenoxiphium_cleaned_dups <- remove_dupls(gbifdata = Schoenoxiphium_cleaned)
