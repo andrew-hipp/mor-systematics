@@ -66,44 +66,32 @@ clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
   return(gbifdata)
   }
  
- ##Step 5: -Flags specimens with identical lat/log coordinates as Duplication in new column called flag_dupls
-				#Ex. Schoenoxiphium_cleaned_dups <- remove_dupls(gbifdata = Schoenoxiphium_cleaned)
- 
- remove_dupls = function(gbifdata) {
- xd2 <- list()
-for (i in 1:length(gbifdata)){
-xd2[[i]]<-subset(gbifdata[[i]], !duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon))
-gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE)
-}
-nrowlistxd2 <- list()
-for (i in 1:length(x)) nrowlistxd2[[i]] <- nrow(xd2[[i]])
-print("# of duplications (identical lat/long coordinates)in gbifdata")
-print(cbind(nrowlistx,nrowlistxd,nrowlistxd2))
-return(gbifdata[])
- }
-
   ##Step 6: Mapping cleaned up data  PROBLEMS #1 ## we now need to make sure we only map specimens that are NOT duplicated and are NOT low precision!!!!
 				#Ex.  map_gbif(gbifdata = Schoenoxiphium_cleaned_dups)
-  map_gbif = function(gbifdata=Schoenoxiphium_cleaned_dups) {
-require(maps)
-require(maptools)
-require(RColorBrewer)
-require(classInt)
-require(mapdata)
-map2 <- function(x) map("worldHires", xlim = c(min(x[,8])-10, max(x[,8])+10), ylim = c(min(x[,7])-10, max(x[,7])+10))
-point2 <- function(x) points(x[,8], x[,7], pch = 16, col= 2, cex = 0.5)
-for (i in 1:length(gbifdata)){  ##Problem #2 needs to be able to skip files without any gbif data; right now it kills the function.... or at least the for loop.
-pdf(file = paste(gbifdata[[i]]$species[1],'_map_',format(Sys.time(),"%Y-%m-%d"),'.pdf',sep =''))
-map2(gbifdata[[i]])
-point2(gbifdata[[i]])
-title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL,
-      line = NA, outer = FALSE)
-dev.off(which = dev.cur())
-gbifdata[[i]] <- gbifdata[[i]][order(gbifdata[[i]][7]),]
-gbifdata[[i]] <- edit(gbifdata[[i]])
-}
- }
- ### PRoblem #3- do couldn't get the jpeg part to work, only the PDF
+map_gbif = function(gbifdata=Schoenoxiphium_cleaned_dups) {
+  require(maps)
+  require(maptools)
+  require(RColorBrewer)
+  require(classInt)
+  require(mapdata)
+  map2 <- function(x) map("worldHires", xlim = c(min(x$lon)-10, max(x$lon)+10), ylim = c(min(x$lat)-10, max(x$lat)+10)) #nasty little embedded function
+  point2 <- function(x) points(x$lon[x$precise_enough & x$unique_record], x$lat[x$precise_enough & x$unique_record], pch = 16, col= 2, cex = 0.5) #nasty little embedded function
+  for (i in 1:length(gbifdata)){  ##Problem #2 needs to be able to skip files without any gbif data; right now it kills the function.... or at least the for loop.
+    if(class(i) == "try-error") {
+	  message(paste('Dataset', i, 'is an utter failure'))
+	  next
+	  } # close if
+	pdf(file = paste(gbifdata[[i]]$species[1],'_map_',format(Sys.time(),"%Y-%m-%d"),'.pdf',sep =''))
+    map2(gbifdata[[i]])
+    point2(gbifdata[[i]])
+    title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
+    dev.off(which = dev.cur())
+    # gbifdata[[i]] <- gbifdata[[i]][order(gbifdata[[i]][7]),]
+    # gbifdata[[i]] <- edit(gbifdata[[i]]) -- this is a throwback to doing the mapping and data cleanup on the command-line
+    } # close i
+  }
+
+### PRoblem #3- do couldn't get the jpeg part to work, only the PDF
 
 ##Step6: Download WorldClim Data
  #clim<-getData(“worldclim”,var=”bio”,res=5)
