@@ -70,7 +70,7 @@ clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
   return(gbifdata)
   }
  
-  ##Step 6: Mapping cleaned up data  PROBLEMS #1 ## we now need to make sure we only map specimens that are NOT duplicated and are NOT low precision!!!!
+##Step 6: Mapping cleaned up data  PROBLEMS #1 ## we now need to make sure we only map specimens that are NOT duplicated and are NOT low precision!!!!
 				#Ex.  map_gbif(gbifdata = Schoenoxiphium_cleaned_dups)
 map_gbif = function(gbifdata=Schoenoxiphium_cleaned_dups) {
   require(maps)
@@ -83,10 +83,11 @@ map_gbif = function(gbifdata=Schoenoxiphium_cleaned_dups) {
 	  message(paste('Dataset', i, 'is an utter failure'))
 	  next
 	  } # close if
-	pdf(file = paste(gbifdata[[i]]$species[1],'_map_',format(Sys.time(),"%Y-%m-%d"),'.pdf',sep =''))
+	pdf(file = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.pdf',sep =''))
     map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
     if(class(map.try) == 'try-error') {
 	  message(paste('Dataset', i, 'has some SERIOUS mapping problems. Check it out.'))
+	  # add something here to delete corrupt maps and create a log file for errors
 	  dev.off()
 	  next
 	  } # close if
