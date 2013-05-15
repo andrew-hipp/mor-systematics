@@ -49,7 +49,8 @@ clean_gbif = function(gbifdata) {
     gbifdata[[i]]$lat <- as.numeric(gbifdata[[i]]$lat)
     gbifdata[[i]]$calc_error <- ifelse(gbifdata[[i]]$lat==as.integer(gbifdata[[i]]$lat), 100, ifelse((10*gbifdata[[i]]$lat)==as.integer(10*gbifdata[[i]]$lat), 10, ifelse((100*gbifdata[[i]]$lat)==as.integer(100*gbifdata[[i]]$lat), 1, ifelse((1000*gbifdata[[i]]$lat)==as.integer(1000*gbifdata[[i]]$lat), 0.1, ifelse((10000*gbifdata[[i]]$lat)==as.integer(10000*gbifdata[[i]]$lat), 0.01, ifelse((100000*gbifdata[[i]]$lat)==as.integer(100000*gbifdata[[i]]$lat), 0.001, 0.0001))))))
     gbifdata[[i]]$precise_enough <- ifelse(gbifdata[[i]]$calc_error < 10, TRUE, FALSE)
-    xd[[i]]<-subset(gbifdata[[i]], calc_error < 10)  
+    gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE)
+	xd[[i]]<-subset(gbifdata[[i]], calc_error < 10)  # can be cleaned out
     } # close i
   nrowlistx <- lapply(gbifdata, nrow)
   nrowlistxd <- lapply(xd, nrow)
@@ -69,7 +70,7 @@ clean_gbif = function(gbifdata) {
  xd2 <- list()
 for (i in 1:length(gbifdata)){
 xd2[[i]]<-subset(gbifdata[[i]], !duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon))
-gbifdata[[i]]$flag_dupls<- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon),"USE","Duplication")
+gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE)
 }
 nrowlistxd2 <- list()
 for (i in 1:length(x)) nrowlistxd2[[i]] <- nrow(xd2[[i]])
