@@ -42,24 +42,27 @@ download_gbif = function(specieslist, genus) {
 ##Step 4: -Flags specimens with low lat/long precision as LowPrecision in new column called flag_precision
 			#Ex. Schoenoxiphium_cleaned <- clean_gbif(gbifdata = Schoenoxiphium_gbifdata)
 			
-clean_gbif = function(gbifdata) {
+clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
   for (i in 1:length(gbifdata)) gbifdata[[i]] <- as.data.frame(gbifdata[[i]]) #Create dataframe of gbif data
   xd <- list() #tempfile to use to compare data that will be flagged as unuseable
   for (i in 1:length(gbifdata)) {
     gbifdata[[i]]$lat <- as.numeric(gbifdata[[i]]$lat)
     gbifdata[[i]]$calc_error <- ifelse(gbifdata[[i]]$lat==as.integer(gbifdata[[i]]$lat), 100, ifelse((10*gbifdata[[i]]$lat)==as.integer(10*gbifdata[[i]]$lat), 10, ifelse((100*gbifdata[[i]]$lat)==as.integer(100*gbifdata[[i]]$lat), 1, ifelse((1000*gbifdata[[i]]$lat)==as.integer(1000*gbifdata[[i]]$lat), 0.1, ifelse((10000*gbifdata[[i]]$lat)==as.integer(10000*gbifdata[[i]]$lat), 0.01, ifelse((100000*gbifdata[[i]]$lat)==as.integer(100000*gbifdata[[i]]$lat), 0.001, 0.0001))))))
     gbifdata[[i]]$precise_enough <- ifelse(gbifdata[[i]]$calc_error < 10, TRUE, FALSE)
-    gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE)
+	gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE) #cleans by lat and long
+    # if(clean.by.locality) gbifdata[[i]]$unique_record <- gbifdata[[i]]$unique_record & ifelse(!duplicated(gbifdata[[i]]$cloc), TRUE, FALSE) -- CLEAN UP NULLS FIRST
 	xd[[i]]<-subset(gbifdata[[i]], calc_error < 10)  # can be cleaned out
     } # close i
   nrowlistx <- lapply(gbifdata, nrow)
   nrowlistxd <- lapply(xd, nrow)
+  number.not.unique <- lapply(gbifdata, function(x) sum(!x$unique_record))
   #nrowlistx <- list()
   #nrowlistxd <- list()
   #for (i in 1:length(gbifdata)) nrowlistx[[i]] <- nrow(gbifdata[[i]])
   #for (i in 1:length(gbifdata)) nrowlistxd[[i]] <- nrow(xd[[i]])
-  print("Comparison of # of original rows to # of high precision rows for LAT/LONG Coordinates")
-  print(cbind(nrowlistx,nrowlistxd))
+  print("Comparison of # of original rows to # of high precision rows for LAT/LONG Coordinates; third column is number of rows not unique based on lat and long")
+  print(cbind(nrowlistx,nrowlistxd,number.not.unique))
+ 
   return(gbifdata)
   }
  
