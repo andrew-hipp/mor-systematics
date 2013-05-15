@@ -11,11 +11,11 @@
 #note for Carex first run, I only used species marked as accepted species, and excluded intraspecific designations. 5/14/2013- MH
 
 ## Step 3: download gbif data for different taxons; you will have to enter in a species list, and a genus name for the species list.
-#EX. 							Kobresia_gbifdata <-download_gbif(speciesfile = Kobresiaspecies, genus = "Kobresia")
-#				 		    	Schoenoxiphium_gbifdata <-download_gbif(speciesfile = Schoenoxiphiumspecies, genus = "Schoenoxiphium")
-#				  				Carex_gbifdata <-download_gbif(speciesfile = Carexspecies, genus = "Carex")
-#				 				Uncinia_gbifdata <- download_gbif(speciesfile = Unciniaspecies, genus = "Uncinia")
-#				  				Cymophyllus_gbifdata <- download_gbif(speciesfile = Cymophyllus_species, genus = "Cymophyllus")
+#EX. 							Kobresia_gbif <-download_gbif(Kobresiaspecies, genus = "Kobresia")
+#				 		    	Schoenoxiphium_gbif <-download_gbif(Schoenoxiphiumspecies, genus = "Schoenoxiphium")
+#				  				Carex_gbifdata <-download_gbif(Carexspecies, genus = "Carex")
+#				 				Uncinia_gbif <- download_gbif(Unciniaspecies, genus = "Uncinia")
+#				  				Cymophyllus_gbif <- download_gbif(specieslist = Cymophyllusspecies, genus = "Cymophyllus")
 
 download_gbif = function(specieslist, genus) { 
 ## We assume that specieslist is either a dataframe or list or matrix with a "species" column, or just a vector of species epithets
@@ -25,10 +25,7 @@ download_gbif = function(specieslist, genus) {
   require(XML)
   require(raster)
   require(dismo)
-  if(class(specieslist) %in% c('matrix', 'list', 'data.frame')) {
-    specieslist <- list()
-    specieslist <- specieslist$species
-	}  
+  if(class(specieslist) %in% c('matrix', 'list', 'data.frame')) specieslist <- specieslist$species
   gbifdata <- lapply(specieslist, function(x) {try(gbif(genus, species=x, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))})
   # gbifdata <- vector('list', length(specieslist))  # defines gbifdata as list
   # for (i in 1:length(specieslist)) gbifdata[[i]] <- try(gbif(genus, species=specieslist[i], ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))
