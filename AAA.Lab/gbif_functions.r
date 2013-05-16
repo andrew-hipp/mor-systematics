@@ -94,6 +94,7 @@ map_gbif = function(gbifdata) {
 	  next
 	  } # close if
 	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
+	map.axes()
 	title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
     dev.off(which = dev.cur())
     # gbifdata[[i]] <- gbifdata[[i]][order(gbifdata[[i]][7]),]
@@ -122,8 +123,8 @@ map_gbif = function(gbifdata) {
 	  next
 	  } # close if
 	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
-	title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
 	map.axes()
+	title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
     dev.off(which = dev.cur())
     } # close i
   }
