@@ -220,11 +220,11 @@ filter.by <- function(dat, taxa) {
   return(names(which(apply(dat.mat, 2, sum) == length(taxa))))
   }
 
-hyb.test.2830 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
+hyb.test.2830.2893G1 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
                                 f1s = c('>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
 							}	
 							
-hyb.test.2816 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
+hyb.test.2816.2893G1 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
                                 f1s = c(">2816x2893G1E", ">2816", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A"))
 							}
 							
@@ -306,6 +306,7 @@ require(Biostrings)
 	}# close i
   parents.differ <- summaryMat[1, ]
   percent.compatible.with.cross <- apply(summaryMat[, parents.differ], 1, mean, na.rm = TRUE)
+  total.scorable.loci.points <- apply(summaryMat[, parents.differ], 1, function(x) !is.na(x))
   percent.compatible.with.cross[1] <- sum(parents.differ)
   out = list(matsOut = matsOut, summaryMat = summaryMat, percent.compatible.with.cross = percent.compatible.with.cross)
   return(out)
