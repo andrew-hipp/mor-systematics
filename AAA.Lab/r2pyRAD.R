@@ -226,8 +226,12 @@ hyb.test.2830 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2
 hyb.test.2816 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
                                 f1s = c(">2816x2893G1E", ">2816", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A"))
 
-hyb.trial.allOffspring <- hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
-                                f1s = c(">2816x2893G1E", ">2816", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A",
+hyb.trial.allOffspring.2816 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
+                                f1s = c(">2816x2893G1E", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A",
+								'>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
+
+hyb.trial.allOffspring.2830 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'),
+                                f1s = c(">2816x2893G1E", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A",
 								'>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
 
 								
@@ -289,7 +293,8 @@ require(Biostrings)
 	    message(paste("Doing summary matrix column", colCounter))
 		message(paste(" -- working on row", dimnames(matsOut[[i]])[[1]][k]))
 		summaryMat[dimnames(matsOut[[i]])[[1]][k], colCounter] <- as.logical(matsOut[[i]][k,j])
-		summaryMat[1, colCounter] <- matsOut[[i]][1,(j - dim(matsOut[[i]])[2] / 2)] != matsOut[[i]][2,(j - dim(matsOut[[i]])[2] / 2)]
+		if(any(matsOut[[i]][1:2,(j - dim(matsOut[[i]])[2] / 2)] == "N")) summaryMat[1, colCounter] <- FALSE
+		else summaryMat[1, colCounter] <- matsOut[[i]][1,(j - dim(matsOut[[i]])[2] / 2)] != matsOut[[i]][2,(j - dim(matsOut[[i]])[2] / 2)]
 		}# close k
 		colCounter <- colCounter + 1	  
 	  }# close j
