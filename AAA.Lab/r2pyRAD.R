@@ -220,12 +220,17 @@ filter.by <- function(dat, taxa) {
   return(names(which(apply(dat.mat, 2, sum) == length(taxa))))
   }
 
-do.hyb.test.2830 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
+hyb.test.2830 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
                                 f1s = c('>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
 								 
-do.hyb.test.2816 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
-                                f1s = c(">2816x2893G1E", ">2816", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A")
+hyb.test.2816 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
+                                f1s = c(">2816x2893G1E", ">2816", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A"))
 
+hyb.trial.allOffspring <- hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
+                                f1s = c(">2816x2893G1E", ">2816", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A",
+								'>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
+
+								
 hybrid.test <- function(dat, parents, f1s)								 
 ### TO DO (3/14/2013, AH and AMELirio):
 ##    don't analyze Ns and -s
