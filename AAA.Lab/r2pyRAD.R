@@ -305,7 +305,8 @@ require(Biostrings)
 	  }# close j
 	}# close i
   parents.differ <- summaryMat[1, ]
-  percent.compatible.with.cross <- apply(summaryMat[, parents.differ], 1, mean, na.rm = TRUE)  
+  percent.compatible.with.cross <- apply(summaryMat[, parents.differ], 1, mean, na.rm = TRUE)
+  percent.compatible.with.cross[1] <- sum(parents.differ)
   out = list(matsOut = matsOut, summaryMat = summaryMat, percent.compatible.with.cross = percent.compatible.with.cross)
   return(out)
   }
