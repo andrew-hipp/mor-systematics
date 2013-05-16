@@ -1,6 +1,9 @@
-###GBIF/NICHE MODELING FUNCTIONS (v1 5-15-2013 R code)
+###GBIF/NICHE MODELING FUNCTIONS (v1.1 5-16-2013 R code)
 ### To download gbif data for Cariceae sp, clean up data (remove duplicates, remove less precise georef's to create niche maps of different Taxons
 ### Marlene Hahn May 2013, as part of Carex project,  (based on original R coding by Marcial Escudero and Ian Pearse.)
+
+#v1.1 additions- - now writes out files in download_gbif, and clean_gbif; pdf and jpeg maps creates with axes
+#v1.1 issues- download-gbif function is running into some extraction issues that kill the function for some datasets.
 
 
 ## Step 1: install packages (do only once)
@@ -37,10 +40,7 @@ download_gbif = function(specieslist, genus) {
   names(gbifdata) <- specieslist
   return(gbifdata)
  }
-		### Done for Schoenoxiphium, Cymophyllus, Uncinia, Kobresia (on May 14, 2013)
-			##test success using commands like: Kobresia_gbifdata[[1]] or    Kobresia_gbifdata[[1]][7:8]  ##gives lat and long coordinates for specimens of specific Kobresia spp
-
-			
+				
 ##Step 4: -Flags specimens with low lat/long precision as false in precise_enough column; flags duplicate specimens (species records with same lat/long coordinates) as false in unique_record column.
 			#Ex. Schoenoxiphium_cleaned <- clean_gbif(Schoenoxiphium_gbifdata)
 			
@@ -134,23 +134,28 @@ map_gbif = function(gbifdata) {
 
  
 ##Step6: Download WorldClim Data (http://www.worldclim.org/download) to get bioclim variables
+			#EX Sch_bioclim <- world_clim(Sch_clean)
 world_clim = function(gbifdata) {
- #clim <- getData(“worldclim”,var=”bio”,res=5)
- #bioclim <- list()
- 
- ###don't we need all 19 variables?  and why does the 8:7 and 7:8 reverse between bioclim 1 and 2???
- # we also need to exclude flagged data again....
- #for (i in 1:length(gbifdata)) bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE, layer, nl, df=FALSE, factors=FALSE)bioclim2 <- list()
- #for (i in 1:length(gbifdata)) bioclim2[[i]] <- extract(clim, gbifdata[[i]][7:8], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
- #return(bioclim)
-#}
+  require(rJava) 
+  require(rgdal)
+  require(sp)
+  require(XML)
+  require(raster)
+  require(dismo)
+ clim <-getData('worldclim', var='bio', res=5)
+ bioclim <- list()
+ # we also need to exclude flagged data again....  
+ #worldclim and gbif have reversed long and lats??  which is why code below is [8:7]- double check with Marcial
+ for (i in 1:length(gbifdata)) bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
+ return(bioclim)
+}
 
 ##Step7: Remove OUTLIERS from Bioclim data
-#rm_outliers = function(bioclim){
-# require(MIPHENO)
- #bioclimnoout <- list()
- #for(i in 1:length(bioclim)) bioclimnoout[[i]] <- rm.outlier(bioclim[[i]], fill = TRUE)
- #return(bioclimoout)
+rm_outliers = function(bioclim){
+ require(MIPHENO)
+ bioclimnoout <- list()
+ for(i in 1:length(bioclim)) bioclimnoout[[i]] <- rm.outlier(bioclim[[i]], fill = TRUE)
+ return(bioclimoout)
 }
 
 ##Step 8: Calculate MEAN and Standard Deviation (SD), then generates PCA.
