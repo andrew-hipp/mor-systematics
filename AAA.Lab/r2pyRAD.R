@@ -225,7 +225,7 @@ hyb.test.2830.2893G1 <- function() {hybrid.test(dat = test.18.v2.summary, parent
 							}	
 							
 hyb.test.2816.2893G1 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
-                                f1s = c(">2816x2893G1E", ">2816", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A"))
+                                f1s = c(">2816x2893G1E", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A"))
 							}
 							
 hyb.trial.allOffspring.2816 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
@@ -306,7 +306,7 @@ require(Biostrings)
 	}# close i
   parents.differ <- summaryMat[1, ]
   percent.compatible.with.cross <- apply(summaryMat[, parents.differ], 1, mean, na.rm = TRUE)
-  total.scorable.loci <- apply(summaryMat[, parents.differ], 1, function(x) !is.na(x))
+  total.scorable.loci <- sum(apply(summaryMat[, parents.differ], 1, function(x) !is.na(x)))
   percent.compatible.with.cross[1] <- sum(parents.differ)
   out = list(matsOut = matsOut, summaryMat = summaryMat, percent.compatible.with.cross = percent.compatible.with.cross, total.scorable.loci = total.scorable.loci)
   return(out)
