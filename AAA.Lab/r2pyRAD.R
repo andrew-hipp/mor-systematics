@@ -220,16 +220,20 @@ filter.by <- function(dat, taxa) {
   return(names(which(apply(dat.mat, 2, sum) == length(taxa))))
   }
 
-hybrid.test <- function(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
-                        f1s = c('>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E',
-						         '>2893Gx2830D1A', '>2893Gx2830D1C'))								 
+do.hyb.test.2830 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
+                                f1s = c('>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
+								 
+do.hyb.test.2816 <- hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
+                                f1s = c(">2816x2893G1E", ">2816", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A")
+
+hybrid.test <- function(dat, parents, f1s)								 
 ### TO DO (3/14/2013, AH and AMELirio):
 ##    don't analyze Ns and -s
 ##    Check for variability after screening out everyone except for the parents and offspring
 								 {
 require(Biostrings)
   ## go through all loci and find for each (1) the parent genotypes, 
-  ##(2) the expected F1 genotypes are and their ratios, 
+  ##(2) the expected F1 genotypes and their ratios, 
   ##(3) the observed F1 genotypes and their ratios,
   ##(4) the percent F1 genotypes that are the expected genotypes
   
