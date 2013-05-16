@@ -1,21 +1,22 @@
-###GBIF/NICHE MODELING FUNCTIONS
+###GBIF/NICHE MODELING FUNCTIONS (v1 5-15-2013 R code)
 ### To download gbif data for Cariceae sp, clean up data (remove duplicates, remove less precise georef's to create niche maps of different Taxons
-### Marlene Hahn May 2013, as part of Carex project.
+### Marlene Hahn May 2013, as part of Carex project,  (based on original R coding by Marcial Escudero and Ian Pearse.)
+
 
 ## Step 1: install packages (do only once)
 #libs <- c("rJava", "rgdal", "sp", "XML", "raster", "dismo", "maps", "maptools","RColorBrewer", "classInt", "mapdata", "MIPHENO")
 #lapply(libs, install.packages)
 
-## Step2: Download species list (Genus	species	etc...)
+## Step2: Upload species list into R(Genus	species	etc...)
 #speciesfile <- read.delim(file.choose(), as.is = TRUE)    ##file must be text, tab delim for this to work; CAREX species names coming from WorldChecklist extraction. (species column needs header as "species")
 #note for Carex first run, I only used species marked as accepted species, and excluded intraspecific designations. 5/14/2013- MH
 
 ## Step 3: download gbif data for different taxons; you will have to enter in a species list, and a genus name for the species list.
-#EX. 							Kobresia_gbif <-download_gbif(Kobresiaspecies, genus = "Kobresia")
-#				 		    	Schoenoxiphium_gbif <-download_gbif(Schoenoxiphiumspecies, genus = "Schoenoxiphium")
-#				  				Carex_gbifdata <-download_gbif(Carexspecies, genus = "Carex")
-#				 				Uncinia_gbif <- download_gbif(Unciniaspecies, genus = "Uncinia")
-#				  				Cymophyllus_gbif <- download_gbif(specieslist = Cymophyllusspecies, genus = "Cymophyllus")
+#EX. 							Kobresia_gbif <-download_gbif(Kobresiaspecies,"Kobresia")
+#				 		    	Schoenoxiphium_gbif <-download_gbif(Schoenoxiphiumspecies,"Schoenoxiphium")
+#				  				Carex_gbifdata <-download_gbif(Carexspecies,"Carex")
+#				 				Uncinia_gbif <- download_gbif(Unciniaspecies,"Uncinia")
+#				  				Cymophyllus_gbif <- download_gbif(Cymophyllusspecies, "Cymophyllus")
 
 download_gbif = function(specieslist, genus) { 
 ## We assume that specieslist is either a dataframe or list or matrix with a "species" column, or just a vector of species epithets
@@ -26,7 +27,6 @@ download_gbif = function(specieslist, genus) {
   require(raster)
   require(dismo)
   if(class(specieslist) %in% c('matrix', 'list', 'data.frame')) specieslist <- specieslist$species
-	}  
   gbifdata <- lapply(specieslist, function(x) {try(gbif(genus, species=x, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))})
   # gbifdata <- vector('list', length(specieslist))  # defines gbifdata as list
   # for (i in 1:length(specieslist)) gbifdata[[i]] <- try(gbif(genus, species=specieslist[i], ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))
@@ -37,8 +37,8 @@ download_gbif = function(specieslist, genus) {
 			##test success using commands like: Kobresia_gbifdata[[1]] or    Kobresia_gbifdata[[1]][7:8]  ##gives lat and long coordinates for specimens of specific Kobresia spp
 
 			
-##Step 4: -Flags specimens with low lat/long precision as LowPrecision in new column called flag_precision
-			#Ex. Schoenoxiphium_cleaned <- clean_gbif(gbifdata = Schoenoxiphium_gbifdata)
+##Step 4: -Flags specimens with low lat/long precision as false in precise_enough column; flags duplicate specimens (species records with same lat/long coordinates) as false in unique_record column.
+			#Ex. Schoenoxiphium_cleaned <- clean_gbif(Schoenoxiphium_gbifdata)
 			
 clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
   for (i in 1:length(gbifdata)) {
@@ -68,15 +68,15 @@ clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
   return(gbifdata)
   }
  
-##Step 6: Mapping cleaned up data  PROBLEMS #1 ## we now need to make sure we only map specimens that are NOT duplicated and are NOT low precision!!!!
-				#Ex.  map_gbif(gbifdata = Schoenoxiphium_cleaned_dups)
+##Step 5a: Create pdf maps of data (excludes specimen records flagged as low precision or as duplicate record.)
+				#Ex.  map_gbif(Schoenoxiphium_cleaned_dups)
 map_gbif = function(gbifdata) {
   require(maps)
   require(maptools)
   require(RColorBrewer)
   require(classInt)
   require(mapdata)
-  for (i in 1:length(gbifdata)){  ##Problem #2 needs to be able to skip files without any gbif data; right now it kills the function.... or at least the for loop.
+  for (i in 1:length(gbifdata)){  
     if(class(i) == "try-error") {
 	  message(paste('Dataset', i, 'is an utter failure'))
 	  next
@@ -97,11 +97,69 @@ map_gbif = function(gbifdata) {
     } # close i
   }
 
-### PRoblem #3- do couldn't get the jpeg part to work, only the PDF
+ ##Step 5b: Create jpeg maps of data (excludes specimen records flagged as low precision or as duplicate record.)  
+ map_gbif_jpeg = function(gbifdata) {
+  require(maps)
+  require(maptools)
+  require(RColorBrewer)
+  require(classInt)
+  require(mapdata)
+  for (i in 1:length(gbifdata)){  
+    if(class(i) == "try-error") {
+	  message(paste('Dataset', i, 'is an utter failure'))
+	  next
+	  } # close if
+	jpeg(filename = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''), width = 480, height = 480, pointsize = 12, quality = 100, bg = "white"))
+    map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
+    if(class(map.try) == 'try-error') {
+	  message(paste('Dataset', i, 'has some SERIOUS mapping problems. Check it out.'))
+	  # add something here to delete corrupt maps and create a log file for errors
+	  dev.off()
+	  next
+	  } # close if
+	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
+	title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
+    dev.off(which = dev.cur())
+    } # close i
+  }
+ 
+ 
+##Step6: Download WorldClim Data (http://www.worldclim.org/download) to get bioclim variables
+world_clim = function(gbifdata) {
+ clim <- getData(“worldclim”,var=”bio”,res=5)
+ bioclim <- list()
+ 
+ ###don't we need all 19 variables?  and why does the 8:7 and 7:8 reverse between bioclim 1 and 2???
+ # we also need to exclude flagged data again....
+ for (i in 1:length(gbifdata)) bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE, layer, nl, df=FALSE, factors=FALSE)bioclim2 <- list()
+ for (i in 1:length(gbifdata)) bioclim2[[i]] <- extract(clim, gbifdata[[i]][7:8], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
+ 
+ return(bioclim)
+}
 
-##Step6: Download WorldClim Data
- #clim<-getData(“worldclim”,var=”bio”,res=5)
- 
- 
- 
+##Step7: Remove OUTLIERS from Bioclim data
+rm_outliers = function(bioclim){
+ require(MIPHENO)
+ bioclimnoout <- list()
+ for(i in 1:length(bioclim)) bioclimnoout[[i]] <- rm.outlier(bioclim[[i]], fill = TRUE)
+ return(bioclimoout)
+}
+
+##Step 8: Calculate MEAN and Standard Deviation (SD), then generates PCA.
+mean_SD = function(bioclimoout){
+ bioclimmean <- list()
+ for (i in 1:length(bioclimnoout)) bioclimmean[[i]] <- colMeans(bioclimnoout[[i]], na.rm = TRUE, dims = 1)
+ Means <- do.call(rbind, bioclimmean)
+ row.names(Means) = specieslist
+ bioclimSD <- list()
+ for (i in 1:length(bioclimnoout)) bioclimSD[[i]] <- apply(bioclimnoout[[i]],2, sd, na.rm = TRUE)
+ SDs <- do.call(rbind, bioclimSD)
+ row.names(SDs) = specieslist
+ pca <- prcomp(Means, retx = TRUE, center = TRUE, scale. = TRUE, tol = NULL)
+ plot(pca$x[,"PC1"], pca$x[,"PC2"])
+}
+
+
+
+
  
