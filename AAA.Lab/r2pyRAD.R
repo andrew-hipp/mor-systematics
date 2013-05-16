@@ -306,9 +306,9 @@ require(Biostrings)
 	}# close i
   parents.differ <- summaryMat[1, ]
   percent.compatible.with.cross <- apply(summaryMat[, parents.differ], 1, mean, na.rm = TRUE)
-  total.scorable.loci.points <- apply(summaryMat[, parents.differ], 1, function(x) !is.na(x))
+  total.scorable.loci <- apply(summaryMat[, parents.differ], 1, function(x) !is.na(x))
   percent.compatible.with.cross[1] <- sum(parents.differ)
-  out = list(matsOut = matsOut, summaryMat = summaryMat, percent.compatible.with.cross = percent.compatible.with.cross)
+  out = list(matsOut = matsOut, summaryMat = summaryMat, percent.compatible.with.cross = percent.compatible.with.cross, total.scorable.loci = total.scorable.loci)
   return(out)
   }
   
