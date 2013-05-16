@@ -269,7 +269,7 @@ require(Biostrings)
 	matsOut[[locusCounter]] <- seqsMat
 	colNames <- c(colNames, paste(locusCounter, "_", seq(dim(seqsMat)[2] / 2), sep = ""))
 	}
-  browser()
+  # browser()
   message(paste("Columns in summary matrix:", length(colNames)))
   summaryMat <- matrix(NA, nrow = length(c("differ", f1s)), ncol = length(colNames), dimnames = list(c("Parents differ", f1s), colNames))
   colCounter <- 1
