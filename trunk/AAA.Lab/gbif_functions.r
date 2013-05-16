@@ -29,7 +29,7 @@ download_gbif = function(specieslist, genus) {
   if(class(specieslist) %in% c('matrix', 'list', 'data.frame')) specieslist <- specieslist$species
   gbifdata <- lapply(specieslist, function(x) {
     out <- try(gbif(genus, species=x, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))
-	if(class(out) != "try-error") save(out, file = paste(gsub(" ", "_", out$species[1]), '.Rdata'))
+	if(class(out) != "try-error") save(out, file = paste(gsub(" ", "_", out$species[1]), '.Rdata', sep = ''))
 	return(out)
 	})
   # gbifdata <- vector('list', length(specieslist))  # defines gbifdata as list
