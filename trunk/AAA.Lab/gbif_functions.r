@@ -142,19 +142,19 @@ world_clim = function(gbifdata) {
   require(XML)
   require(raster)
   require(dismo)
- clim <-getData('worldclim', var='bio', res=5)
- bioclim <- list()
- # we also need to exclude flagged data again....  
- #worldclim and gbif have reversed long and lats??  which is why code below is [8:7]- double check with Marcial
- for (i in 1:length(gbifdata)) bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
- return(bioclim)
+  clim <-getData('worldclim', var='bio', res=5)
+  bioclim <- list()
+  # we also need to exclude flagged data again....  
+  #worldclim and gbif have reversed long and lats??  which is why code below is [8:7]- double check with Marcial
+  for (i in 1:length(gbifdata)) bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
+  return(bioclim)
 }
 
 ##Step7: Remove OUTLIERS from Bioclim data
 rm_outliers = function(bioclim){
  require(MIPHENO)
  bioclimnoout <- list()
- for(i in 1:length(bioclim)) bioclimnoout[[i]] <- rm.outlier(bioclim[[i]], fill = TRUE)
+ for(i in 1:length(bioclim)) bioclimnoout[[i]] <- rm.outliers(bioclim[[i]], fill = TRUE)
  return(bioclimoout)
 }
 
