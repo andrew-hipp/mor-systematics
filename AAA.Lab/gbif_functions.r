@@ -57,6 +57,7 @@ clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
     gbifdata[[i]]$precise_enough <- ifelse(gbifdata[[i]]$calc_error < 10, TRUE, FALSE)
 	gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE) #cleans by lat and long
     # if(clean.by.locality) gbifdata[[i]]$unique_record <- gbifdata[[i]]$unique_record & ifelse(!duplicated(gbifdata[[i]]$cloc), TRUE, FALSE) -- CLEAN UP NULLS FIRST
+	write.table(gbifdata[[i]], file = paste('cleaned_',gbifdata[[i]]$species[[1]],format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|")
 	xd[[i]]<-subset(gbifdata[[i]], calc_error < 10)  # can be cleaned out
     } # close i
   nrowlistx <- lapply(gbifdata, nrow) #this may fail now
@@ -72,6 +73,8 @@ clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
   return(gbifdata)
   }
  
+ 
+
 ##Step 5a: Create pdf maps of data (excludes specimen records flagged as low precision or as duplicate record.)
 				#Ex.  map_gbif(Schoenoxiphium_cleaned_dups)
 map_gbif = function(gbifdata) {
@@ -131,7 +134,7 @@ map_gbif = function(gbifdata) {
 
  
 ##Step6: Download WorldClim Data (http://www.worldclim.org/download) to get bioclim variables
-#world_clim = function(gbifdata) {
+world_clim = function(gbifdata) {
  #clim <- getData(“worldclim”,var=”bio”,res=5)
  #bioclim <- list()
  
@@ -148,10 +151,10 @@ map_gbif = function(gbifdata) {
  #bioclimnoout <- list()
  #for(i in 1:length(bioclim)) bioclimnoout[[i]] <- rm.outlier(bioclim[[i]], fill = TRUE)
  #return(bioclimoout)
-#}
+}
 
 ##Step 8: Calculate MEAN and Standard Deviation (SD), then generates PCA.
-#mean_SD = function(bioclimoout){
+mean_SD = function(bioclimoout){
  #bioclimmean <- list()
  #for (i in 1:length(bioclimnoout)) bioclimmean[[i]] <- colMeans(bioclimnoout[[i]], na.rm = TRUE, dims = 1)
  #Means <- do.call(rbind, bioclimmean)
@@ -162,7 +165,7 @@ map_gbif = function(gbifdata) {
  #row.names(SDs) = specieslist
  #pca <- prcomp(Means, retx = TRUE, center = TRUE, scale. = TRUE, tol = NULL)
  #plot(pca$x[,"PC1"], pca$x[,"PC2"])
-#}
+}
 
 
 
