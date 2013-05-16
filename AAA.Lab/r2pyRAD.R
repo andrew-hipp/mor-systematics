@@ -237,7 +237,7 @@ hyb.trial.allOffspring.2830 <- function() {hybrid.test(dat = test.18.v2.summary,
 								'>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
 							}
 								
-hybrid.test <- function(dat, parents, f1s)								 
+hybrid.test <- function(dat, parents, f1s, unambiguousParents = TRUE)								 
 ### TO DO (3/14/2013, AH and AMELirio):
 ##    don't analyze Ns and -s
 ##    Check for variability after screening out everyone except for the parents and offspring
@@ -297,6 +297,9 @@ require(Biostrings)
 		summaryMat[dimnames(matsOut[[i]])[[1]][k], colCounter] <- as.logical(matsOut[[i]][k,j])
 		if(any(matsOut[[i]][1:2,(j - dim(matsOut[[i]])[2] / 2)] == "N")) summaryMat[1, colCounter] <- FALSE
 		else summaryMat[1, colCounter] <- matsOut[[i]][1,(j - dim(matsOut[[i]])[2] / 2)] != matsOut[[i]][2,(j - dim(matsOut[[i]])[2] / 2)]
+		if(unambiguousParents) {
+		  if(any(!matsOut[[i]][1:2,(j - dim(matsOut[[i]])[2] / 2)] %in% c('A', 'C', 'G', 'T'))) summaryMat[1, colCounter] <- FALSE
+		  }
 		}# close k
 		colCounter <- colCounter + 1	  
 	  }# close j
