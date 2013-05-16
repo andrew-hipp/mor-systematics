@@ -125,39 +125,38 @@ map_gbif = function(gbifdata) {
  
  
 ##Step6: Download WorldClim Data (http://www.worldclim.org/download) to get bioclim variables
-world_clim = function(gbifdata) {
- clim <- getData(“worldclim”,var=”bio”,res=5)
- bioclim <- list()
+#world_clim = function(gbifdata) {
+ #clim <- getData(“worldclim”,var=”bio”,res=5)
+ #bioclim <- list()
  
  ###don't we need all 19 variables?  and why does the 8:7 and 7:8 reverse between bioclim 1 and 2???
  # we also need to exclude flagged data again....
- for (i in 1:length(gbifdata)) bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE, layer, nl, df=FALSE, factors=FALSE)bioclim2 <- list()
- for (i in 1:length(gbifdata)) bioclim2[[i]] <- extract(clim, gbifdata[[i]][7:8], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
- 
- return(bioclim)
-}
+ #for (i in 1:length(gbifdata)) bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE, layer, nl, df=FALSE, factors=FALSE)bioclim2 <- list()
+ #for (i in 1:length(gbifdata)) bioclim2[[i]] <- extract(clim, gbifdata[[i]][7:8], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
+ #return(bioclim)
+#}
 
 ##Step7: Remove OUTLIERS from Bioclim data
-rm_outliers = function(bioclim){
- require(MIPHENO)
- bioclimnoout <- list()
- for(i in 1:length(bioclim)) bioclimnoout[[i]] <- rm.outlier(bioclim[[i]], fill = TRUE)
- return(bioclimoout)
-}
+#rm_outliers = function(bioclim){
+# require(MIPHENO)
+ #bioclimnoout <- list()
+ #for(i in 1:length(bioclim)) bioclimnoout[[i]] <- rm.outlier(bioclim[[i]], fill = TRUE)
+ #return(bioclimoout)
+#}
 
 ##Step 8: Calculate MEAN and Standard Deviation (SD), then generates PCA.
-mean_SD = function(bioclimoout){
- bioclimmean <- list()
- for (i in 1:length(bioclimnoout)) bioclimmean[[i]] <- colMeans(bioclimnoout[[i]], na.rm = TRUE, dims = 1)
- Means <- do.call(rbind, bioclimmean)
- row.names(Means) = specieslist
- bioclimSD <- list()
- for (i in 1:length(bioclimnoout)) bioclimSD[[i]] <- apply(bioclimnoout[[i]],2, sd, na.rm = TRUE)
- SDs <- do.call(rbind, bioclimSD)
- row.names(SDs) = specieslist
- pca <- prcomp(Means, retx = TRUE, center = TRUE, scale. = TRUE, tol = NULL)
- plot(pca$x[,"PC1"], pca$x[,"PC2"])
-}
+#mean_SD = function(bioclimoout){
+ #bioclimmean <- list()
+ #for (i in 1:length(bioclimnoout)) bioclimmean[[i]] <- colMeans(bioclimnoout[[i]], na.rm = TRUE, dims = 1)
+ #Means <- do.call(rbind, bioclimmean)
+ #row.names(Means) = specieslist
+ #bioclimSD <- list()
+ #for (i in 1:length(bioclimnoout)) bioclimSD[[i]] <- apply(bioclimnoout[[i]],2, sd, na.rm = TRUE)
+ #SDs <- do.call(rbind, bioclimSD)
+ #row.names(SDs) = specieslist
+ #pca <- prcomp(Means, retx = TRUE, center = TRUE, scale. = TRUE, tol = NULL)
+ #plot(pca$x[,"PC1"], pca$x[,"PC2"])
+#}
 
 
 
