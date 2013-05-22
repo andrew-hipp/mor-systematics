@@ -220,11 +220,11 @@ filter.by <- function(dat, taxa) {
   return(names(which(apply(dat.mat, 2, sum) == length(taxa))))
   }
 
-hyb.test.2830.2893G1 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2893G1'), 
+hyb.test.2830.2893G1 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2830D', '>2830D2'), 
                                 f1s = c('>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
 							}	
 							
-hyb.test.2816.2893G1 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2893G1'),
+hyb.test.2816.2893G1 <- function() {hybrid.test(dat = test.18.v2.summary, parents = c('>2816', '>2830D2'),
                                 f1s = c(">2816x2893G1E", ">2816x2893G1B", ">2816x2893G1C", ">2816x2893G1D", ">2816x2893G1A"))
 							}
 							
@@ -237,7 +237,7 @@ hyb.trial.allOffspring.2830 <- function() {hybrid.test(dat = test.18.v2.summary,
 								'>2830Dx2893G1A', '>2830Dx2893G1B','>2830Dx2893G1C','>2830Dx2893G1D', '>2830Dx2893G1E', '>2893Gx2830D1A', '>2893Gx2830D1C'))
 							}
 								
-hybrid.test <- function(dat, parents, f1s, unambiguousParents = TRUE)								 
+hybrid.test <- function(dat, parents, f1s, unambiguousParents = TRUE, silent = TRUE)								 
 ### TO DO (3/14/2013, AH and AMELirio):
 ##    don't analyze Ns and -s
 ##    Check for variability after screening out everyone except for the parents and offspring
@@ -259,17 +259,17 @@ require(Biostrings)
   matsOut <- structure(vector('list', length(loci.to.use.names)), .Names = loci.to.use.names)
   colNames <- character(0)
   for(locusCounter in loci.to.use.names) {
-	message(paste("Doing", locusCounter))
+	if(!silent) message(paste("Doing", locusCounter))
 	seqsMat <- t(as.matrix(sapply(as.character(dat$seqs.per.locus[[locusCounter]]), function(x) strsplit(x, split = "")[[1]]), byrow = T))   
 	dimnames(seqsMat)[[1]] <- dat$tips.per.locus[[locusCounter]]
 	seqLength <- dim(seqsMat)[2]
 	seqConsensus <- substr(dat$break.vectors[locusCounter], nchar(dat$break.vectors[locusCounter]) - seqLength + 1, nchar(dat$break.vectors[locusCounter]))
     variable.sites <- which(strsplit(seqConsensus, "")[[1]] %in% variableSiteCharacters)
 	if(length(variable.sites) == 0) {
-	  message("No variable sites... moving on.")
+	  if(!silent) message("No variable sites... moving on.")
 	  next
 	  }
-	message(paste("Found", length(variable.sites), "variable sites"))
+	if(!silent) message(paste("Found", length(variable.sites), "variable sites"))
 	seqsMat <- as.matrix(seqsMat[c(parents, dimnames(seqsMat)[[1]][dimnames(seqsMat)[[1]] %in% f1s]), variable.sites]) # only includes parents and children
 	#browser()
 	for (i in 1:dim(seqsMat)[2]) {
@@ -285,15 +285,15 @@ require(Biostrings)
 	colNames <- c(colNames, paste(locusCounter, "_", seq(dim(seqsMat)[2] / 2), sep = ""))
 	}
   # browser()
-  message(paste("Columns in summary matrix:", length(colNames)))
+  if(!silent) message(paste("Columns in summary matrix:", length(colNames)))
   summaryMat <- matrix(NA, nrow = length(c("differ", f1s)), ncol = length(colNames), dimnames = list(c("Parents differ", f1s), colNames))
   colCounter <- 1
   for(i in 1:length(matsOut)) {
-    message(paste('DOING MATRIX', i, 'OF', length(matsOut)))
+    if(!silent) message(paste('DOING MATRIX', i, 'OF', length(matsOut)))
 	for(j in ((dim(matsOut[[i]])[2] / 2) + 1):dim(matsOut[[i]])[2]) {
 	  for(k in 3:dim(matsOut[[i]])[1]) {
-	    message(paste("Doing summary matrix column", colCounter))
-		message(paste(" -- working on row", dimnames(matsOut[[i]])[[1]][k]))
+	    if(!silent) message(paste("Doing summary matrix column", colCounter))
+		if(!silent) message(paste(" -- working on row", dimnames(matsOut[[i]])[[1]][k]))
 		summaryMat[dimnames(matsOut[[i]])[[1]][k], colCounter] <- as.logical(matsOut[[i]][k,j])
 		if(any(matsOut[[i]][1:2,(j - dim(matsOut[[i]])[2] / 2)] == "N")) summaryMat[1, colCounter] <- FALSE
 		else summaryMat[1, colCounter] <- matsOut[[i]][1,(j - dim(matsOut[[i]])[2] / 2)] != matsOut[[i]][2,(j - dim(matsOut[[i]])[2] / 2)]
