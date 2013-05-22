@@ -284,11 +284,11 @@ require(Biostrings)
 	matsOut[[locusCounter]] <- seqsMat
 	colNames <- c(colNames, paste(locusCounter, "_", seq(dim(seqsMat)[2] / 2), sep = ""))
 	}
-  # browser()
+  browser()
   if(!silent) message(paste("Columns in summary matrix:", length(colNames)))
   summaryMat <- matrix(NA, nrow = length(c("differ", f1s)), ncol = length(colNames), dimnames = list(c("Parents differ", f1s), colNames))
   colCounter <- 1
-  for(i in 1:length(matsOut)) {
+  for(i in which(sapply(matsOut, function(x) !identical(x, NULL)))) {
     if(!silent) message(paste('DOING MATRIX', i, 'OF', length(matsOut)))
 	for(j in ((dim(matsOut[[i]])[2] / 2) + 1):dim(matsOut[[i]])[2]) {
 	  for(k in 3:dim(matsOut[[i]])[1]) {
