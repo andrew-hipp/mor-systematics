@@ -108,7 +108,7 @@ map_gbif = function(gbifdata) {
     map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
     if(class(map.try) == 'try-error') {
 	  message(paste('Dataset', names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
-	  logbook[i] =(paste('Dataset',names(gbifdata[i]), gbifdata[[i]]$species, 'has some SERIOUS mapping problems. Either Null dataset or perhaps lats and Longs are be switched....Check it out.'))
+	  logbook[i] =(paste('Dataset',names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
 	  # add something here to delete corrupt maps and create a log file for errors
 	  dev.off()
 	  next
@@ -137,11 +137,16 @@ map_gbif = function(gbifdata) {
 	  logbook[i] = (paste('Dataset',names(gbifdata[i]), 'is an utter failure.  Most likely download error'))
 	  next
 	  } # close if
+	   if(length(gbifdata[[i]]) == 0) {  ##skip over nulls dataframes
+	  message(paste('Dataset', names(gbifdata[i]), 'is NULL'))
+	  logbook[i] = (paste('Dataset',names(gbifdata[i]), 'is NULL.'))
+	  next
+	  } # close if
 	jpeg(filename = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''), width = 480, height = 480, pointsize = 12, quality = 100, bg = "white")
     map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
     if(class(map.try) == 'try-error') {
-	  message(paste('Dataset', i, names(gbifdata[i]), 'has some SERIOUS mapping problems. Check it out.'))
-	  	  logbook[i] =(paste('Dataset', names(gbifdata[i]), gbifdata[[i]]$species, 'has some SERIOUS mapping problems. Either Null dataset or perhaps lats and Longs are be switched....Check it out.'))
+	  message(paste('Dataset', i, names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
+	  	  logbook[i] =(paste('Dataset', names(gbifdata[i]), gbifdata[[i]]$species, 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
 	  # add something here to delete corrupt maps
 	  dev.off()
 	  next
@@ -152,7 +157,7 @@ map_gbif = function(gbifdata) {
     dev.off(which = dev.cur())
 	logbook[i] = (paste('Jpeg Map generated for dataset', names(gbifdata[i])))
     } # close i
-	return(logbook)
+	write.table(logbook, file = paste('Jpeg_MAP_log',format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|") ##writes out log file
   }
 
  
