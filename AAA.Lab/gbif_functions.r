@@ -44,29 +44,37 @@ download_gbif = function(specieslist, genus) {
 ##Step 4: -Flags specimens with low lat/long precision as false in precise_enough column; flags duplicate specimens (species records with same lat/long coordinates) as false in unique_record column.
 			#Ex. Schoenoxiphium_cleaned <- clean_gbif(Schoenoxiphium_gbifdata)
 			
-clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
+ clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
   for (i in 1:length(gbifdata)) {
     if(class(gbifdata[[i]]) == 'try-error') next
-	else gbifdata[[i]] <- as.data.frame(gbifdata[[i]]) #Create dataframe of gbif data
-	}
+        else gbifdata[[i]] <- as.data.frame(gbifdata[[i]]) #Create dataframe of gbif data
+        }
   xd <- list() #tempfile to use to compare data that will be flagged as unuseable
   for (i in 1:length(gbifdata)) {
-    if(class(gbifdata[[i]]) == 'try-error') next
-	gbifdata[[i]]$lat <- as.numeric(gbifdata[[i]]$lat)
+    a = names(gbifdata)[i]
+    print(paste("Doing", a))
+    # if(a == 'diluta') browser()
+    if(class(gbifdata[[i]]) %in% c('try-error', 'NULL')) next
+    if(try(nrow(gbifdata[[i]])) == 0) next
+# if(dim(gbifdata[[i]][1]) %in% c(NULL, 0)) next
+        gbifdata[[i]]$lat <- as.numeric(gbifdata[[i]]$lat)
     gbifdata[[i]]$calc_error <- ifelse(gbifdata[[i]]$lat==as.integer(gbifdata[[i]]$lat), 100, ifelse((10*gbifdata[[i]]$lat)==as.integer(10*gbifdata[[i]]$lat), 10, ifelse((100*gbifdata[[i]]$lat)==as.integer(100*gbifdata[[i]]$lat), 1, ifelse((1000*gbifdata[[i]]$lat)==as.integer(1000*gbifdata[[i]]$lat), 0.1, ifelse((10000*gbifdata[[i]]$lat)==as.integer(10000*gbifdata[[i]]$lat), 0.01, ifelse((100000*gbifdata[[i]]$lat)==as.integer(100000*gbifdata[[i]]$lat), 0.001, 0.0001))))))
     gbifdata[[i]]$precise_enough <- ifelse(gbifdata[[i]]$calc_error < 10, TRUE, FALSE)
-	gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE) #cleans by lat and long
+        gbifdata[[i]]$unique_record <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE) #cleans by lat and long
     # if(clean.by.locality) gbifdata[[i]]$unique_record <- gbifdata[[i]]$unique_record & ifelse(!duplicated(gbifdata[[i]]$cloc), TRUE, FALSE) -- CLEAN UP NULLS FIRST
-	write.table(gbifdata[[i]], file = paste('cleaned_',gbifdata[[i]]$species[[1]],format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|")
-	xd[[i]]<-subset(gbifdata[[i]], calc_error < 10)  # can be cleaned out
+        write.table(gbifdata[[i]], file = paste('cleaned_',gbifdata[[i]]$species[[1]],format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|")
+        xd[[i]]<-subset(gbifdata[[i]], calc_error < 10)  # can be cleaned out
     } # close i
+  #browser()
   nrowlistx <- lapply(gbifdata, nrow) #this may fail now
   nrowlistxd <- lapply(xd, nrow)
-  number.not.unique <- lapply(gbifdata, function(x) sum(!x$unique_record))
-  #nrowlistx <- list()
-  #nrowlistxd <- list()
-  #for (i in 1:length(gbifdata)) nrowlistx[[i]] <- nrow(gbifdata[[i]])
-  #for (i in 1:length(gbifdata)) nrowlistxd[[i]] <- nrow(xd[[i]])
+  number.not.unique <- lapply(gbifdata, function(x) {
+    out = 1
+    if(class(x) %in% c('try-error', 'NULL')) out <- 0
+    if(try(nrow(x) == 0)) out <- 0
+    if(out == 1) out <- sum(!x$unique_record)
+    }
+    ) # end lapply function
   print("Comparison of # of original rows to # of high precision rows for LAT/LONG Coordinates; third column is number of rows not unique based on lat and long")
   print(cbind(nrowlistx,nrowlistxd,number.not.unique))
  
@@ -76,22 +84,25 @@ clean_gbif = function(gbifdata, clean.by.locality = FALSE) {
  
 
 ##Step 5a: Create pdf maps of data (excludes specimen records flagged as low precision or as duplicate record.)
-				#Ex.  map_gbif(Schoenoxiphium_cleaned_dups)
+				#Ex.  Sch_log_pdf <- map_gbif(Schoenoxiphium_cleaned_dups)
 map_gbif = function(gbifdata) {
   require(maps)
   require(maptools)
   require(RColorBrewer)
   require(classInt)
   require(mapdata)
+  logbook <- list()
   for (i in 1:length(gbifdata)){  
     if(class(i) == "try-error") {
-	  message(paste('Dataset', i, 'is an utter failure'))
+	  message(paste('Dataset', names(gbifdata[i]), 'is an utter failure'))
+	  logbook[i] = (paste('Dataset',names(gbifdata[i]), 'is an utter failure.  Most likely download error'))
 	  next
 	  } # close if
 	pdf(file = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.pdf',sep =''))
     map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
     if(class(map.try) == 'try-error') {
-	  message(paste('Dataset', i, 'has some SERIOUS mapping problems. Check it out.'))
+	  message(paste('Dataset', names(gbifdata[i]), 'has some SERIOUS mapping problems. Either Null dataset or perhaps lats and Longs are be switched....Check it out.'))
+	  logbook[i] =(paste('Dataset',names(gbifdata[i]), gbifdata[[i]]$species, 'has some SERIOUS mapping problems. Either Null dataset or perhaps lats and Longs are be switched....Check it out.'))
 	  # add something here to delete corrupt maps and create a log file for errors
 	  dev.off()
 	  next
@@ -100,9 +111,9 @@ map_gbif = function(gbifdata) {
 	map.axes()
 	title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
     dev.off(which = dev.cur())
-    # gbifdata[[i]] <- gbifdata[[i]][order(gbifdata[[i]][7]),]
-    # gbifdata[[i]] <- edit(gbifdata[[i]]) -- this is a throwback to doing the mapping and data cleanup on the command-line
+	logbook[i] = (paste('PDF Map generated for dataset', names(gbifdata[i])))
     } # close i
+	return(logbook)
   }
 
  ##Step 5b: Create jpeg maps of data (excludes specimen records flagged as low precision or as duplicate record.)  
@@ -146,7 +157,13 @@ world_clim = function(gbifdata) {
   bioclim <- list()
   # we also need to exclude flagged data again....  
   #worldclim and gbif have reversed long and lats??  which is why code below is [8:7]- double check with Marcial
-  for (i in 1:length(gbifdata)) bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
+  for (i in 1:length(gbifdata)) {
+	if (gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record) {
+	bioclim[[i]] <- extract(clim, gbifdata[[i]][8:7], method='simple', buffer=NULL, small=FALSE, cellnumbers=FALSE, fun=NULL, na.rm=TRUE)
+	}
+		gbifdata[[i]]$bio1 <- ifelse(!duplicated(gbifdata[[i]]$lat) | !duplicated(gbifdata[[i]]$lon), TRUE, FALSE) 
+
+	} #closes i
   return(bioclim)
 }
 
