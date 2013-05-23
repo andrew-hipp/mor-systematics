@@ -146,7 +146,7 @@ map_gbif = function(gbifdata) {
     map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
     if(class(map.try) == 'try-error') {
 	  message(paste('Dataset', i, names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
-	  	  logbook[i] =(paste('Dataset', names(gbifdata[i]), gbifdata[[i]]$species, 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
+	  	  logbook[i] =(paste('Dataset', names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
 	  # add something here to delete corrupt maps
 	  dev.off()
 	  next
