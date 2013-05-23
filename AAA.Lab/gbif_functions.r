@@ -84,6 +84,7 @@ download_gbif = function(specieslist, genus) {
  
 
 ##Step 5a: Create pdf maps of data (excludes specimen records flagged as low precision or as duplicate record.)
+##note maps are still made if originally there was data data but flagged as false. Map without any points...
 				#Ex.  Sch_log_pdf <- map_gbif(Schoenoxiphium_cleaned_dups)
 map_gbif = function(gbifdata) {
   require(maps)
