@@ -124,16 +124,19 @@ map_gbif = function(gbifdata) {
   require(RColorBrewer)
   require(classInt)
   require(mapdata)
+   logbook <- list()
   for (i in 1:length(gbifdata)){  
     if(class(i) == "try-error") {
-	  message(paste('Dataset', i, 'is an utter failure'))
+	  message(paste('Dataset', i, names(gbifdata[i]), 'is an utter failure'))
+	  logbook[i] = (paste('Dataset',names(gbifdata[i]), 'is an utter failure.  Most likely download error'))
 	  next
 	  } # close if
 	jpeg(filename = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''), width = 480, height = 480, pointsize = 12, quality = 100, bg = "white")
     map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
     if(class(map.try) == 'try-error') {
-	  message(paste('Dataset', i, 'has some SERIOUS mapping problems. Check it out.'))
-	  # add something here to delete corrupt maps and create a log file for errors
+	  message(paste('Dataset', i, names(gbifdata[i]), 'has some SERIOUS mapping problems. Check it out.'))
+	  	  logbook[i] =(paste('Dataset', names(gbifdata[i]), gbifdata[[i]]$species, 'has some SERIOUS mapping problems. Either Null dataset or perhaps lats and Longs are be switched....Check it out.'))
+	  # add something here to delete corrupt maps
 	  dev.off()
 	  next
 	  } # close if
@@ -141,6 +144,7 @@ map_gbif = function(gbifdata) {
 	map.axes()
 	title(main = gbifdata[[i]]$species[1], sub = NULL, xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
     dev.off(which = dev.cur())
+	logbook[i] = (paste('Jpeg Map generated for dataset', names(gbifdata[i])))
     } # close i
   }
 
