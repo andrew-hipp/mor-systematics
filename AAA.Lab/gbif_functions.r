@@ -109,8 +109,8 @@ map_gbif = function(gbifdata) {
     if(class(map.try) == 'try-error') {
 	  message(paste('Dataset', names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
 	  logbook[i] =(paste('Dataset',names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
-	  # add something here to delete corrupt maps and create a log file for errors
 	  dev.off()
+	  file.remove((file = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.pdf',sep =''))) ##removed files with errors
 	  next
 	  } # close if
 	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
@@ -147,8 +147,8 @@ map_gbif = function(gbifdata) {
     if(class(map.try) == 'try-error') {
 	  message(paste('Dataset', i, names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
 	  	  logbook[i] =(paste('Dataset', names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
-	  # add something here to delete corrupt maps
 	  dev.off()
+	  file.remove((file = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''))) ##removed jpeg files with errors
 	  next
 	  } # close if
 	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
