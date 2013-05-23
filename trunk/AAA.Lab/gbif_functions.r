@@ -146,6 +146,7 @@ map_gbif = function(gbifdata) {
     dev.off(which = dev.cur())
 	logbook[i] = (paste('Jpeg Map generated for dataset', names(gbifdata[i])))
     } # close i
+	return(logbook)
   }
 
  
