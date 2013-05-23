@@ -114,6 +114,7 @@ map_gbif = function(gbifdata) {
     dev.off(which = dev.cur())
 	logbook[i] = (paste('PDF Map generated for dataset', names(gbifdata[i])))
     } # close i
+	write.table(logbook, file = paste('PDF_MAP_log',gbifdata,format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|") ##writes out log file
 	return(logbook)
   }
 
