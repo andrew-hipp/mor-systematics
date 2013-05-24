@@ -1,11 +1,16 @@
-###GBIF/NICHE MODELING FUNCTIONS (v1.1 5-16-2013 R code)
+###GBIF/NICHE MODELING FUNCTIONS (v1.2 5-24-2013 R code)
 ### To download gbif data for Cariceae sp, clean up data (remove duplicates, remove less precise georef's to create niche maps of different Taxons
-### Marlene Hahn May 2013, as part of Carex project,  (based on original R coding by Marcial Escudero and Ian Pearse.)
+### Marlene Hahn and Andrew Hipp May 2013, as part of Carex project,  (based on original R coding by Marcial Escudero and Ian Pearse.)
 
 #v1.1 additions- - now writes out files in download_gbif, and clean_gbif; pdf and jpeg maps creates with axes
-#v1.1 issues- download-gbif function is running into some extraction issues that kill the function for some datasets.
-
-
+#v1.1 issues- download-gbif function is running into some extraction issues that kill the function for some datasets.  This is fixed in 1.2, I think.
+#v1.2 additions- added log file in mapping functions. no maps with null data are created; maps with "serious mapping issues" are deleted.
+#v1.2 issues- maps are created even if there are no data points due to a FALSE flag of inprecision in lat/long.; logfile is made as rows instead of columns which is non-optimal.
+#             download errors still occur- possibly due to server issues- but I suspect that this might cause us to sometimes lose records in our dataframe.
+#	*****MAPS Still need to be spot checked for lat and long reversals, and lack of - signs (note in manual error log/fix in dataframe, upload and rerun map program)  
+ 
+ 
+ 
 ## Step 1: install packages (do only once)
 #libs <- c("rJava", "rgdal", "sp", "XML", "raster", "dismo", "maps", "maptools","RColorBrewer", "classInt", "mapdata", "MIPHENO")
 #lapply(libs, install.packages)
