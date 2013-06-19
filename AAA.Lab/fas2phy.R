@@ -18,3 +18,7 @@ fas2phy <- function(working.dir = choose.dir(), pattern = '.fas', ignore = 'none
   setwd(original.dir)
   return('done!')
   }
+
+concat.DNA <- function(dat) {
+## dat is a list of DNA objects
+}
