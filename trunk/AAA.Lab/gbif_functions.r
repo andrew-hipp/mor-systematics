@@ -165,6 +165,48 @@ map_gbif = function(gbifdata) {
 	write.table(logbook, file = paste('Jpeg_MAP_log',format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|") ##writes out log file
   }
 
+ map_gbif_jpeg_imprecise = function(gbifdata) {
+  require(maps)
+  require(maptools)
+  require(RColorBrewer)
+  require(classInt)
+  require(mapdata)
+   logbook <- list()
+  for (i in 1:length(gbifdata)){  
+    if(class(i) == "try-error") {
+	  message(paste('Dataset', i, names(gbifdata[i]), 'is an utter failure'))
+	  logbook[i] = (paste('Dataset',names(gbifdata[i]), 'is an utter failure.  Most likely download error'))
+	  next
+	  } # close if
+	   if(length(gbifdata[[i]]) == 0) {  ##skip over nulls dataframes
+	  message(paste('Dataset', names(gbifdata[i]), 'is NULL'))
+	  logbook[i] = (paste('Dataset',names(gbifdata[i]), 'is NULL.'))
+	  next
+	  } # close if
+	jpeg(filename = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''), width = 480, height = 480, pointsize = 12, quality = 100, bg = "white")
+    map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
+    if(class(map.try) == 'try-error') {
+	  message(paste('Dataset', i, names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
+	  	  logbook[i] =(paste('Dataset', names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
+	  dev.off()
+	  file.remove((file = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''))) ##removed jpeg files with errors
+	  next
+	  } # close if
+	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
+	if(gbifdata[[i]]$precise_enough == FALSE){
+		points(gbifdata[[i]]$lon[gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$unique_record], pch = 1, col= "green", cex = ((gbifdata[[i]]$calc_error)/10))    
+	}
+	map.axes()
+	legend("bottomright", c("Precise coordinates", "Imprecise coordinates scaled"), cex=0.7, pch=1, col= c("red","green"))
+	title(main = gbifdata[[i]]$species[1], sub = "GBIF Specimen Records", xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
+	dev.off(which = dev.cur())
+	logbook[i] = (paste('Jpeg Map generated for dataset', names(gbifdata[i])))
+    } # close i
+	write.table(logbook, file = paste('Jpeg_MAP_log',format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|") ##writes out log file
+  }
+ 
+ 
+ 
  
 ##Step6: Download WorldClim Data (http://www.worldclim.org/download) to get bioclim variables
 			#EX Sch_bioclim <- world_clim(Sch_clean)
