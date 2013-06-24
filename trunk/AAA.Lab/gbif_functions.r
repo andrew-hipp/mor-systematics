@@ -43,6 +43,7 @@ download_gbif = function(specieslist, genus) {
   # gbifdata <- vector('list', length(specieslist))  # defines gbifdata as list
   # for (i in 1:length(specieslist)) gbifdata[[i]] <- try(gbif(genus, species=specieslist[i], ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3))
   names(gbifdata) <- specieslist
+  
   return(gbifdata)
  }
 				
@@ -97,7 +98,7 @@ map_gbif = function(gbifdata) {
   require(RColorBrewer)
   require(classInt)
   require(mapdata)
-  logbook <- list()
+  logbook <- matrix()
   for (i in 1:length(gbifdata)){  
     if(class(i) == "try-error") {
 	  message(paste('Dataset', names(gbifdata[i]), 'is an utter failure'))
@@ -135,7 +136,7 @@ map_gbif = function(gbifdata) {
   require(RColorBrewer)
   require(classInt)
   require(mapdata)
-   logbook <- list()
+   logbook <- matrix()
   for (i in 1:length(gbifdata)){  
     if(class(i) == "try-error") {
 	  message(paste('Dataset', i, names(gbifdata[i]), 'is an utter failure'))
@@ -171,7 +172,7 @@ map_gbif = function(gbifdata) {
   require(RColorBrewer)
   require(classInt)
   require(mapdata)
-   logbook <- list()
+   logbook <- matrix()
   for (i in 1:length(gbifdata)){  
     if(class(i) == "try-error") {
 	  message(paste('Dataset', i, names(gbifdata[i]), 'is an utter failure'))
