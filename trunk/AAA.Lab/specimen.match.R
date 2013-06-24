@@ -7,9 +7,6 @@
 nospace <- function(x) gsub(" ", "", x)
 tidyNames <- function(x) gsub("[# -.,]", "_", x)
 
-## variables
-top12 <- c('ITS', 'ETS','trnLF','rbcL','matK','18S','trnK','rpoC1','rps16','psbA','atpF','rpoB')
-
 clean.specimen <- function(x) {
 ## cleans specimen names for known genbank oddities
    x <- gsub('                     /specimen_voucher=', '', gsub('\"', '', x, perl = T), fixed = T)
