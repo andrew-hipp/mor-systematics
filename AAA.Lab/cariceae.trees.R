@@ -2,8 +2,9 @@
 ## Andrew Hipp, 2013-06-19
 
 ## variables
-top6 <- ('ITS', 'ETS','trnLF','rbcL','matK','18S')
-top12 <- c(top6, 'trnK','rpoC1','rps16','psbA','atpF','rpoB')
+top12 <- c('ITS', 'ETS','trnLF','rbcL','matK','18S','trnK','rpoC1','rps16','psbA','atpF','rpoB')
+top5 <- c('ITS', 'ETS','trnLF','rbcL','matK')
+dregs <- c('trnK','rpoC1','rps16','psbA','atpF','rpoB')
 
 ## tree traversal and counting
 tip.spp <- function(tree, delim = '_') {
