@@ -62,7 +62,7 @@ voucherBySpecies <- function(datDir = 'EXPORT.2013-05-13', new.rank = "DNA.sampl
 	sheet.working <- coll.sheets[[i]][gsub(" ", "", coll.sheets[[i]]$ID, fixed = TRUE) != "", ] # uses only rows that have a taxon ID matched to CHECKLIST
 	sheet.as.mat <- matrix("", dim(sheet.working)[1], length(spTax.cols), dimnames = list(NULL, spTax.cols))
 	sheet.as.mat[, c('Term.name', 'Parent.Term.Name', 'Rank', 'Usage')] <- cbind(as.matrix(sheet.working[, c('material.brief', 'sciname.edited')]), rep(new.rank, dim(sheet.working)[1]), rep('accepted', dim(sheet.working)[1]))
-	sheet.as.mat[, 'Term.name'] <- paste(i, '--', sheet.as.mat[, 'Term.name'])
+	sheet.as.mat[, 'Term.name'] <- paste('**', i, '--', sheet.as.mat[, 'Term.name'])
 	spTaxonomy <- rbind(spTaxonomy, sheet.as.mat)
 	}
   return(spTaxonomy)
