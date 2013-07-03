@@ -3,7 +3,7 @@
 ### 2012-06-13: created
 ### 2013-05-13: updating to update the checklist in a more streamlined manner
 
-do.it.cariceae <- function(datDir = choose.dir(), ...) {
+do.it.cariceae <- function(datDir = choose.dir(), topNodes = c('Vignea', 'coreCarex', 'Caricoid', 'Siderostictae'), ...) {
 ## this wrapper should do everything and then archive the files with date / time stamp
 ## not done yet
 ## possible features:
@@ -14,8 +14,8 @@ do.it.cariceae <- function(datDir = choose.dir(), ...) {
 ## 2013-07-03
 
   datMat <- voucherBySpecies(datDir)
-  traversedDatFile <- traverse.checklist(datMat, ...)
-  write.csv(datMat, 'dataMatrix.csv')
+  traversedDatFile <- sapply(topNodes, function(x) traverse.checklist(datMat, topParent = x, outfileName = paste('cariceae.', x, '.txt', sep = ''), ...))
+  write.csv(datMat, 'cariceae.dataMatrix.', format(Sys.time(), "%Y-%m-%d"), '.csv', sep = '')
   # zip up all the files with time stamp
   # upload to web?
   }
@@ -62,7 +62,7 @@ voucherBySpecies <- function(datDir = 'EXPORT.2013-05-13', new.rank = "DNA.sampl
 	sheet.working <- coll.sheets[[i]][gsub(" ", "", coll.sheets[[i]]$ID, fixed = TRUE) != "", ] # uses only rows that have a taxon ID matched to CHECKLIST
 	sheet.as.mat <- matrix("", dim(sheet.working)[1], length(spTax.cols), dimnames = list(NULL, spTax.cols))
 	sheet.as.mat[, c('Term.name', 'Parent.Term.Name', 'Rank', 'Usage')] <- cbind(as.matrix(sheet.working[, c('material.brief', 'sciname.edited')]), rep(new.rank, dim(sheet.working)[1]), rep('accepted', dim(sheet.working)[1]))
-	sheet.as.mat[, 'Term.name'] <- paste('**', i, '--', sheet.as.mat[, 'Term.name'])
+	sheet.as.mat[, 'Term.name'] <- paste('DNA VOUCHER --', i, '--', sheet.as.mat[, 'Term.name'])
 	spTaxonomy <- rbind(spTaxonomy, sheet.as.mat)
 	}
   return(spTaxonomy)
