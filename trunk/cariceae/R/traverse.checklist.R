@@ -31,4 +31,5 @@ traverse.checklist <- function(spTaxonomy, topParent = "Cyperaceae", lowestRank 
 	traverse.checklist(spTaxonomy, iAsParent, tabs = nextTabs, tabChar = tabChar, outfileName = outfileName, includeGeog = includeGeog, wikiStyle = wikiStyle)
 	}
   close(outFile)
+  return(outfileName)
   }
