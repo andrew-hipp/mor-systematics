@@ -6,7 +6,13 @@
 do.it.cariceae <- function(datDir = choose.dir(), ...) {
 ## this wrapper should do everything and then archive the files with date / time stamp
 ## not done yet
+## possible features:
+##		(a) calls traverseChecklist to create a hierarchical checklist (text file, with indents)
+##		(b) calls assignSectionsAndClades to assign every taxon to a section and higher clade (spreadsheet)
+##		(c) highlights taxa for which no samples are available
+##		(d) aggregates vouchers for synonyms up to accepted names, holding the synonym under 'Deposited as'
 ## 2013-07-03
+
   datMat <- voucherBySpecies(datDir)
   traversedDatFile <- traverse.checklist(datMat, ...)
   write.csv(datMat, 'dataMatrix.csv')
@@ -41,27 +47,27 @@ taxonByLab <- function(x = 'EXPORT.2013-05-13') {
   return(wcm)
   }
 
-
 voucherBySpecies <- function(datDir = 'EXPORT.2013-05-13', new.rank = "DNA.sample") {
 ## this function:
-##	(1) creates a matrix with taxonomic terms, parents, term authors, WCM id, and geography;
-##	(2 ideal) in a best world, we would: 
+##	in a best world, we would: 
 ##      (a) expand the matrix with a row for each voucher, with Rank = 'VOUCHER', placing the taxon for that voucher as the parent of that voucher; note that this will have the odd side-effect of making the voucher of a species taxonomically equivalent to infraspeces of that species. Perhaps set off with a big character? e.g., -V- or ***; voucher field includes lab ownership / contact for extraction; then
 ##	    (b) Adds sequences as children of each voucher, with Rank = 'SEQUENCE'; sequence fields include region name and genbank number
-##  (2 real) Instead, we add a line for each voucher with rank = 'DNA.sample', setting the term name to be the lab name, followed by the material.brief field, created uniquely for each spreadsheet.
-##	(3) optionally:
-##		(a) calls traverseChecklist to create a hierarchical checklist (text file, with indents)
-##		(b) calls assignSectionsAndClades to assign every taxon to a section and higher clade (spreadsheet)
-##		(c) highlights taxa for which no samples are available
-##		(d) aggregates vouchers for synonyms up to accepted names, holding the synonym under 'Deposited as'
+##  INSTEAD, we add a line for each voucher with rank = 'DNA.sample', setting the term name to be the lab name, followed by the material.brief field, created uniquely for each spreadsheet.
   
-  ## 1. 
-  
-  
-
-  return(out)
+  coll.sheets <- read.all.collector.sheets(datDir)
+  spTaxonomy <- read.csv(paste(datDir, '/CHECKLIST.csv', sep = ''), as.is = TRUE)
+  spTax.cols <- names(spTaxonomy)
+  for(i in names(coll.sheets)) {
+    print(paste("Doing sheet", i))
+	sheet.working <- coll.sheets[[i]][gsub(" ", "", coll.sheets[[i]]$ID, fixed = TRUE) != "", ] # uses only rows that have a taxon ID matched to CHECKLIST
+	sheet.as.mat <- matrix("", dim(sheet.working)[1], length(spTax.cols), dimnames = list(NULL, spTax.cols))
+	sheet.as.mat[, c('Term.name', 'Parent.Term.Name', 'Rank', 'Usage')] <- cbind(as.matrix(sheet.working[, c('material.brief', 'sciname.edited')]), rep(new.rank, dim(sheet.working)[1]), rep('accepted', dim(sheet.working)[1]))
+	sheet.as.mat[, 'Term.name'] <- paste(i, '--', sheet.as.mat[, 'Term.name'])
+	spTaxonomy <- rbind(spTaxonomy, sheet.as.mat)
+	}
+  return(spTaxonomy)
   }
-  
+
 summaryByRegion <- function(wcm = scan(file.choose(), what = character(), sep = "\n", fileEncoding = "UTF-8"), tdwg = read.delim('TDWG.regions.level2', as.is = TRUE), sampleChar = "%", toGetChar = "@", exportByRegion = F, excludeHybrids = TRUE) {
   ## get wcm by reading in a summary file using wcm <- scan(file.choose(), what = character(), sep = "\n", fileEncoding = "UTF-8")
   out <- matrix(NA, nrow = dim(tdwg)[1] + 1, ncol = 5, dimnames = list(c(tdwg$label, "GLOBAL"), c('Total species', 'Species sampled', 'Species sampled or easily obtained', 'Species not accounted for', 'Percent')))
