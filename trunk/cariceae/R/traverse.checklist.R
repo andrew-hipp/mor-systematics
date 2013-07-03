@@ -1,4 +1,4 @@
-traverse.checklist <- function(spTaxonomy, topParent = "Cyperaceae", lowestRank = NA, tabs = "", tabChar = "\t", DNA.flag = 'DNA VOUCHER', dna.missing.char = '**', show = c('all', 'missing', 'dna'), outfileName = "spTaxonomy.out.txt", includeGeog = F, wikiStyle = T, file.encoding = "UTF-8") {
+traverse.checklist <- function(spTaxonomy, topParent = "Cyperaceae", lowestRank = NA, tabs = "", tabChar = "\t", DNA.flag = 'DNA VOUCHER', dna.missing.char = '**', show = c('all', 'missing', 'dna'), outfileName = "spTaxonomy.out.txt", includeGeog = T, wikiStyle = F, file.encoding = "UTF-8") {
 ##  Currently, you need to send it an accepted-names only list if you want an accepted-names only result
 ##  Arguments:
 ##    spTaxonomy = a Scratchpads checklist
