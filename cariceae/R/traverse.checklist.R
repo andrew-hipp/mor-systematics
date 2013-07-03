@@ -1,11 +1,17 @@
-traverse.checklist <- function(spTaxonomy, topParent = "Cyperaceae", lowestRank = NA, tabs = "", tabChar = "\t", outfileName = "spTaxonomy.out.txt", includeGeog = F, wikiStyle = T, file.encoding = "UTF-8") {
+traverse.checklist <- function(spTaxonomy, topParent = "Cyperaceae", lowestRank = NA, tabs = "", tabChar = "\t", outfileName = "spTaxonomy.out.txt", stopGrep = "**", includeGeog = F, wikiStyle = T, file.encoding = "UTF-8") {
 ##  Currently, you need to send it an accepted-names only list if you want an accepted-names only result
 ##  Arguments:
 ##    spTaxonomy = a Scratchpads checklist
 ##    topParent = node at which to begin building checklist
 ##    lowestRank = vector of ranks at which to stop (e.g., "SEQUENCE", c("Subspecies", "Variety"), or "Species"); use NA to go to lowest rank
   
-  if(spTaxonomy$Rank[spTaxonomy$Term.name == topParent] %in% lowestRank) return(0) # doesn't recurse if we've hit the lowest rank we care about
+  topParentRank <- spTaxonomy$Rank[spTaxonomy$Term.name == topParent]
+  if(length(topParentRank) > 1) {
+    message(paste('There are', length(topParentRank), 'instances of taxon', topParent, '-- only using the first to determine rank of the parent'))
+	topParentRank <- topParentRank[1]
+	}
+  if(topParentRank %in% lowestRank) return(0) # doesn't recurse if we've hit the lowest rank we care about
+  if(length(grep(stopGrep, topParent, fixed = T)) > 0) return(0) # doesn't recurse if the topParent name contains the stopGrep string
   children <- which(gsub(" ", "", tolower(spTaxonomy$Parent.Term.Name)) == gsub(" ", "", tolower(topParent)))
   if(length(children) == 0) return(0) # doesn't recurse if there are no children
   outFile = file(outfileName, open = "a", encoding = file.encoding)
