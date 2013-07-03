@@ -3,6 +3,17 @@
 ### 2012-06-13: created
 ### 2013-05-13: updating to update the checklist in a more streamlined manner
 
+do.it.cariceae <- function(datDir = choose.dir(), ...) {
+## this wrapper should do everything and then archive the files with date / time stamp
+## not done yet
+## 2013-07-03
+  datMat <- voucherBySpecies(datDir)
+  traversedDatFile <- traverse.checklist(datMat, ...)
+  write.csv(datMat, 'dataMatrix.csv')
+  # zip up all the files with time stamp
+  # upload to web?
+  }
+
 read.all.collector.sheets <- function(datDir, special.files = c('CHECKLIST.csv', 'GEO.csv', 'PermittedValues.csv', 'VersionNotes.csv'), rm.csv = T) {
 ## 13 May 2013 -- assumes all files have been exported using as CSV from standard collecting workbook
   files <- dir(datDir, full = T)
@@ -30,8 +41,6 @@ taxonByLab <- function(x = 'EXPORT.2013-05-13') {
   return(wcm)
   }
 
-add.geog <- function(datasheet, geog) {}
-
 
 voucherBySpecies <- function(datDir = 'EXPORT.2013-05-13', new.rank = "DNA.sample") {
 ## this function:
@@ -47,44 +56,12 @@ voucherBySpecies <- function(datDir = 'EXPORT.2013-05-13', new.rank = "DNA.sampl
 ##		(d) aggregates vouchers for synonyms up to accepted names, holding the synonym under 'Deposited as'
   
   ## 1. 
-
+  
   
 
   return(out)
   }
   
-traverseChecklist <- function(wcm = wcv.matched.v6.8$WCM.out, topParent = "Cyperaceae", include = c("all", "accepted"), tabs = "", tabChar = "\t", outfileName = "wcm.out.txt", includeGeog = F, includeDNA = F, wikiStyle = T) {
-  children <- which(gsub(" ", "", tolower(wcm$parent_name)) == gsub(" ", "", tolower(topParent)))
-  if(length(children) == 0) return(0)
-  outFile = file(outfileName, open = "a", encoding = "UTF-8")
-  nameCols <- c(1,3,2,5,4) # orders name columns in the right order
-  # childrenFormatted <- paste(tabs, as.character(gsub("  {2, }", " ", apply(wcm[children, nameCols], 1, paste, collapse = " "))), sep = "")
-  childrenFormatted <- paste(as.character(gsub("  {2, }", " ", apply(wcm[children, nameCols], 1, paste, collapse = " "))), sep = "")
-  if(includeGeog) childrenAuxData <- as.character(paste('[', apply(wcm[children, c('rank_name', 'usage', 'geo_cariceae_wcm')], 1, paste, collapse = ", "), ']', sep = ''))
-  else childrenAuxData <- as.character(paste('[', apply(wcm[children, c('rank_name', 'usage')], 1, paste, collapse = ", "), ']', sep = ''))
-  if(includeDNA) dnaIndicator <- paste(ifelse(wcm[children, 'onHand'], "[%] ", ""), ifelse(wcm[children, 'toGet'], "[@] ", ""), sep = "")
-
-  sortOrder <- order(childrenFormatted)
-  rank_name <- wcm[children, c('rank_name')][sortOrder]
-  childrenSorted <- childrenFormatted[sortOrder]
-  auxDataSorted <- childrenAuxData[sortOrder]
-  if(includeDNA) dnaSorted <- dnaIndicator[sortOrder]
-  for(i in 1:length(childrenSorted)) {
-	if(wikiStyle) {  
-	  if(rank_name[i] == "SPECIES") tabsPrint <- c("#","") else tabsPrint = c(tabs, tabs)	#this is just a work-around for wiki formatting
-	  out <- ifelse(includeDNA, paste(tabsPrint[1], "'''", dnaSorted[i], childrenSorted[i], "''' ", auxDataSorted[i], tabsPrint[2], sep = ""), paste(tabsPrint[1], "'''", childrenSorted[i], "''' ", auxDataSorted[i], tabsPrint[2], sep = ""))
-	  }
-	else out <- ifelse(includeDNA, paste(tabs, dnaSorted[i], childrenSorted[i], " ", auxDataSorted[i], sep = ""), paste(tabs, childrenSorted[i], " ", auxDataSorted[i], sep = ""))
-	if(outfileName == "screen") cat(c(out, "\n")) # to screen
-	else cat(c(out, "\n"), file = outFile) # to file
-	iAsParent <- gsub("[ \t]", "", childrenSorted[i])
-	# print(iAsParent)
-	nextTabs <- paste(tabs, tabChar, sep = "")
-	traverseChecklist(wcm, iAsParent, tabs = nextTabs, tabChar = tabChar, outfileName = outfileName, includeGeog = includeGeog, includeDNA = includeDNA, wikiStyle = wikiStyle)
-	}
-  close(outFile)
-  }
-
 summaryByRegion <- function(wcm = scan(file.choose(), what = character(), sep = "\n", fileEncoding = "UTF-8"), tdwg = read.delim('TDWG.regions.level2', as.is = TRUE), sampleChar = "%", toGetChar = "@", exportByRegion = F, excludeHybrids = TRUE) {
   ## get wcm by reading in a summary file using wcm <- scan(file.choose(), what = character(), sep = "\n", fileEncoding = "UTF-8")
   out <- matrix(NA, nrow = dim(tdwg)[1] + 1, ncol = 5, dimnames = list(c(tdwg$label, "GLOBAL"), c('Total species', 'Species sampled', 'Species sampled or easily obtained', 'Species not accounted for', 'Percent')))
