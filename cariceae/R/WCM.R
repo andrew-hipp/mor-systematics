@@ -3,7 +3,7 @@
 ### 2012-06-13: created
 ### 2013-05-13: updating to update the checklist in a more streamlined manner
 
-do.it.cariceae <- function(datDir = choose.dir(), topNodes = c('Vignea', 'coreCarex', 'Caricoid', 'Siderostictae'), ...) {
+do.it.cariceae <- function(datDir = choose.dir(), topNodes = c('Vignea', 'coreCarex', 'Caricoid', 'Siderostictae'), acceptedOnly = T, ...) {
 ## this wrapper should do everything and then archive the files with date / time stamp
 ## not done yet
 ## possible features:
@@ -14,6 +14,7 @@ do.it.cariceae <- function(datDir = choose.dir(), topNodes = c('Vignea', 'coreCa
 ## 2013-07-03
 
   datMat <- voucherBySpecies(datDir)
+  if(acceptedOnly) datMat <- datMat[datMat$Usage == 'accepted', ]
   traversedDatFile <- sapply(topNodes, function(x) traverse.checklist(datMat, topParent = x, outfileName = paste('cariceae.', x, '.txt', sep = ''), ...))
   write.csv(datMat, 'cariceae.dataMatrix.', format(Sys.time(), "%Y-%m-%d"), '.csv', sep = '')
   # zip up all the files with time stamp
