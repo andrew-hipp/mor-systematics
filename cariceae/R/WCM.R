@@ -17,6 +17,8 @@ taxonByLab <- function(x = 'EXPORT.2013-05-13') {
 ## This function appends to the WCM matrix a column for each lab, indicating whether that lab has reported any material or sequences
 ## Arguments:
 ##  x = data directory to look in for all data collecting sheets and checklist
+## FORMERLY CALLED makeCollSheets
+## very simplistic function; not super-useful, as it ignores what quality and type of material and sequences are on-hand
   collSheets <- read.all.collector.sheets(x)
   wcm <- read.csv(dir(x, full = T, patt = 'CHECKLIST'))
   headers <- names(collSheets)
@@ -28,23 +30,24 @@ taxonByLab <- function(x = 'EXPORT.2013-05-13') {
   return(wcm)
   }
 
-makeOneDatasheet <- function(datDir = 'EXPORT.2013-05-13') {
-## ultimately, all extractions data should be in a single table
-## this does that temporarily for our datasheets
+add.geog <- function(datasheet, geog) {}
 
 
-voucherBySpecies <- function(datDir = 'EXPORT.2013-05-13') {
+voucherBySpecies <- function(datDir = 'EXPORT.2013-05-13', new.rank = "DNA.sample") {
 ## this function:
 ##	(1) creates a matrix with taxonomic terms, parents, term authors, WCM id, and geography;
-##	(2) expands that matrix with a row for each voucher, with Rank = 'VOUCHER', placing the taxon for that voucher as the parent of that voucher; note that this will have the odd side-effect of making the voucher of a species taxonomically equivalent to infraspeces of that species. Perhaps set off with a big character? e.g., -V- or ***; voucher field includes lab ownership / contact for extraction
-##	(3) Adds sequences as children of each voucher, with Rank = 'SEQUENCE'; sequence fields include region name and genbank number
-##	(4) optionally:
+##	(2 ideal) in a best world, we would: 
+##      (a) expand the matrix with a row for each voucher, with Rank = 'VOUCHER', placing the taxon for that voucher as the parent of that voucher; note that this will have the odd side-effect of making the voucher of a species taxonomically equivalent to infraspeces of that species. Perhaps set off with a big character? e.g., -V- or ***; voucher field includes lab ownership / contact for extraction; then
+##	    (b) Adds sequences as children of each voucher, with Rank = 'SEQUENCE'; sequence fields include region name and genbank number
+##  (2 real) Instead, we add a line for each voucher with rank = 'DNA.sample', setting the term name to be the lab name, followed by the material.brief field, created uniquely for each spreadsheet.
+##	(3) optionally:
 ##		(a) calls traverseChecklist to create a hierarchical checklist (text file, with indents)
 ##		(b) calls assignSectionsAndClades to assign every taxon to a section and higher clade (spreadsheet)
 ##		(c) highlights taxa for which no samples are available
 ##		(d) aggregates vouchers for synonyms up to accepted names, holding the synonym under 'Deposited as'
+  
+  ## 1. 
 
-## 1
   
 
   return(out)
