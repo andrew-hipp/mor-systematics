@@ -1,4 +1,4 @@
-###GBIF/NICHE MODELING FUNCTIONS (v1.2 5-24-2013 R code)
+###GBIF/NICHE MODELING FUNCTIONS (v1.3 7-5-2013 R code)
 ### To download gbif data for Cariceae sp, clean up data (remove duplicates, remove less precise georef's to create niche maps of different Taxons
 ### Marlene Hahn and Andrew Hipp May 2013, as part of Carex project,  (based on original R coding by Marcial Escudero and Ian Pearse.)
 
@@ -7,8 +7,8 @@
 #v1.2 additions- added log file in mapping functions. no maps with null data are created; maps with "serious mapping issues" are deleted.
 #v1.2 issues- maps are created even if there are no data points due to a FALSE flag of inprecision in lat/long.; logfile is made as rows instead of columns which is non-optimal.
 #             download errors still occur- possibly due to server issues- but I suspect that this might cause us to sometimes lose records in our dataframe.
+#v1.3 additions- maps_jpeg_imprecise added to include the mapping of imprecise data points.  logfile for map program is corrected.
 #	*****MAPS Still need to be spot checked for lat and long reversals, and lack of - signs (note in manual error log/fix in dataframe, upload and rerun map program)  
- 
  
  
 ## Step 1: install packages (do only once)
@@ -88,9 +88,10 @@ download_gbif = function(specieslist, genus) {
   }
  
  
-
-##Step 5a: Create pdf maps of data (excludes specimen records flagged as low precision or as duplicate record.)
-##note maps are still made if originally there was data data but flagged as false. Map without any points...
+### Step 5: Create maps of data.  There are several functions for this, however map_gbif_jpeg_imprecise will give the best map of the 3 options (larger file, both precise and imprecise data, etc)
+	
+	#Step 5a: Create pdf maps of data (excludes specimen records flagged as low precision or as duplicate record.)
+	#note maps are still made if originally there was data data but flagged as false. Map without any points...
 				#Ex.  Sch_log_pdf <- map_gbif(Schoenoxiphium_cleaned_dups)
 map_gbif = function(gbifdata) {
   require(maps)
@@ -166,7 +167,10 @@ map_gbif = function(gbifdata) {
 	write.table(logbook, file = paste('Jpeg_MAP_log',format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|") ##writes out log file
   }
 
- map_gbif_jpeg_imprecise = function(gbifdata) {
+ 
+ ##STEP 5c:  Create larger jpeg maps of data (this function maps both precise and imprecise data)
+		# Note change genus in function call if not using for Carex.  (This is only so that map filenames contain genus)
+map_gbif_jpeg_imprecise = function(gbifdata, genus ="Carex", sizes = c(2.5, 5.0)) {
   require(maps)
   require(maptools)
   require(RColorBrewer)
@@ -175,38 +179,42 @@ map_gbif = function(gbifdata) {
    logbook <- matrix()
   for (i in 1:length(gbifdata)){  
     if(class(i) == "try-error") {
-	  message(paste('Dataset', i, names(gbifdata[i]), 'is an utter failure'))
+	  #message(paste('Dataset', i, names(gbifdata[i]), 'is an utter failure'))
 	  logbook[i] = (paste('Dataset',names(gbifdata[i]), 'is an utter failure.  Most likely download error'))
 	  next
 	  } # close if
 	   if(length(gbifdata[[i]]) == 0) {  ##skip over nulls dataframes
-	  message(paste('Dataset', names(gbifdata[i]), 'is NULL'))
+	  #message(paste('Dataset', names(gbifdata[i]), 'is NULL'))
 	  logbook[i] = (paste('Dataset',names(gbifdata[i]), 'is NULL.'))
 	  next
 	  } # close if
-	jpeg(filename = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''), width = 480, height = 480, pointsize = 12, quality = 100, bg = "white")
-    map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-10, max(gbifdata[[i]]$lon)+10), ylim = c(min(gbifdata[[i]]$lat)-10, max(gbifdata[[i]]$lat)+10)))
+	jpeg(filename = paste(genus,'_', names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''), width = 1200, height = 1200, pointsize = 12, quality = 100, bg = "white")
+	map.try <- try(map("worldHires", xlim = c(min(gbifdata[[i]]$lon)-15, max(gbifdata[[i]]$lon)+15), ylim = c(min(gbifdata[[i]]$lat)-18, max(gbifdata[[i]]$lat)+18)))
     if(class(map.try) == 'try-error') {
-	  message(paste('Dataset', i, names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
+	  #message(paste('Dataset', i, names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
 	  	  logbook[i] =(paste('Dataset', names(gbifdata[i]), 'has some SERIOUS mapping problems. Check to see if lats and Longs are switched....Check it out.'))
 	  dev.off()
-	  file.remove((file = paste(names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''))) ##removed jpeg files with errors
+	  file.remove((file = paste(genus,'_', names(gbifdata)[i],'_map_',format(Sys.time(),"%Y-%m-%d"),'.jpeg',sep =''))) ##removed jpeg files with errors
 	  next
 	  } # close if
-	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 0.5)    
-	if(gbifdata[[i]]$precise_enough == FALSE){
-		points(gbifdata[[i]]$lon[gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$unique_record], pch = 1, col= "green", cex = ((gbifdata[[i]]$calc_error)/10))    
-	}
+    ## now subset by those that are not so precise
+    gbifdata.temp <- gbifdata[[i]][!gbifdata[[i]]$precise_enough, ]
+	if(dim(gbifdata.temp)[1] > 0) {
+	## if(gbifdata[[i]]$precise_enough == FALSE){ ##OLD
+	    points(gbifdata.temp$lon[gbifdata.temp$unique_record], gbifdata.temp$lat[gbifdata.temp$unique_record], pch = 24, col= "green", cex = 1)    
+		points(gbifdata.temp$lon[gbifdata.temp$unique_record], gbifdata.temp$lat[gbifdata.temp$unique_record], pch = 1, col= "green", cex = sapply(gbifdata.temp$calc_error, function(x) switch(as.character(x), '10' = sizes[1], '100' = sizes[2])))    
+	} # end the imprecise-records if
+	points(gbifdata[[i]]$lon[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], gbifdata[[i]]$lat[gbifdata[[i]]$precise_enough & gbifdata[[i]]$unique_record], pch = 16, col= 2, cex = 1)    
 	map.axes()
-	legend("bottomright", c("Precise coordinates", "Imprecise coordinates scaled"), cex=0.7, pch=1, col= c("red","green"))
+	legend("bottomright", c("Precise coordinates", "Imprecise coordinates", "+/- 0.05 degree", "+/- 0.5 degree"), cex=1.5, pt.cex=c(1, 1, sizes[1] , sizes[2]), pch= c(16,24, 1, 1), col= c("red","green", "green", "green"))
 	title(main = gbifdata[[i]]$species[1], sub = "GBIF Specimen Records", xlab = NULL, ylab = NULL, line = NA, outer = FALSE)
 	dev.off(which = dev.cur())
 	logbook[i] = (paste('Jpeg Map generated for dataset', names(gbifdata[i])))
     } # close i
-	write.table(logbook, file = paste('Jpeg_MAP_log',format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|") ##writes out log file
+	write.table(logbook, file = paste(genus,'Jpeg_MAP_log',format(Sys.time(),"%Y-%m-%d"),'.txt'), sep = "|") ##writes out log file
   }
  
- 
+ ### BELOW FUNCTIONS ARE UNFINISHED!!!
  
  
 ##Step6: Download WorldClim Data (http://www.worldclim.org/download) to get bioclim variables
