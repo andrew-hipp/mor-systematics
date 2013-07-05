@@ -22,3 +22,96 @@ return(temp2)}
 	
 	
 # USE ANDREW HIPP'S PROGRAM TO HELP PARSE OUT COMPONENTS OF THE VOUCHER FIELD, SOME MANUAL MANIPULATIONS WILL BE NECESSARY.
+
+
+
+##Additional functions to parse out other tagged fields within qualifier1 file to make vouchers for specimens without specimen_voucher tags- these may need to be spot checked...  June 2013
+## DNA ISOLATE
+getSpecisolate <- function(x) {
+temp1 <- strsplit(x, "DNAisolate")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'db_xref')[[1]][1]
+temp3 <- strsplit(temp2[1], 'specimen_voucher')[[1]][1]
+temp4 <- strsplit(temp3[1], 'sub_species')[[1]][1]
+return(temp4)}
+
+
+## POP_VARIANT
+getSpec_pop_variant <- function(x) {  ##only about 57 specimens
+temp1 <- strsplit(x, "pop_variant")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'country')[[1]][1]
+return(temp2)}
+
+## COUNTRY
+getSpec_country <- function(x) {
+temp1 <- strsplit(x, "country")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'collection_date')[[1]][1]
+temp3 <- strsplit(temp2[1], 'lat_lon')[[1]][1]
+temp4 <- strsplit(temp3[1], 'note')[[1]][1]
+temp5 <- strsplit(temp4[1], 'PCR_primers')[[1]][1]
+temp6 <- strsplit(temp5[1], 'identified_by')[[1]][1]
+temp7 <- strsplit(temp6[1], 'primers')[[1]][1]
+temp8 <- strsplit(temp7[1], 'collected_by')[[1]][1]
+return(temp8)}
+
+
+## NOTES
+getSpec_note <- function(x) {
+temp1 <- strsplit(x, "note")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'collection_date')[[1]][1]  ###??? note sure where to clip
+return(temp2)}
+
+
+## lat and long coordinates
+getSpec_lat_long <- function(x) {
+temp1 <- strsplit(x, "lat_lon")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'collection_date')[[1]][1]
+temp3 <- strsplit(temp2[1], 'collected_by')[[1]][1]
+temp4 <- strsplit(temp3[1], 'identified_by')[[1]][1]
+temp5 <- strsplit(temp4[1], 'note')[[1]][1]
+return(temp5)}
+
+		
+##collection date
+getSpec_colldate <- function(x) {
+temp1 <- strsplit(x, "collection_date")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'collected_by')[[1]][1]
+temp3 <- strsplit(temp2[1], 'PCR_primer')[[1]][1]
+temp4 <- strsplit(temp3[1], 'identified_by')[[1]][1]
+return(temp4)}
+
+## collected by
+getSpec_collectedby<- function(x) {
+temp1 <- strsplit(x, "collected_by")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'PCR_primer')[[1]][1]
+temp3 <- strsplit(temp2[1], 'identified_by')[[1]][1]
+return(temp3)}
+
+##identified by
+getSpec_identifiedby<- function(x) {
+temp1 <- strsplit(x, "identified_by")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'PCR_primer')[[1]][1]
+temp3 <- strsplit(temp2[1], 'note')[[1]][1]
+return(temp3)}
+
+##  primers  ## 
+getSpec_primers <- function(x) {
+temp1 <- strsplit(x, "primersfwd_name")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'note')[[1]][1]
+return(temp2)}
+
+
+##  primers  ## test because didn't get everything ## NOTE THIS IS THE BETTER FUNCTION TO USE!!
+getSpec_primers_all <- function(x) {
+temp1 <- strsplit(x, "primers")[[1]]
+if(length(temp1) == 1) return("")
+temp2 <- strsplit(temp1[2], 'note')[[1]][1]
+return(temp2)}
