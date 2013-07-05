@@ -26,3 +26,13 @@ tip.spp <- function(tree, delim = '[_.]', ...) {
 spp.ci <- function(tree, ...) {
 ## finds CI of all species
   require(phangorn)
+  ## NOT DONE
+  }
+  
+monophyletic.spp <- function(tree, ...) {
+  require(ape)
+  all.spp <- tip.spp(tree, ...)
+  unique.spp <- sort(unique(all.spp))
+  out <- list(numSpp = length(unique.spp), spp.summary = cbind(count = sapply(unique.spp, function(x) sum(all.spp == x)), monophyletic = sapply(unique.spp, function(x) is.monophyletic(tree, names(all.spp)[all.spp == x]))))
+  return(out)
+  }
