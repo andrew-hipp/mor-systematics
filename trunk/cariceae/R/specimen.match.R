@@ -12,7 +12,6 @@ clean.specimen <- function(x) {
    x <- gsub('                     /specimen_voucher=', '', gsub('\"', '', x, perl = T), fixed = T)
    x
    }
-   
  
 parse.specimen <- function(obj) {
 ## try to parse out the pieces of the specimen field
