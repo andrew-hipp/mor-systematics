@@ -170,8 +170,7 @@ mrca.branches <- function(tree, repPattern = "_re", origPattern = "_h") {
   out = unlist(out)
   return(out)
   }
-  
-					   
+				   
 do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary$locus.lengths, blast = blast.results.concat, t.hold = -15, minLength = 50, maxLength = 55, sampleReps = 0, makeDirs = TRUE) {
 ## this needs to spit out paths and loci for each analysis
   if(is.na(lengths[1])) lengths <- lengths.report(dat,0) # as written, this will fail if lengths = NA, b/c lengths.report needs a pyRAD object, whereas this function needs a pyRAD.mat object
@@ -204,23 +203,3 @@ do.EST.phylo <- function(dat = d6m10p2.wRE.mat, lengths = d6m10p2.wRE$radSummary
 
 ## Make a helpful barplot:
  barplot(sapply(-1:-30, function(x) length(loci.by.threshold(threshold = x))), names.arg=-1:-30, xlab = "log10(e-value)", ylab = "Number of loci for which best blast is this good or better")
- 
-  
-## OLD -- Redone on 2013-02-21
-
-## read in and concatenate blast results to EST databases
-#blast.results <- lapply(dir('../../../OAK-RAD-ANNOTATIONS/QuercusFeb0513/', full = T, patt = 'blastN'), read.delim, header = F, as.is = T)
-#names(blast.results)<- (dir('../../../OAK-RAD-ANNOTATIONS/QuercusFeb0513/', full = F, patt = 'blastN')
-#blast.results.concat <- blast.results[[1]]
-#for(i in 2:length(blast.results)) blast.results.concat <- rbind(blast.results.concat, blast.results[[i]])
-
-
-## Making a data matrix for the EST-linked markers
-# oaks.d6m4.mat <- rad2mat(oaks.d6m4)
-# rad2phy(oaks.d6m4.mat, loci = loci.by.threshold(), outfile = 'oaks.dna.d6m4.blast.e-15.phy')
-# rad2phy(oaks.d6m4.mat, loci = loci.by.threshold(threshold = -25), outfile = 'oaks.dna.d6m4.blast.e-25.phy')
-
-## Subsampling loci to see how phylogeny based on non-EST linked markers compares
-## PROBLEMATIC: mean length of the EST-linked markers is longer, so this results in a shorter data matrix
-# subsampled.loci <- lapply(rep(8833,10), sample, x = dimnames(oaks.d6m4.mat)[[2]][!dimnames(oaks.d6m4.mat)[[2]] %in% blast.results.concat[[1]]])
-# for(i in 1:10) rad2phy(oaks.d6m4.mat, loci = subsampled.loci[[i]], outfile = paste('oaks.dna.d6m4.blast.subsample.', i,'.phy', sep = ''))

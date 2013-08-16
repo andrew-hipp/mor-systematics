@@ -17,6 +17,7 @@ unique.loci <- sort(unique(oak.blasts$query))
 stats.of.interest <- c('number of hits', 'number of unique descriptions', 'descriptions concatenated', 
                        'number of unique GOs', 'GO terms concatenated', 'QUERCUS', 'EST.OTHERS', 'REF.SEQ.RNA')
 locus.summary.mat <- matrix(NA, length(unique.loci), length(stats.of.interest), dimnames = list(unique.loci, stats.of.interest))
+
 for(i in unique.loci) {
   # browser()
   temp <- oak.blasts[oak.blasts$query == i, ]
