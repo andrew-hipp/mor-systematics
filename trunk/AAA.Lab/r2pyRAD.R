@@ -43,6 +43,15 @@ rad2mat <- function(pyDat, fill.N = TRUE) {
   return(out)
 }
 
+locus.dist <- function(pyIn) {
+## ABORTED
+  if(class(pyIn) == 'pyRAD.loci') pyIn <- pyIn$radSummary$inds.mat
+  numLoci <- dim(pyIn)[2]
+  for(i in 1:dim(pyIn)[1]) {
+    for(j in 1:i) {
+	  total <- (colSums(pyIn[c(i, j), ]) == 2) / numLoci
+	  }}}
+
 consensus.pyRAD <- function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.1_100.txt', ...) {
 ## use seqinr to generate a consensus sequence for each pyRAD locus
 ## 2013-01-04: updated to use Biostrings, which works better -- deleted arguments: method = 'majority', threshold = 0.001
