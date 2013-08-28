@@ -65,7 +65,6 @@ plot.locus.dist <- function(locD, tr, trW = 3, plotW = 5, plotGap = 0.25, scalar
  plot(rescaleTree(tr, trW), x.lim = c(0, trW + plotW + plotGap), show.tip.label=F, no.margin = T)
  xy <- matrix(seq(nloci), nloci, nloci, byrow = TRUE)
  points(plotW*(as.numeric(t(xy)) / nloci) + trW + plotGap, as.numeric(xy), pch = 15, cex = as.numeric(locD) * scalar)
- ## still need to order by tip.label
  }
   
 consensus.pyRAD <- function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.1_100.txt', ...) {
