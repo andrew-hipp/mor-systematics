@@ -43,17 +43,31 @@ rad2mat <- function(pyDat, fill.N = TRUE) {
   return(out)
 }
 
-locus.dist <- function(pyIn) {
+locus.dist <- function(pyIn, proportional = TRUE, upper = TRUE) {
   if(class(pyIn) == 'pyRAD.loci') pyIn <- pyIn$radSummary$inds.mat
-  numLoci <- dim(pyIn)[2]
-  out <- matrix(NA, numLoci, numLoci, row.names(pyIn))
-  for(i in 1:dim(pyIn)[1]) {
+  numInds <- dim(pyIn)[1]
+  numLoci <- ifelse(proportional, 1, dim(pyIn)[2])
+  out <- matrix(NA, numInds, numInds, dimnames = list(row.names(pyIn), row.names(pyIn)))
+  for(i in 1:numInds) {
     for(j in 1:i) {
-	  out[i, j] <- (colSums(pyIn[c(i, j), ]) == 2) / numLoci
+	  out[i, j] <- sum(colSums(pyIn[c(i, j), ]) == 2) / numLoci
 	  }}
+  if(upper) out <- as.matrix(as.dist(out))
   out
   }
 
+plot.locus.dist <- function(locD, tr, trW = 3, plotW = 5, plotGap = 0.25, scalar = 1.5) {
+ require(geiger)
+ require(ape)
+ tr <- read.tree(text = write.tree(tr))
+ locD <- locD[tr$tip.label, tr$tip.label]
+ nloci <- dim(locD)[1]
+ plot(rescaleTree(tr, trW), x.lim = c(0, trW + plotW + plotGap), show.tip.label=F, no.margin = T)
+ xy <- matrix(seq(nloci), nloci, nloci, byrow = TRUE)
+ points(plotW*(as.numeric(t(xy)) / nloci) + trW + plotGap, as.numeric(xy), pch = 15, cex = as.numeric(locD) * scalar)
+ ## still need to order by tip.label
+ }
+  
 consensus.pyRAD <- function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.1_100.txt', ...) {
 ## use seqinr to generate a consensus sequence for each pyRAD locus
 ## 2013-01-04: updated to use Biostrings, which works better -- deleted arguments: method = 'majority', threshold = 0.001
