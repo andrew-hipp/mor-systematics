@@ -44,13 +44,15 @@ rad2mat <- function(pyDat, fill.N = TRUE) {
 }
 
 locus.dist <- function(pyIn) {
-## ABORTED
   if(class(pyIn) == 'pyRAD.loci') pyIn <- pyIn$radSummary$inds.mat
   numLoci <- dim(pyIn)[2]
+  out <- matrix(NA, numLoci, numLoci, row.names(pyIn))
   for(i in 1:dim(pyIn)[1]) {
     for(j in 1:i) {
-	  total <- (colSums(pyIn[c(i, j), ]) == 2) / numLoci
-	  }}}
+	  out[i, j] <- (colSums(pyIn[c(i, j), ]) == 2) / numLoci
+	  }}
+  out
+  }
 
 consensus.pyRAD <- function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.1_100.txt', ...) {
 ## use seqinr to generate a consensus sequence for each pyRAD locus
