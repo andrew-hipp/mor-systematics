@@ -1,5 +1,6 @@
 ## Functions to perform successive weighting using likelihood (SWUL)
 ## A Hipp, Sept 2010 (ahipp@mortonarb.org)
+## Oct 2013: updated for PLoS ONE paper, revised to use RAxML
 
 require(ape)
 require(seqinr)
@@ -11,13 +12,15 @@ require(seqinr)
 ##  swulData - generates a new dataset, cutting off either the best or worst sites by percentage
 
 clusterSites <- function(locusVector) {
+## this should be obsolete now, as read.pyRAD generates a matrix that can be used to infer this info
+## left in in case it becomes handy to anyone
   clusterEnds <- cumsum(locusVector) # a vector of the position for each cluster first bp
   clusterBegs <- clusterEnds - locusVector + 1 # a vector of the position for each cluster last bp
   out <- lapply(1:length(locusVector), function(x) seq(from = clusterBegs[x], to = clusterEnds[x])) # list of base pairs in each cluster
   return(out)
   }
 
-genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'), maxmoves = 3, perms = c(length(nni(x)), 100, 100), ...) {
+genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'), maxmoves = 3, perms = c(length(nni(x)), 100, 100), software = c('raxml', 'paup'), ...) {
   ## Arguments:
   ## x = phylo tree
   ## N = number of trees to generate
@@ -38,24 +41,34 @@ genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'),
 	} # end if	  
   else if(method[1] == 'random') treeset = rtree.phylo(x, N, ...)
   class(treeset) <- 'multiPhylo'
-  write.nexus(treeset, file = paste(filebase, '.rtrees.tre', sep = ''))
-  write.nexus(x, file = paste(filebase, '.optimal.tre', sep = ''))
-  
+  if(software == 'paup') {
+    write.nexus(treeset, file = paste(filebase, '.rtrees.tre', sep = ''))
+    write.nexus(x, file = paste(filebase, '.optimal.tre', sep = ''))
+	}
+  if(software == 'raxml') {
+    write.tree(treeset, file = paste(filebase, '.rtrees.tre', sep = ''))
+    write.tree(x, file = paste(filebase, '.optimal.tre', sep = ''))
+    }
   ## write paup block
-  paup.out <- file(description = paste(filebase, '.paupBlock.nex', sep = ''), open = "w")
-  writeLines("#NEXUS", paup.out)
-  writeLines(paste("[PAUP block written using genTrees function in R,", date(), "]"), paup.out)
-  writeLines("\nBEGIN PAUP;\n", paup.out)
-  writeLines("  exclude constant /only;", paup.out)
-  writeLines("  increase = auto autoclose = yes;", paup.out)
-  writeLines("  cleartrees;", paup.out)
-  writeLines(paste("  gettrees file =", paste(filebase, '.optimal.tre', sep = ''), ";"), paup.out)
-  writeLines(paste("  lscores all / sitelikes = yes scorefile =", paste(filebase, '.optimal.scores', sep = ''), ";"), paup.out)
-  writeLines("\n  cleartrees;", paup.out)
-  writeLines(paste("  gettrees file =", paste(filebase, '.rtrees.tre', sep = ''), ";"), paup.out)
-  writeLines(paste("  lscores all / sitelikes = yes scorefile =", paste(filebase, '.rtrees.scores', sep = ''), ";"), paup.out)
-  writeLines("\nend;", paup.out)
-  close(paup.out)
+  if(software[1] == 'paup') {
+    paup.out <- file(description = paste(filebase, '.paupBlock.nex', sep = ''), open = "w")
+    writeLines("#NEXUS", paup.out)
+    writeLines(paste("[PAUP block written using genTrees function in R,", date(), "]"), paup.out)
+    writeLines("\nBEGIN PAUP;\n", paup.out)
+    writeLines("  exclude constant /only;", paup.out)
+    writeLines("  increase = auto autoclose = yes;", paup.out)
+    writeLines("  cleartrees;", paup.out)
+    writeLines(paste("  gettrees file =", paste(filebase, '.optimal.tre', sep = ''), ";"), paup.out)
+    writeLines(paste("  lscores all / sitelikes = yes scorefile =", paste(filebase, '.optimal.scores', sep = ''), ";"), paup.out)
+    writeLines("\n  cleartrees;", paup.out)
+    writeLines(paste("  gettrees file =", paste(filebase, '.rtrees.tre', sep = ''), ";"), paup.out)
+    writeLines(paste("  lscores all / sitelikes = yes scorefile =", paste(filebase, '.rtrees.scores', sep = ''), ";"), paup.out)
+    writeLines("\nend;", paup.out)
+    close(paup.out)
+	}
+  if(software[1] == 'raxml') {
+    message('RAxML chosen as analysis software. Currently, you just need to run this on your own to get the site likelihoods. Try something like this: /home/andrew/code/raxml/standard-RAxML-7.7.2/raxmlHPC-PTHREADS-SSE3 -f g -T 10 -s d6m10.phy -m GTRGAMMA -z analysis.d6m10/RAxML_bestTree.d6m10.out -n d6m10.phy.reduced.siteLnL')  
+	}
   return(treeset)
   }
 
