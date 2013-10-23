@@ -56,15 +56,23 @@ locus.dist <- function(pyIn, proportional = TRUE, upper = TRUE) {
   out
   }
 
-plot.locus.dist <- function(locD, tr, trW = 3, plotW = 5, plotGap = 0.25, scalar = 1.5) {
+plot.locus.dist <- function(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, ...) {
  require(geiger)
  require(ape)
+ if(barH > 0) layout(matrix(c(2,1),2,1), widths = c(trW + plotW + labelsW + plotGap * 2, trW + plotW + labelsW + plotGap * 2), heights = c(barH,trW + plotW + labelsW + plotGap * 2), TRUE)
  tr <- read.tree(text = write.tree(tr))
  locD <- locD[tr$tip.label, tr$tip.label]
  nloci <- dim(locD)[1]
- plot(rescaleTree(tr, trW), x.lim = c(0, trW + plotW + plotGap), show.tip.label=F, no.margin = T)
+ plot(transform(tr, 'depth', trW), x.lim = c(0, trW + plotW + plotGap * 2 + labelsW), show.tip.label=F, no.margin = T)
  xy <- matrix(seq(nloci), nloci, nloci, byrow = TRUE)
- points(plotW*(as.numeric(t(xy)) / nloci) + trW + plotGap, as.numeric(xy), pch = 15, cex = as.numeric(locD) * scalar)
+ Xs <- plotW*(as.numeric(t(xy)) / nloci) + trW + plotGap
+ points(Xs, as.numeric(xy), pch = 15, cex = as.numeric(locD) * scalar)
+ if(labelsW > 0) text(rep((trW + plotW + plotGap * 2), length(tr$tip.label)), 1:length(tr$tip.label), tr$tip.label, pos = 4, ...)
+ if(barH > 0) {
+   plot(1, xlim = c(0, trW + plotW + labelsW + plotGap * 2), type = 'n', axes = F) # just to move to next layout area
+   segments(x0 = Xs[1:length(tr$tip.label)], y0 = 0, x1 = Xs[1:length(tr$tip.label)], y1 = scale(colSums(locD), F), lwd = 10, lty = 1)
+   }
+ return(Xs[1:length(tr$tip.label)])
  }
   
 consensus.pyRAD <- function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.1_100.txt', ...) {
