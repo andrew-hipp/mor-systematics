@@ -56,23 +56,32 @@ locus.dist <- function(pyIn, proportional = TRUE, upper = TRUE) {
   out
   }
 
-plot.locus.dist <- function(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, ...) {
+plot.locus.dist <- function(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, point.pch = c(15,19), bartype = c('lines', 'bars'), ...) {
  require(geiger)
  require(ape)
- if(barH > 0) layout(matrix(c(2,1),2,1), widths = c(trW + plotW + labelsW + plotGap * 2, trW + plotW + labelsW + plotGap * 2), heights = c(barH,trW + plotW + labelsW + plotGap * 2), TRUE)
+ if(barH > 0) layout(matrix(c(2,1),2,1), widths = c(trW + plotW + labelsW + plotGap * 2, trW + plotW + labelsW + plotGap * 2), heights = c(barH, plotW), TRUE)
  tr <- read.tree(text = write.tree(tr))
  locD <- locD[tr$tip.label, tr$tip.label]
  nloci <- dim(locD)[1]
  plot(transform(tr, 'depth', trW), x.lim = c(0, trW + plotW + plotGap * 2 + labelsW), show.tip.label=F, no.margin = T)
  xy <- matrix(seq(nloci), nloci, nloci, byrow = TRUE)
  Xs <- plotW*(as.numeric(t(xy)) / nloci) + trW + plotGap
- points(Xs, as.numeric(xy), pch = 15, cex = as.numeric(locD) * scalar)
+ points(Xs, as.numeric(xy), pch = point.pch[1], cex = as.numeric(locD) * scalar)
  if(labelsW > 0) text(rep((trW + plotW + plotGap * 2), length(tr$tip.label)), 1:length(tr$tip.label), tr$tip.label, pos = 4, ...)
  if(barH > 0) {
-   plot(1, xlim = c(0, trW + plotW + labelsW + plotGap * 2), type = 'n', axes = F) # just to move to next layout area
-   segments(x0 = Xs[1:length(tr$tip.label)], y0 = 0, x1 = Xs[1:length(tr$tip.label)], y1 = scale(colSums(locD), F), lwd = 10, lty = 1)
+   if(bartype[1] == 'lines') {
+     Xs = Xs[1:length(tr$tip.label)]
+	 heights = apply(locD, 2, mean) * barH 
+	 plot(1, xlim = c(0, trW + plotW + labelsW + plotGap * 2), ylim = c(0, barH * 1.1), type = 'n', axes = F) # just to move to next layout area
+	 axis(side = 4, pos = tail(Xs, 1) + plotGap, las = 2, cex.axis = 0.6)
+     segments(x0 = Xs[1:length(tr$tip.label)], y0 = 0, x1 = Xs[1:length(tr$tip.label)], y1 = apply(locD, 2, mean) * barH, lwd = 10, lty = 1, lend = 2)
+     }
+   if(bartype[1] == 'bars') {
+     
+	 }
    }
- return(Xs[1:length(tr$tip.label)])
+ out = invisible(list(Xs = Xs[1:length(tr$tip.label)], heights = apply(locD, 2, mean) * barH))
+ return(out)
  }
   
 consensus.pyRAD <- function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.1_100.txt', ...) {
