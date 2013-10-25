@@ -12,7 +12,7 @@ require(seqinr)
 ##  swulData - generates a new dataset, cutting off either the best or worst sites by percentage
 
 clusterSites <- function(locusVector) {
-## this should be obsolete now, as read.pyRAD generates a matrix that can be used to infer this info
+## 2013-10-23: this should be obsolete now, as read.pyRAD generates a matrix that can be used to infer this info
 ## left in in case it becomes handy to anyone
   clusterEnds <- cumsum(locusVector) # a vector of the position for each cluster first bp
   clusterBegs <- clusterEnds - locusVector + 1 # a vector of the position for each cluster last bp
@@ -67,7 +67,8 @@ genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'),
     close(paup.out)
 	}
   if(software[1] == 'raxml') {
-    message('RAxML chosen as analysis software. Currently, you just need to run this on your own to get the site likelihoods. Try something like this: /home/andrew/code/raxml/standard-RAxML-7.7.2/raxmlHPC-PTHREADS-SSE3 -f g -T 10 -s d6m10.phy -m GTRGAMMA -z analysis.d6m10/RAxML_bestTree.d6m10.out -n d6m10.phy.reduced.siteLnL')  
+    message('RAxML chosen as analysis software. Currently, you just need to run this on your own to get the site likelihoods.Try something like this:\n
+	/home/andrew/code/raxml/standard-RAxML-7.7.2/raxmlHPC-PTHREADS-SSE3 -f g -T 10 -s d6m10.phy -m GTRGAMMA -z analysis.d6m10/RAxML_bestTree.d6m10.out -n d6m10.phy.reduced.siteLnL')
 	}
   return(treeset)
   }
@@ -117,27 +118,31 @@ getLikelihoods.paup <- function(rtreeScoreFile = choose.files(multi = FALSE, cap
   }
   
   
-getLikelihoods.raxml <- function(dat, rtreeScoreFile = choose.files(multi = FALSE, caption = "Select score file for random trees"), bestTreeScoreFile = choose.files(multi = FALSE, caption = "select score file for best tree")) {
+getLikelihoods.raxml <- function(dat, rtreeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
   ## this version of the getLikelihood function tosses 
   ## ARGUMENTS:
-  ##   rtreeScoreFile, bestTreeScoreFile - filenames for site likelihoods from RAxML outfile and a vector of locus assignments for each site
+  ##   rtreeScoreFile - filenames for site likelihoods from RAxML outfile and a vector of locus assignments for each site
+  ##   dat - pyRAD.loci object
   ## VALUE: a list with (1) a matrix of locus likelihoods (columns) by trees (rows) and (2) a vector of tree likelihoods
   
-  # 1. book-keeping, so we can find trees and clusters
-
-  message("Doing bookkeeping...")
-  clusterBP <- clusterSites(locusVector)
-  bestTreeScores <- read.delim(bestTreeScoreFile) # data.frame with site likelihoods for best tree
-  rtreeScores <- read.delim(rtreeScoreFile) # data.frame with all site likelihoods and tree likelihoods for rtrees
-  endOfEachTree <- which(!is.na(rtreeScores$Tree)) # last row of each tree in rtreeScores
-  begOfEachTree <- c(1, endOfEachTree[1:length(endOfEachTree) - 1] + 1) # first row of each tree in rtreeScores
-  treeRows <- lapply(1:length(endOfEachTree), function(x) seq(from = begOfEachTree[x], to = endOfEachTree[x])) # list of rows for each tree in rtreeScores
+  ## 1. read data -- result is a list of site likelihoods, one per tree
+  lnL <- readLines(rtreeScoreFile)
+  lnL <- strsplit(lnL[2:length(lnL)], "\t")
+  names(lnL) <- unlist(lapply(lnL, function(x) x[1]))
+  lnL <- unlist(lapply(lnL, function(x) x[2]))
+  lnL <- strsplit(lnL, " ")
   
-  message("Finding clusters present...")
-  clustersPresent <- which(sapply(clusterBP, function(x) sum(x %in% rtreeScores[treeRows[[1]], 'Site']) > 0))
+  # 1. book-keeping, so we can find trees and clusters
+  message("Doing bookkeeping...")
+  nLoci <- length(dat$radSummary$locus.lengths)
+  loc.ranges <- cbind(c(1, cumsum(dat$radSummary$locus.lengths) + 1)[1:nLoci], cumsum(dat$radSummary$locus.lengths))
+  clusterBP <- apply(loc.ranges, function(x) x[1]:x[2])
   
   # 2. locus likelihoods for each locus and tree
-  locusScores = matrix(0, nrow = length(treeRows) + 1, ncol = length(clustersPresent), dimnames = list(c(1:length(treeRows), 'best'), as.character(clustersPresent)))
+  locusScores = matrix(0, nrow = length(lnL), ncol = nLoci, dimnames = list(names(lnL), names(clusterBP)))
+  
+  ### LEFT OFF HERE CHANGING OVER TO RAXML ###
+  
   treeScores <- c(rtreeScores[endOfEachTree, 'X.lnL'], bestTreeScores[!is.na(bestTreeScores$Tree),'X.lnL'])
   names(treeScores) <- dimnames(locusScores)[[1]]  
   for(treeNumber in c(1:length(treeRows), -9)) {
