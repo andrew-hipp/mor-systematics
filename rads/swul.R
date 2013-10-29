@@ -23,31 +23,29 @@ clusterSites <- function(locusVector) {
 genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'), maxmoves = 3, perms = c(length(nni(x)), 100, 100), software = c('raxml', 'paup'), ...) {
   ## Arguments:
   ## x = phylo tree
-  ## N = number of trees to generate
+  ## N = number of trees to generate per nni / spr stratum
   ## filebase = file name base; a tree file (.tre) and paup command file (.nex) will be created for both
   ## method = method for generating trees
   ## maxmoves = maximum number of rearrangements per tree for nni or spr
   ## perms = number of permutations per maxmoves
   ## ... = additional arguments to pass along to rtree.phylo or rNNI
   ## works with nni, 12 nov 10
-  treeset = vector('list', sum(perms[seq(maxmoves)]))
+  require(phangorn)
+  if(class(x) != 'phylo') stop('This function requires a phylo object as its first argument')
   if(method[1] == 'nni') {
-    require(phangorn)
 	for(i in seq(maxmoves)) {
-	  if(i == 1) treesetTemp <- nni(x) 
-	    else treesetTemp <- rNNI(x, i, perms[i])
-	  for(j in 1:length(treesetTemp)) treeset[[j + sum(perms[0:(i-1)])]] <- treesetTemp[[j]]
+	  if(i == 1) treeset <- nni(x) 
+	  else treeset <- c(treeset, rNNI(x, i, perms[i]))
       }	# end i
 	} # end if	  
   else if(method[1] == 'random') treeset = rtree.phylo(x, N, ...)
-  class(treeset) <- 'multiPhylo'
-  if(software == 'paup') {
+  if(software[1] == 'paup') {
     write.nexus(treeset, file = paste(filebase, '.rtrees.tre', sep = ''))
     write.nexus(x, file = paste(filebase, '.optimal.tre', sep = ''))
 	}
-  if(software == 'raxml') {
-    write.tree(treeset, file = paste(filebase, '.rtrees.tre', sep = ''))
-    write.tree(x, file = paste(filebase, '.optimal.tre', sep = ''))
+  if(software[1] == 'raxml') {
+    write.tree(c(structure(list(x), class = 'multiPhylo'),treeset), file = paste(filebase, '.trees.tre', sep = ''))
+    # write.tree(x, file = paste(filebase, '.optimal.tre', sep = '')) ## no longer separating optimal from full trees
     }
   ## write paup block
   if(software[1] == 'paup') {
@@ -149,6 +147,7 @@ getLikelihoods.raxml <- function(dat, lnL = NA, treeScoreFile = choose.files(mul
 	# I think it would be more efficient to vectorize the next row by creating a vector of locus numbers, then splitting
 	for(locusNumber in seq(nLoci)) locusScores[treeNumber, locusNumber] <- sum(lnL[[treeNumber]][clusterBP[[locusNumber]]])
 	} #close treeNumber
+  row.names(locusScores)[treeScores == min(treeScores)] <- 'best'
   out <- list(locusScores = locusScores, treeScores = treeScores, clustersPresent = NA)
   class(out) <- 'swulLikelihoods'
   return(out)
