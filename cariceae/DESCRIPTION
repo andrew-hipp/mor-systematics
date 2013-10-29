@@ -1,14 +1,16 @@
 Package: cariceae
 Type: Package
-Title: 
-Version: 
+Title: Cariceae Tools
+Version: 0.5
 Date: 
-Depends:
+Depends: rJava, rgdal, sp, XML, raster, dismo, maps, maptools,RColorBrewer, classInt, mapdata, MIPHENO,
+         ape, Biostrings,
+		 gdata
 Enhances:
 Suggests: 
 Author: Andrew Hipp <ahipp@mortonarb.org>, marlene Hahn <mhahn@mortonarb.org>
 Maintainer: Andrew Hipp <ahipp@mortonarb.org>
-Description: 
+Description: A toolkit for the Cariceae community, integrating specimen data into revisionary taxonomy
 License: GPL
-URL: 
-Revision: 
+URL: http://systematics.mortonarb.org/cariceae
+Revision: 1
