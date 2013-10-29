@@ -3,7 +3,7 @@
 ## Oct 2013: updated for PLoS ONE paper, revised to use RAxML
 
 require(ape)
-require(seqinr)
+# require(seqinr)
 
 ## Functions:
 ##  genTrees - generates trees and PAUP commands to get site likelihoods - DONE
@@ -84,7 +84,7 @@ getLikelihoods.paup <- function(rtreeScoreFile = choose.files(multi = FALSE, cap
   message("Doing bookkeeping...")
   clusterBP <- clusterSites(locusVector)
   bestTreeScores <- read.delim(bestTreeScoreFile) # data.frame with site likelihoods for best tree
-  rtreeScores <- read.delim(rtreeScoreFile) # data.frame with all site likelihoods and tree likelihoods for rtrees
+  treeScores <- read.delim(rtreeScoreFile) # data.frame with all site likelihoods and tree likelihoods for rtrees
   endOfEachTree <- which(!is.na(rtreeScores$Tree)) # last row of each tree in rtreeScores
   begOfEachTree <- c(1, endOfEachTree[1:length(endOfEachTree) - 1] + 1) # first row of each tree in rtreeScores
   treeRows <- lapply(1:length(endOfEachTree), function(x) seq(from = begOfEachTree[x], to = endOfEachTree[x])) # list of rows for each tree in rtreeScores
@@ -118,50 +118,38 @@ getLikelihoods.paup <- function(rtreeScoreFile = choose.files(multi = FALSE, cap
   }
   
   
-getLikelihoods.raxml <- function(dat, rtreeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
+getLikelihoods.raxml <- function(dat, lnL = NA, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
   ## this version of the getLikelihood function tosses 
   ## ARGUMENTS:
-  ##   rtreeScoreFile - filenames for site likelihoods from RAxML outfile and a vector of locus assignments for each site
+  ##   treeScoreFile - filenames for site likelihoods from RAxML outfile and a vector of locus assignments for each site
   ##   dat - pyRAD.loci object
   ## VALUE: a list with (1) a matrix of locus likelihoods (columns) by trees (rows) and (2) a vector of tree likelihoods
+  ## works: 2013-10-29
   
   ## 1. read data -- result is a list of site likelihoods, one per tree
-  lnL <- readLines(rtreeScoreFile)
-  lnL <- strsplit(lnL[2:length(lnL)], "\t")
-  names(lnL) <- unlist(lapply(lnL, function(x) x[1]))
-  lnL <- unlist(lapply(lnL, function(x) x[2]))
-  lnL <- strsplit(lnL, " ")
-  
+  if(is.na(lnL[1])) {
+    lnL <- readLines(treeScoreFile)
+    lnL <- strsplit(lnL[2:length(lnL)], "\t")
+    names(lnL) <- unlist(lapply(lnL, function(x) x[1]))
+    lnL <- unlist(lapply(lnL, function(x) x[2]))
+    lnL <- lapply(strsplit(lnL, " "), as.numeric)
+    }
   # 1. book-keeping, so we can find trees and clusters
   message("Doing bookkeeping...")
   nLoci <- length(dat$radSummary$locus.lengths)
   loc.ranges <- cbind(c(1, cumsum(dat$radSummary$locus.lengths) + 1)[1:nLoci], cumsum(dat$radSummary$locus.lengths))
-  clusterBP <- apply(loc.ranges, function(x) x[1]:x[2])
+  clusterBP <- apply(loc.ranges, 1, function(x) x[1]:x[2])
   
   # 2. locus likelihoods for each locus and tree
   locusScores = matrix(0, nrow = length(lnL), ncol = nLoci, dimnames = list(names(lnL), names(clusterBP)))
-  
-  ### LEFT OFF HERE CHANGING OVER TO RAXML ###
-  
-  treeScores <- c(rtreeScores[endOfEachTree, 'X.lnL'], bestTreeScores[!is.na(bestTreeScores$Tree),'X.lnL'])
-  names(treeScores) <- dimnames(locusScores)[[1]]  
-  for(treeNumber in c(1:length(treeRows), -9)) {
-    if(treeNumber == -9) {
-	  tr <- bestTreeScores
-	  treeNumber <- 'best'
-	  message("Summing locus likelihoods on the best (ML) tree")
-	  }
-	else {
-	  tr <- rtreeScores[treeRows[[treeNumber]], ]
-	  message(paste("Summing locus likelihoods on tree", treeNumber))
-	  }
-	for(locusNumber in clustersPresent) {
-	  locusScores[treeNumber, as.character(locusNumber)] <- 
-	    sum(tr$X.lnL.1[which(tr$Site %in% clusterBP[[locusNumber]])])
-	  } #close locusNumber
+  treeScores <- unlist(sapply(lnL, sum))
+  names(treeScores) <- dimnames(locusScores)[[1]]  # just in case names didn't come over... may not be needed
+  for(treeNumber in c(1:length(treeScores))) {
+	message(paste("Summing locus likelihoods on tree", treeNumber))
+	# I think it would be more efficient to vectorize the next row by creating a vector of locus numbers, then splitting
+	for(locusNumber in seq(nLoci)) locusScores[treeNumber, locusNumber] <- sum(lnL[[treeNumber]][clusterBP[[locusNumber]]])
 	} #close treeNumber
-	
-  out <- list(locusScores = locusScores, treeScores = treeScores, clustersPresent = clustersPresent)
+  out <- list(locusScores = locusScores, treeScores = treeScores, clustersPresent = NA)
   class(out) <- 'swulLikelihoods'
   return(out)
   }
