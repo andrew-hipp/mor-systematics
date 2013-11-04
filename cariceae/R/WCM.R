@@ -7,16 +7,17 @@ do.it.cariceae <- function(datDir = choose.dir(), topNodes = c('Vignea', 'coreCa
 ## this wrapper should do everything and then archive the files with date / time stamp
 ## not done yet
 ## possible features:
-##		(a) calls traverseChecklist to create a hierarchical checklist (text file, with indents)
+##		(a) DONE: calls traverseChecklist to create a hierarchical checklist (text file, with indents)
 ##		(b) calls assignSectionsAndClades to assign every taxon to a section and higher clade (spreadsheet)
-##		(c) highlights taxa for which no samples are available
+##		(c) DONE: highlights taxa for which no samples are available
 ##		(d) aggregates vouchers for synonyms up to accepted names, holding the synonym under 'Deposited as'
 ## 2013-07-03
 
   datMat <- voucherBySpecies(datDir)
   if(acceptedOnly) datMat <- datMat[datMat$Usage == 'accepted', ]
-  traversedDatFile <- sapply(topNodes, function(x) traverse.checklist(datMat, topParent = x, outfileName = paste('cariceae.', x, '.txt', sep = ''), ...))
-  write.csv(datMat, 'cariceae.dataMatrix.', format(Sys.time(), "%Y-%m-%d"), '.csv', sep = '')
+  traversedDatFile <- sapply(topNodes, function(x) traverse.checklist(datMat, topParent = x, outfileName = paste('cariceae.', x, format(Sys.time(), ".%Y-%m-%d.txt"), sep = ''), ...))
+  #write.csv(datMat, 'cariceae.dataMatrix.', format(Sys.time(), "%Y-%m-%d"), '.csv', sep = '')
+  write.csv(datMat, paste('cariceae.dataMatrix.', format(Sys.time(), "%Y-%m-%d"), '.csv', sep = ''))
   # zip up all the files with time stamp
   # upload to web?
   }
