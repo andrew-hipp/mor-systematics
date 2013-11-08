@@ -3,6 +3,15 @@
 ### 2012-06-13: created
 ### 2013-05-13: updating to update the checklist in a more streamlined manner
 
+sampled <- function(dat, no.dna = '***') {
+  if(class(dat) != 'list') dat = list(dat)
+  spp <- sapply(dat, function(x) length(grep('Species', x, fixed = T)))
+  dna <- sapply(dat, function(x) length(grep('Species', x, fixed = T)) - length(grep('***', x, fixed = T)))
+  no.dna <- spp - dna
+  out <- cbind(spp, dna, no.dna)
+  return(out)
+  }
+
 do.it.cariceae <- function(datDir = choose.dir(), topNodes = c('Vignea', 'coreCarex', 'Caricoid', 'Siderostictae'), acceptedOnly = T, ...) {
 ## this wrapper should do everything and then archive the files with date / time stamp
 ## not done yet
