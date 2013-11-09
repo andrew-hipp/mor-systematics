@@ -6,6 +6,8 @@ traverse.checklist <- function(spTaxonomy, topParent = "Cyperaceae", lowestRank 
 ##    lowestRank = vector of ranks at which to stop (e.g., "SEQUENCE", c("Subspecies", "Variety"), or "Species"); use NA to go to lowest rank
 ##    DNA.flag = character string used to flag a DNA extraction. If !is.na(DNA.flag), then species and infraspecies are flagged with dna.missing.char if they have no DNA voucher
 ##    dna.missing.character = character used if DNA is missing from species[1], subspecies[2], or variety[3]   
+##  2013-11-09: add csv output type, with 
+
   names(dna.missing.char) <- c('Species', 'Subspecies', 'Variety')
   topParentRank <- spTaxonomy$Rank[spTaxonomy$Term.name == topParent]
   if(length(topParentRank) > 1) {
