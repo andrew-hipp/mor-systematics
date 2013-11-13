@@ -45,8 +45,17 @@ genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'),
   return(treeset)
   }
 
+get.raxml.siteLikelihoods <- function(x)  {
+    lnL <- readLines(x)
+    lnL <- strsplit(lnL[2:length(lnL)], "\t")
+    names(lnL) <- unlist(lapply(lnL, function(x) x[1]))
+    lnL <- unlist(lapply(lnL, function(x) x[2]))
+    lnL <- t(sapply(strsplit(lnL, " "), as.numeric)) # this is a matrix with trees as rows, site lnL as columns
+    return(lnL)
+	}
+  
  
-getLikelihoods.raxml <- function(dat, lnL = NA, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
+getLikelihoods.raxml <- function(dat, lnL = NA, info = NA, missingSites = NA, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees"), infoFile = choose.files(multi = FALSE, caption = 'Select RAxML info file for analysis')) {
   ## this version of the getLikelihood function tosses 
   ## ARGUMENTS:
   ##   treeScoreFile - filenames for site likelihoods from RAxML outfile and a vector of locus assignments for each site
@@ -55,27 +64,30 @@ getLikelihoods.raxml <- function(dat, lnL = NA, treeScoreFile = choose.files(mul
   ## works: 2013-10-29
   
   ## 1. read data -- result is a list of site likelihoods, one per tree
-  if(is.na(lnL[1])) {
-    lnL <- readLines(treeScoreFile)
-    lnL <- strsplit(lnL[2:length(lnL)], "\t")
-    names(lnL) <- unlist(lapply(lnL, function(x) x[1]))
-    lnL <- unlist(lapply(lnL, function(x) x[2]))
-    lnL <- lapply(strsplit(lnL, " "), as.numeric)
-    }
+  if(is.na(lnL[1])) lnL <- get.raxml.siteLikelihoods(treeScoreFile)
+  if(is.na(info[1])) {
+	info <- readLines(infoFile)
+	missing.sites <- grep('Alignment column', info)
+	missing.sites <- as.numeric(sapply(info[missing.sites], function(x) strsplit(x, ' ')[[1]][5]))
+	lnL.2 <- matrix(NA, nrow = dim(lnL)[1], ncol = dim(lnL)[2] + length(missing.sites))
+	lnL.2[, -missing.sites] <- lnL
+	lnL.2[, missing.sites] <- 0
+	lnL <- lnL.2 # this is a matrix of site likelihoods, with 0s for undefined columns; okay because we care about rank order, not absolute lnL
+	}
+	
   # 1. book-keeping, so we can find trees and clusters
   message("Doing bookkeeping...")
   nLoci <- length(dat$radSummary$locus.lengths)
   loc.ranges <- cbind(c(1, cumsum(dat$radSummary$locus.lengths) + 1)[1:nLoci], cumsum(dat$radSummary$locus.lengths))
-  clusterBP <- apply(loc.ranges, 1, function(x) x[1]:x[2])
+  clusterBP <- apply(loc.ranges, 1, function(x) x[1]:x[2]) # this is a list of numeric vectors, one per locus, giving all bp positions for that locus
   
   # 2. locus likelihoods for each locus and tree
-  locusScores = matrix(0, nrow = length(lnL), ncol = nLoci, dimnames = list(names(lnL), names(clusterBP)))
-  treeScores <- unlist(sapply(lnL, sum))
-  names(treeScores) <- dimnames(locusScores)[[1]]  # just in case names didn't come over... may not be needed
+  locusScores = matrix(0, nrow = dim(lnL)[1], ncol = nLoci, dimnames = list(row.names(lnL), names(clusterBP)))
+  treeScores <- apply(lnL, 1, sum)
   for(treeNumber in c(1:length(treeScores))) {
 	message(paste("Summing locus likelihoods on tree", treeNumber))
 	# I think it would be more efficient to vectorize the next row by creating a vector of locus numbers, then splitting
-	for(locusNumber in seq(nLoci)) locusScores[treeNumber, locusNumber] <- sum(lnL[[treeNumber]][clusterBP[[locusNumber]]])
+	for(locusNumber in seq(nLoci)) locusScores[treeNumber, locusNumber] <- sum(lnL[treeNumber, clusterBP[[locusNumber]]])
 	} #close treeNumber
   row.names(locusScores)[treeScores == min(treeScores)] <- 'best'
   out <- list(locusScores = locusScores, treeScores = treeScores, clustersPresent = NA)
