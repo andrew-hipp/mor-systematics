@@ -4,21 +4,13 @@
 
 require(ape)
 # require(seqinr)
-
+require(phangorn)
+  
 ## Functions:
 ##  genTrees - generates trees and PAUP commands to get site likelihoods - DONE
 ##  getLikelihoods - takes a filename for site likelihoods from PAUP outfile and a vector of locus assignments for each site; returns a list with (1) a matrix of locus likelihoods (columns) by trees (rows) and (2) a vector of tree likelihoods - DONE
 ##  rankLikelihoods - ranks likelihoods, counts likelihood steps, and calculates the goodness-of-fit for each locus to the optimal tree relative to the random tree set - DONE
 ##  swulData - generates a new dataset, cutting off either the best or worst sites by percentage
-
-clusterSites <- function(locusVector) {
-## 2013-10-23: this should be obsolete now, as read.pyRAD generates a matrix that can be used to infer this info
-## left in in case it becomes handy to anyone
-  clusterEnds <- cumsum(locusVector) # a vector of the position for each cluster first bp
-  clusterBegs <- clusterEnds - locusVector + 1 # a vector of the position for each cluster last bp
-  out <- lapply(1:length(locusVector), function(x) seq(from = clusterBegs[x], to = clusterEnds[x])) # list of base pairs in each cluster
-  return(out)
-  }
 
 genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'), maxmoves = 3, perms = c(length(nni(x)), 100, 100), software = c('raxml', 'paup'), ...) {
   ## Arguments:
@@ -30,40 +22,22 @@ genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'),
   ## perms = number of permutations per maxmoves
   ## ... = additional arguments to pass along to rtree.phylo or rNNI
   ## works with nni, 12 nov 10
-  require(phangorn)
   if(class(x) != 'phylo') stop('This function requires a phylo object as its first argument')
   if(method[1] == 'nni') {
 	for(i in seq(maxmoves)) {
+	  message(paste('doing maxmoves', i))
 	  if(i == 1) treeset <- nni(x) 
 	  else treeset <- c(treeset, rNNI(x, i, perms[i]))
       }	# end i
 	} # end if	  
   else if(method[1] == 'random') treeset = rtree.phylo(x, N, ...)
-  if(software[1] == 'paup') {
-    write.nexus(treeset, file = paste(filebase, '.rtrees.tre', sep = ''))
-    write.nexus(x, file = paste(filebase, '.optimal.tre', sep = ''))
-	}
   if(software[1] == 'raxml') {
-    write.tree(c(structure(list(x), class = 'multiPhylo'),treeset), file = paste(filebase, '.trees.tre', sep = ''))
+    message('writing raxml')
+	treeset[2:(length(treeset) + 1)] <- treeset[1:length(treeset)]
+	treeset[[1]] <- x
+	write.tree(treeset, file = paste(filebase, '.trees.tre', sep = ''))
     # write.tree(x, file = paste(filebase, '.optimal.tre', sep = '')) ## no longer separating optimal from full trees
     }
-  ## write paup block
-  if(software[1] == 'paup') {
-    paup.out <- file(description = paste(filebase, '.paupBlock.nex', sep = ''), open = "w")
-    writeLines("#NEXUS", paup.out)
-    writeLines(paste("[PAUP block written using genTrees function in R,", date(), "]"), paup.out)
-    writeLines("\nBEGIN PAUP;\n", paup.out)
-    writeLines("  exclude constant /only;", paup.out)
-    writeLines("  increase = auto autoclose = yes;", paup.out)
-    writeLines("  cleartrees;", paup.out)
-    writeLines(paste("  gettrees file =", paste(filebase, '.optimal.tre', sep = ''), ";"), paup.out)
-    writeLines(paste("  lscores all / sitelikes = yes scorefile =", paste(filebase, '.optimal.scores', sep = ''), ";"), paup.out)
-    writeLines("\n  cleartrees;", paup.out)
-    writeLines(paste("  gettrees file =", paste(filebase, '.rtrees.tre', sep = ''), ";"), paup.out)
-    writeLines(paste("  lscores all / sitelikes = yes scorefile =", paste(filebase, '.rtrees.scores', sep = ''), ";"), paup.out)
-    writeLines("\nend;", paup.out)
-    close(paup.out)
-	}
   if(software[1] == 'raxml') {
     message('RAxML chosen as analysis software. Currently, you just need to run this on your own to get the site likelihoods.Try something like this:\n
 	/home/andrew/code/raxml/standard-RAxML-7.7.2/raxmlHPC-PTHREADS-SSE3 -f g -T 10 -s d6m10.phy -m GTRGAMMA -z analysis.d6m10/RAxML_bestTree.d6m10.out -n d6m10.phy.reduced.siteLnL')
@@ -71,51 +45,7 @@ genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'),
   return(treeset)
   }
 
-getLikelihoods.paup <- function(rtreeScoreFile = choose.files(multi = FALSE, caption = "Select score file for random trees"), 
-                           bestTreeScoreFile = choose.files(multi = FALSE, caption = "select score file for best tree"),
-						   locusVector = clusterLens) {
-  ## takes a filename for site likelihoods from PAUP outfile and a vector of locus assignments for each site; returns a list with (1) a matrix of locus likelihoods (columns) by trees (rows) and (2) a vector of tree likelihoods
-  ## note that the log-likelihood scores written to the file by PAUP are negative of the true lnL
-  
-  # 1. book-keeping, so we can find trees and clusters
-
-  message("Doing bookkeeping...")
-  clusterBP <- clusterSites(locusVector)
-  bestTreeScores <- read.delim(bestTreeScoreFile) # data.frame with site likelihoods for best tree
-  treeScores <- read.delim(rtreeScoreFile) # data.frame with all site likelihoods and tree likelihoods for rtrees
-  endOfEachTree <- which(!is.na(rtreeScores$Tree)) # last row of each tree in rtreeScores
-  begOfEachTree <- c(1, endOfEachTree[1:length(endOfEachTree) - 1] + 1) # first row of each tree in rtreeScores
-  treeRows <- lapply(1:length(endOfEachTree), function(x) seq(from = begOfEachTree[x], to = endOfEachTree[x])) # list of rows for each tree in rtreeScores
-  
-  message("Finding clusters present...")
-  clustersPresent <- which(sapply(clusterBP, function(x) sum(x %in% rtreeScores[treeRows[[1]], 'Site']) > 0))
-  
-  # 2. locus likelihoods for each locus and tree
-  locusScores = matrix(0, nrow = length(treeRows) + 1, ncol = length(clustersPresent), dimnames = list(c(1:length(treeRows), 'best'), as.character(clustersPresent)))
-  treeScores <- c(rtreeScores[endOfEachTree, 'X.lnL'], bestTreeScores[!is.na(bestTreeScores$Tree),'X.lnL'])
-  names(treeScores) <- dimnames(locusScores)[[1]]  
-  for(treeNumber in c(1:length(treeRows), -9)) {
-    if(treeNumber == -9) {
-	  tr <- bestTreeScores
-	  treeNumber <- 'best'
-	  message("Summing locus likelihoods on the best (ML) tree")
-	  }
-	else {
-	  tr <- rtreeScores[treeRows[[treeNumber]], ]
-	  message(paste("Summing locus likelihoods on tree", treeNumber))
-	  }
-	for(locusNumber in clustersPresent) {
-	  locusScores[treeNumber, as.character(locusNumber)] <- 
-	    sum(tr$X.lnL.1[which(tr$Site %in% clusterBP[[locusNumber]])])
-	  } #close locusNumber
-	} #close treeNumber
-	
-  out <- list(locusScores = locusScores, treeScores = treeScores, clustersPresent = clustersPresent)
-  class(out) <- 'swulLikelihoods'
-  return(out)
-  }
-  
-  
+ 
 getLikelihoods.raxml <- function(dat, lnL = NA, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
   ## this version of the getLikelihood function tosses 
   ## ARGUMENTS:
