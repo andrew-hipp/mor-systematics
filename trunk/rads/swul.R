@@ -12,7 +12,7 @@ require(phangorn)
 ##  rankLikelihoods - ranks likelihoods, counts likelihood steps, and calculates the goodness-of-fit for each locus to the optimal tree relative to the random tree set - DONE
 ##  swulData - generates a new dataset, cutting off either the best or worst sites by percentage
 
-genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'), maxmoves = 3, perms = c(length(nni(x)), 100, 100), software = c('raxml', 'paup'), ...) {
+genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'), maxmoves = 3, perms = c(length(nni(x)), as.integer(100-(length(nni(x))/2)), as.integer(100-(length(nni(x))/2))), software = c('raxml', 'paup'), ...) {
   ## Arguments:
   ## x = phylo tree
   ## N = number of trees to generate per nni / spr stratum
