@@ -53,8 +53,15 @@ get.raxml.siteLikelihoods <- function(x)  {
     lnL <- t(sapply(strsplit(lnL, " "), as.numeric)) # this is a matrix with trees as rows, site lnL as columns
     return(lnL)
 	}
+
+plot.swulLikelihoods <- function(x, scalar = 2, ...) {
+  X <- x$treeScores
+  favTree <- apply(x$locusScores, 2, function(z) which(z == min(z)))
+  Y <- sapply(1:length(X), function(z) sum(favTree) == z)
+  sizes <- apply(x$locusScores, 2, sd) * scalar
+  plot(X, Y, cex = sizes, ...)
+  } 
   
- 
 getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, which.loci, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
   ## this version of the getLikelihood function tosses 
   ## ARGUMENTS:
