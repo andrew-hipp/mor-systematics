@@ -55,7 +55,7 @@ get.raxml.siteLikelihoods <- function(x)  {
 	}
   
  
-getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
+getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, which.loci, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
   ## this version of the getLikelihood function tosses 
   ## ARGUMENTS:
   ##   treeScoreFile - filenames for site likelihoods from RAxML outfile and a vector of locus assignments for each site
@@ -68,8 +68,8 @@ getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, treeScoreFile
 	
   # 1. book-keeping, so we can find trees and clusters
   message("Doing bookkeeping...")
-  nLoci <- length(dat$radSummary$locus.lengths)
-  loc.ranges <- cbind(c(1, cumsum(dat$radSummary$locus.lengths) + 1)[1:nLoci], cumsum(dat$radSummary$locus.lengths))
+  nLoci <- length(which.loci)
+  loc.ranges <- cbind(c(1, cumsum(dat$radSummary$locus.lengths[which.loci]) + 1)[1:nLoci], cumsum(dat$radSummary$locus.lengths[which.loci]))
   clusterBP <- apply(loc.ranges, 1, function(x) x[1]:x[2]) # this is a list of numeric vectors, one per locus, giving all bp positions for that locus
   
   # 2. locus likelihoods for each locus and tree
