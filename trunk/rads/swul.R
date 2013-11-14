@@ -54,15 +54,34 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-plot.swulLikelihoods <- function(x, scalar = 2, output = c('jpg'), ...) {
+plot.swulLikelihoods <- function(x, scalar = 2, output = c('jpg'), bw.scalar = 1, ...) {
 ## each tree is a data point
 ## X: tree likelihood
 ## Y: 
   X <- x$treeScores
-  favTree <- unlist(apply(x$locusScores, 2, function(z) which(z == max(z))))
-  Y <- sapply(1:length(X), function(z) sum(favTree == z))
+  star.best <- which(names(X) == 'best')
+  bestTree <- unlist(apply(x$locusScores, 2, function(z) which(z == max(z))))
+  worstTree <- unlist(apply(x$locusScores, 2, function(z) which(z == min(z))))
+  Y.best <- sapply(1:length(X), function(z) sum(bestTree == z))
+  Y.worst <- sapply(1:length(X), function(z) sum(worstTree == z))
   dotSizes <- apply(x$locusScores, 1, sd) * scalar
-  plot(X, Y, cex = dotSizes, ...)
+  layout(matrix(1:3, 1, 3))
+  plot(X, Y.best, cex = dotSizes, xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is or ties for best', ylim = range(c(Y.best, Y.worst)), ...)
+  plot(X, Y.worst, cex = dotSizes, xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is or ties for worst', ylim = range(c(Y.best, Y.worst)), ...) 
+  plot(X, Y.best, cex = dotSizes * (bw.scalar / scalar), xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is or ties for best (B) or worst (W)', ylim = range(c(Y.best, Y.worst)), pch = 'B', ...)
+  points(X, Y.worst, cex = dotSizes * (bw.scalar / scalar), col = 'red', pch = 'W', ...)
+  segments(X, Y.best, X, Y.worst, lty = 'dashed')
+  out <- cbind(Y.best, Y.worst, lnL = x$treeScores, difference = Y.best-Y.worst)
+  row.names(out) <- names(X)
+  windows()
+  plot(out[, c('lnL', 'difference')], pch = 21, col = 'grey', bg = 'black', cex = 2)
+  abline(h = quantile(out[, c('difference')], c(0.025, 0.975)), lty = 'dashed')
+  v.bad <- which(out[, c('difference')] < quantile(out[, c('difference')], c(0.025, 0.975))[1])
+  v.good <- which(out[, c('difference')] > quantile(out[, c('difference')], c(0.025, 0.975))[2])
+  text(out[v.good, c('lnL', 'difference')], labels = names(v.good), pos = 2)
+  text(out[v.bad, c('lnL', 'difference')], labels = names(v.bad), pos = 4)
+  out <- list(lnL.diff.mat = out, v.bad = v.bad, v.good = v.good)
+  return(out)
   } 
   
 getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, which.loci, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
