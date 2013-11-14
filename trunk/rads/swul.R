@@ -65,18 +65,19 @@ getLikelihoods.raxml <- function(dat, lnL = NA, info = NA, missingSites = NA, tr
   
   ## 1. read data -- result is a list of site likelihoods, one per tree
   if(is.na(lnL[1])) lnL <- get.raxml.siteLikelihoods(treeScoreFile)
-  if(is.na(info[1])) {
-	info <- readLines(infoFile)
-	missing.sites <- grep('Alignment column', info)
-	missing.sites <- as.numeric(sapply(info[missing.sites], function(x) strsplit(x, ' ')[[1]][5]))
-	lnL.2 <- matrix(NA, nrow = dim(lnL)[1], ncol = dim(lnL)[2] + length(missing.sites))
-	lnL.2[, -missing.sites] <- lnL
-	lnL.2[, missing.sites] <- 0
-	message(paste('Taxa read:', dim(lnL.2)[1]))
-	message(paste('Sites read:', dim(lnL.2)[2]))
-	message(paste('Target number of sites:', sum(dat$radSummary$locus.lengths)))
-	lnL <- lnL.2 # this is a matrix of site likelihoods, with 0s for undefined columns; okay because we care about rank order, not absolute lnL
-	}
+  ## following appears not to be needed...
+  # if(is.na(info[1])) {
+	# info <- readLines(infoFile)
+	# missing.sites <- grep('Alignment column', info)
+	# missing.sites <- as.numeric(sapply(info[missing.sites], function(x) strsplit(x, ' ')[[1]][5]))
+	# lnL.2 <- matrix(NA, nrow = dim(lnL)[1], ncol = dim(lnL)[2] + length(missing.sites))
+	# lnL.2[, -missing.sites] <- lnL
+	# lnL.2[, missing.sites] <- 0
+	# message(paste('Taxa read:', dim(lnL.2)[1]))
+	# message(paste('Sites read:', dim(lnL.2)[2]))
+	# message(paste('Target number of sites:', sum(dat$radSummary$locus.lengths)))
+	# lnL <- lnL.2 # this is a matrix of site likelihoods, with 0s for undefined columns; okay because we care about rank order, not absolute lnL
+	# }
 	
   # 1. book-keeping, so we can find trees and clusters
   message("Doing bookkeeping...")
