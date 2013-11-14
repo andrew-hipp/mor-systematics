@@ -61,8 +61,8 @@ plot.swulLikelihoods <- function(x, scalar = 2, output = c('jpg'), ...) {
   X <- x$treeScores
   favTree <- unlist(apply(x$locusScores, 2, function(z) which(z == max(z))))
   Y <- sapply(1:length(X), function(z) sum(favTree == z))
-  sizes <- apply(x$locusScores, 2, sd) * scalar
-  plot(X, Y, cex = sizes, ...)
+  dotSizes <- apply(x$locusScores, 1, sd) * scalar
+  plot(X, Y, cex = dotSizes, ...)
   } 
   
 getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, which.loci, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
@@ -91,7 +91,7 @@ getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, which.loci, t
 	# I think it would be more efficient to vectorize the next row by creating a vector of locus numbers, then splitting
 	for(locusNumber in seq(nLoci)) locusScores[treeNumber, locusNumber] <- sum(lnL[treeNumber, clusterBP[[locusNumber]]])
 	} #close treeNumber
-  row.names(locusScores)[treeScores == max(treeScores)] <- 'best'
+  row.names(locusScores)[treeScores == max(treeScores)] <- names(treeScores)[treeScores == max(treeScores)] <- 'best'
   out <- list(locusScores = locusScores, treeScores = treeScores, clustersPresent = NA)
   class(out) <- 'swulLikelihoods'
   return(out)
