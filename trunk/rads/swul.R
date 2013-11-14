@@ -72,6 +72,9 @@ getLikelihoods.raxml <- function(dat, lnL = NA, info = NA, missingSites = NA, tr
 	lnL.2 <- matrix(NA, nrow = dim(lnL)[1], ncol = dim(lnL)[2] + length(missing.sites))
 	lnL.2[, -missing.sites] <- lnL
 	lnL.2[, missing.sites] <- 0
+	message(paste('Taxa read:', dim(lnL.2)[1]))
+	message(paste('Sites read:', dim(lnL.2)[2]))
+	message(paste('Target number of sites:', sum(dat$radSummary$locus.lengths)))
 	lnL <- lnL.2 # this is a matrix of site likelihoods, with 0s for undefined columns; okay because we care about rank order, not absolute lnL
 	}
 	
