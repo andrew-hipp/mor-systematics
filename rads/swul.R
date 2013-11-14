@@ -54,9 +54,9 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-plot.swulLikelihoods <- function(x, scalar = 2, ...) {
+plot.swulLikelihoods <- function(x, scalar = 2, output = c('jpg'...) {
   X <- x$treeScores
-  favTree <- unlist(apply(x$locusScores, 2, function(z) which(z == max(z))))
+  favTree <- unlist(apply(x$locusScores, 2, function(z) which(z == min(z))))
   Y <- sapply(1:length(X), function(z) sum(favTree == z))
   sizes <- apply(x$locusScores, 2, sd) * scalar
   plot(X, Y, cex = sizes, ...)
