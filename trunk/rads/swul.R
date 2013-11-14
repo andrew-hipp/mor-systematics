@@ -55,8 +55,11 @@ get.raxml.siteLikelihoods <- function(x)  {
 	}
 
 plot.swulLikelihoods <- function(x, scalar = 2, output = c('jpg'), ...) {
+## each tree is a data point
+## X: tree likelihood
+## Y: 
   X <- x$treeScores
-  favTree <- unlist(apply(x$locusScores, 2, function(z) which(z == min(z))))
+  favTree <- unlist(apply(x$locusScores, 2, function(z) which(z == max(z))))
   Y <- sapply(1:length(X), function(z) sum(favTree == z))
   sizes <- apply(x$locusScores, 2, sd) * scalar
   plot(X, Y, cex = sizes, ...)
@@ -77,17 +80,18 @@ getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, which.loci, t
   message("Doing bookkeeping...")
   nLoci <- length(which.loci)
   loc.ranges <- cbind(c(1, cumsum(dat$radSummary$locus.lengths[which.loci]) + 1)[1:nLoci], cumsum(dat$radSummary$locus.lengths[which.loci]))
+  row.names(loc.ranges) <- which.loci # otherwise locus names are offset by one
   clusterBP <- apply(loc.ranges, 1, function(x) x[1]:x[2]) # this is a list of numeric vectors, one per locus, giving all bp positions for that locus
   
   # 2. locus likelihoods for each locus and tree
   locusScores = matrix(0, nrow = dim(lnL)[1], ncol = nLoci, dimnames = list(row.names(lnL), names(clusterBP)))
-  treeScores <- apply(lnL, 1, sum)
+  treeScores <- rowSums(lnL)
   for(treeNumber in c(1:length(treeScores))) {
 	message(paste("Summing locus likelihoods on tree", treeNumber))
 	# I think it would be more efficient to vectorize the next row by creating a vector of locus numbers, then splitting
 	for(locusNumber in seq(nLoci)) locusScores[treeNumber, locusNumber] <- sum(lnL[treeNumber, clusterBP[[locusNumber]]])
 	} #close treeNumber
-  row.names(locusScores)[treeScores == min(treeScores)] <- 'best'
+  row.names(locusScores)[treeScores == max(treeScores)] <- 'best'
   out <- list(locusScores = locusScores, treeScores = treeScores, clustersPresent = NA)
   class(out) <- 'swulLikelihoods'
   return(out)
