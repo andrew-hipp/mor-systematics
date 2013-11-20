@@ -54,22 +54,28 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = 1, ...) {
+plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = 1, scale.by = c('numTaxa','sd'), ...) {
 ## each tree is a data point
 ## X: tree likelihood
 ## Y: 
   X <- x$treeScores
   star.best <- which(names(X) == 'best')
-  bestTree <- unlist(apply(x$locusScores, 2, function(z) which(z > quantile(z, percentile[2]))))
-  worstTree <- unlist(apply(x$locusScores, 2, function(z) which(z < quantile(z, percentile[1]))))
+  bestTreeList <- apply(x$locusScores, 2, function(z) which(z > quantile(z, percentile[2])))
+  bestTree <- unlist(bestTree.list)
+  worstTreeList <- apply(x$locusScores, 2, function(z) which(z < quantile(z, percentile[1])))
+  worstTree <- unlist(worstTreeList)
   Y.best <- sapply(1:length(X), function(z) sum(bestTree == z))
   Y.worst <- sapply(1:length(X), function(z) sum(worstTree == z))
-  dotSizes <- apply(x$locusScores, 1, sd) * scalar
+  if(scale.by[1] == 'sd') dotSizes.best <- dotSizes.worst <- apply(x$locusScores, 1, sd) * scalar
+  if(scale.by[1] == 'numTaxa') {
+	dotSizes.best <- apply(1:length(X), function(z) mean(x$locus.total[which(unlist(lapply(bestTreeList, function(y) z %in% y)) == T)])) 
+	dotSizes.worst <- apply(1:length(X), function(z) mean(x$locus.total[which(unlist(lapply(worstTreeList, function(y) z %in% y)) == T)])) 
+	}
   layout(matrix(1:3, 1, 3))
-  plot(X, Y.best, cex = dotSizes, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is above the',percentile[2],'quantile'), ylim = range(c(Y.best, Y.worst)), ...)
-  plot(X, Y.worst, cex = dotSizes, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is below the',percentile[1], 'quantile'), ylim = range(c(Y.best, Y.worst)), ...) 
-  plot(X, Y.best, cex = dotSizes * (bw.scalar / scalar), xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is above quantile (B) or below quantile (W)', ylim = range(c(Y.best, Y.worst)), pch = 'B', ...)
-  points(X, Y.worst, cex = dotSizes * (bw.scalar / scalar), col = 'red', pch = 'W', ...)
+  plot(X, Y.best, cex = dotSizes.best, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is above the',percentile[2],'quantile'), ylim = range(c(Y.best, Y.worst)), ...)
+  plot(X, Y.worst, cex = dotSizes.worst, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is below the',percentile[1], 'quantile'), ylim = range(c(Y.best, Y.worst)), ...) 
+  plot(X, Y.best, cex = dotSizes.best * (bw.scalar / scalar), xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is above quantile (B) or below quantile (W)', ylim = range(c(Y.best, Y.worst)), pch = 'B', ...)
+  points(X, Y.worst, cex = dotSizes.worst * (bw.scalar / scalar), col = 'red', pch = 'W', ...)
   segments(X, Y.best, X, Y.worst, lty = 'dashed')
   out <- cbind(Y.best, Y.worst, lnL = x$treeScores, difference = Y.best-Y.worst)
   row.names(out) <- names(X)
@@ -111,7 +117,7 @@ getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, which.loci, t
 	for(locusNumber in seq(nLoci)) locusScores[treeNumber, locusNumber] <- sum(lnL[treeNumber, clusterBP[[locusNumber]]])
 	} #close treeNumber
   row.names(locusScores)[treeScores == max(treeScores)] <- names(treeScores)[treeScores == max(treeScores)] <- 'best'
-  out <- list(locusScores = locusScores, treeScores = treeScores, clustersPresent = NA)
+  out <- list(locusScores = locusScores, treeScores = treeScores, locus.total = dat$radSummary$num.inds.per.locus)
   class(out) <- 'swulLikelihoods'
   return(out)
   }
