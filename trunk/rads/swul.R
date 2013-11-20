@@ -61,15 +61,16 @@ plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), ou
   X <- x$treeScores
   star.best <- which(names(X) == 'best')
   bestTreeList <- apply(x$locusScores, 2, function(z) which(z > quantile(z, percentile[2])))
-  bestTree <- unlist(bestTree.list)
+  bestTree <- unlist(bestTreeList)
   worstTreeList <- apply(x$locusScores, 2, function(z) which(z < quantile(z, percentile[1])))
   worstTree <- unlist(worstTreeList)
   Y.best <- sapply(1:length(X), function(z) sum(bestTree == z))
   Y.worst <- sapply(1:length(X), function(z) sum(worstTree == z))
   if(scale.by[1] == 'sd') dotSizes.best <- dotSizes.worst <- apply(x$locusScores, 1, sd) * scalar
   if(scale.by[1] == 'numTaxa') {
-	dotSizes.best <- apply(1:length(X), function(z) mean(x$locus.total[which(unlist(lapply(bestTreeList, function(y) z %in% y)) == T)])) 
-	dotSizes.worst <- apply(1:length(X), function(z) mean(x$locus.total[which(unlist(lapply(worstTreeList, function(y) z %in% y)) == T)])) 
+	dotSizes.best <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(bestTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) 
+	dotSizes.worst <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(worstTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) 
+	dotSizes.best[is.na(dotSizes.best)] <- 1
 	}
   layout(matrix(1:3, 1, 3))
   plot(X, Y.best, cex = dotSizes.best, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is above the',percentile[2],'quantile'), ylim = range(c(Y.best, Y.worst)), ...)
