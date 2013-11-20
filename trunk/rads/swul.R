@@ -54,7 +54,7 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = 1, scale.by = c('numTaxa','sd'), ...) {
+plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = 1, scale.by = c('numTaxa','sd', 1), ...) {
 ## each tree is a data point
 ## X: tree likelihood
 ## Y: 
@@ -70,8 +70,9 @@ plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), ou
   if(scale.by[1] == 'numTaxa') {
 	dotSizes.best <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(bestTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) 
 	dotSizes.worst <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(worstTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) 
-	dotSizes.best[is.na(dotSizes.best)] <- 1
+	# dotSizes.best[is.na(dotSizes.best)] <- 1
 	}
+  if(class(scale.by) == 'numeric') dotSizes.best <- dotSizes.worst <- scale.by
   layout(matrix(1:3, 1, 3))
   plot(X, Y.best, cex = dotSizes.best, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is above the',percentile[2],'quantile'), ylim = range(c(Y.best, Y.worst)), ...)
   plot(X, Y.worst, cex = dotSizes.worst, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is below the',percentile[1], 'quantile'), ylim = range(c(Y.best, Y.worst)), ...) 
@@ -87,9 +88,32 @@ plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), ou
   v.good <- which(out[, c('difference')] > quantile(out[, c('difference')], c(0.025, 0.975))[2])
   text(out[v.good, c('lnL', 'difference')], labels = names(v.good), pos = 2)
   text(out[v.bad, c('lnL', 'difference')], labels = names(v.bad), pos = 4)
-  out <- list(lnL.diff.mat = out, v.bad = v.bad, v.good = v.good)
+  out <- list(lnL.diff.mat = out, v.bad = v.bad, v.good = v.good, n.taxa.best = dotSizes.best, n.taxa.worst = dotSizes.worst)
   return(out)
   } 
+
+plot.besties <- function(x, tr = tree.rooted.di.noDupes.noOG.nni, x.text = 0, y.text = 20.5, fileBase = "quantileLoci", includeDate = T, ...) {
+## takes plot.swulLikelihood as input
+  if(includeDate) fileBase = paste(fileBase, format(Sys.time(), ".%Y-%m-%d"), sep = '')
+
+  plot6 <- function(trees, filename) {
+    pdf(filename, width = 11, height = 8.5)
+	layout(matrix(1:6, 2, 3))
+    for(i in trees) {
+      plot(ladderize(tr[[i]]))
+	  text(x.text, y.text, paste("Tree ", i, ", lnL = ", round(x$lnL.diff.mat[i, "lnL"], 1), '; loci for:against = ', x$lnL.diff.mat[i, "Y.best"], ":", x$lnL.diff.mat[i, "Y.worst"],  sep = ''), pos = 4, ...)
+	  }
+	dev.off()
+	}
+  
+  plot6(x$v.good, paste(fileBase, ".bestRatio.trees.out.pdf", sep = ''))
+  plot6(x$v.good, paste(fileBase, ".worstRatio.trees.out.pdf", sep = ''))
+  plot6(head(order(x$lnL.diff.mat[, 'lnL']), 6), paste(fileBase, ".worstScore.trees.out.pdf", sep = ''))
+  plot6(tail(order(x$lnL.diff.mat[, 'lnL']), 6), paste(fileBase, ".bestScore.trees.out.pdf", sep = ''))
+  plot6(tail(order(x$lnL.diff.mat[, 'Y.best']), 6), paste(fileBase, ".mostSupportingLoci.trees.out.pdf", sep = ''))
+  plot6(tail(order(x$lnL.diff.mat[, 'Y.worst']), 6), paste(fileBase, ".mostRejectingLoci.trees.out.pdf", sep = ''))
+ 
+}
   
 getLikelihoods.raxml <- function(dat, lnL = NA, missingSites = NA, which.loci, treeScoreFile = choose.files(multi = FALSE, caption = "Select RAxML site likelihoods file for trees")) {
   ## this version of the getLikelihood function tosses 
