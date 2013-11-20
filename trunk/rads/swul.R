@@ -54,7 +54,7 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = 1, scale.by = c('numTaxa','sd', 1), ...) {
+plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = 1, scale.by = c('numTaxa','sd', 1), ...) {
 ## each tree is a data point
 ## X: tree likelihood
 ## Y: 
@@ -74,10 +74,10 @@ plot.swulLikelihoods <- function(x, scalar = 2, percentile = c(0.025, 0.975), ou
 	}
   if(class(scale.by) == 'numeric') dotSizes.best <- dotSizes.worst <- scale.by
   layout(matrix(1:3, 1, 3))
-  plot(X, Y.best, cex = dotSizes.best, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is above the',percentile[2],'quantile'), ylim = range(c(Y.best, Y.worst)), ...)
-  plot(X, Y.worst, cex = dotSizes.worst, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is below the',percentile[1], 'quantile'), ylim = range(c(Y.best, Y.worst)), ...) 
-  plot(X, Y.best, cex = dotSizes.best * (bw.scalar / scalar), xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is above quantile (B) or below quantile (W)', ylim = range(c(Y.best, Y.worst)), pch = 'B', ...)
-  points(X, Y.worst, cex = dotSizes.worst * (bw.scalar / scalar), col = 'red', pch = 'W', ...)
+  plot(X, Y.best, cex = dotSizes.best, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is above the',percentile[2],'quantile'), ylim = range(c(Y.best, Y.worst)), pch = 21, bg = 'black', col = 'gray')
+  plot(X, Y.worst, cex = dotSizes.worst, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is below the',percentile[1], 'quantile'), ylim = range(c(Y.best, Y.worst)), pch = 21, bg = 'red', col = 'black') 
+  plot(X, Y.best, cex = dotSizes.best * (bw.scalar / scalar), xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is above quantile (B) or below quantile (W)', ylim = range(c(Y.best, Y.worst)), pch = 21, bg = 'black', col = 'gray')
+  points(X, Y.worst, cex = dotSizes.worst * (bw.scalar / scalar), bg = 'red', pch = 21, col = 'black')
   segments(X, Y.best, X, Y.worst, lty = 'dashed')
   out <- cbind(Y.best, Y.worst, lnL = x$treeScores, difference = Y.best-Y.worst)
   row.names(out) <- names(X)
