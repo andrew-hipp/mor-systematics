@@ -54,10 +54,11 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = 1, scale.by = c('numTaxa','sd', 1), ...) {
+plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = NA, scale.by = c('numTaxa','sd', 1), ...) {
 ## each tree is a data point
 ## X: tree likelihood
 ## Y: 
+  if(is.na(bw.scalar)) bw.scalar <- scalar
   X <- x$treeScores
   star.best <- which(names(X) == 'best')
   bestTreeList <- apply(x$locusScores, 2, function(z) which(z > quantile(z, percentile[2])))
@@ -67,9 +68,15 @@ plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), ou
   Y.best <- sapply(1:length(X), function(z) sum(bestTree == z))
   Y.worst <- sapply(1:length(X), function(z) sum(worstTree == z))
   if(scale.by[1] == 'sd') dotSizes.best <- dotSizes.worst <- apply(x$locusScores, 1, sd) * scalar
+  if(scale.by[1] == 'max-min') {
+	# THIS IS NOT RIGHT
+	warning('max-min dot sizes is not currently implemented correctly! do not put any stock in it at all!')
+	dotSizes.best <- abs(sapply(1:length(X), function(z) sum(c(1, -1) * range(x$locusScores[, z])))) * scalar
+	dotSizes.worst <- abs(sapply(1:length(X), function(z) sum(c(1, -1) * range(x$locusScores[, z])))) * scalar
+	}
   if(scale.by[1] == 'numTaxa') {
-	dotSizes.best <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(bestTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) 
-	dotSizes.worst <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(worstTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) 
+	dotSizes.best <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(bestTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) * scalar
+	dotSizes.worst <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(worstTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) * scalar
 	# dotSizes.best[is.na(dotSizes.best)] <- 1
 	}
   if(class(scale.by) == 'numeric') dotSizes.best <- dotSizes.worst <- scale.by
@@ -88,7 +95,7 @@ plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), ou
   v.good <- which(out[, c('difference')] > quantile(out[, c('difference')], c(0.025, 0.975))[2])
   text(out[v.good, c('lnL', 'difference')], labels = names(v.good), pos = 2)
   text(out[v.bad, c('lnL', 'difference')], labels = names(v.bad), pos = 4)
-  out <- list(lnL.diff.mat = out, v.bad = v.bad, v.good = v.good, n.taxa.best = dotSizes.best, n.taxa.worst = dotSizes.worst)
+  out <- list(lnL.diff.mat = out, v.bad = v.bad, v.good = v.good, dot.sizes.best = dotSizes.best, dot.sizes.worst = dotSizes.worst)
   return(out)
   } 
 
