@@ -7,3 +7,4 @@ Try to comment your code with a note about what it does, and what the arguments 
 
 * Marlene starts as committer, May 2013
 * Jocelyn Pender added as committer (for Cariceae project), October 2013
+15 Dec 2013: added new laptop
