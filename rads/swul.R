@@ -54,7 +54,7 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = NA, scale.by = c('numTaxa','sd', 1), ...) {
+plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = NA, scale.by = c('numTaxa','sd', 1), opt = c('diff', 'both'), ...) {
 ## each tree is a data point
 ## X: tree likelihood
 ## Y: 
@@ -79,23 +79,26 @@ plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), ou
 	dotSizes.worst <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(worstTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) * scalar
 	# dotSizes.best[is.na(dotSizes.best)] <- 1
 	}
+  out <- cbind(Y.best, Y.worst, lnL = x$treeScores, difference = Y.best-Y.worst)
+  row.names(out) <- names(X)
   if(class(scale.by) == 'numeric') dotSizes.best <- dotSizes.worst <- scale.by
   layout(matrix(1:3, 1, 3))
   plot(X, Y.best, cex = dotSizes.best, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is above the',percentile[2],'quantile'), ylim = range(c(Y.best, Y.worst)), pch = 21, bg = 'black', col = 'gray')
   plot(X, Y.worst, cex = dotSizes.worst, xlab = 'Tree log-likelihood', ylab = paste('Number of loci for which tree is below the',percentile[1], 'quantile'), ylim = range(c(Y.best, Y.worst)), pch = 21, bg = 'red', col = 'black') 
-  plot(X, Y.best, cex = dotSizes.best * (bw.scalar / scalar), xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is above quantile (B) or below quantile (W)', ylim = range(c(Y.best, Y.worst)), pch = 21, bg = 'black', col = 'gray')
-  points(X, Y.worst, cex = dotSizes.worst * (bw.scalar / scalar), bg = 'red', pch = 21, col = 'black')
-  segments(X, Y.best, X, Y.worst, lty = 'dashed')
-  out <- cbind(Y.best, Y.worst, lnL = x$treeScores, difference = Y.best-Y.worst)
-  row.names(out) <- names(X)
-  windows()
-  plot(out[, c('lnL', 'difference')], pch = 21, col = 'grey', bg = 'black', cex = 2)
-  abline(h = quantile(out[, c('difference')], c(0.025, 0.975)), lty = 'dashed')
-  v.bad <- which(out[, c('difference')] < quantile(out[, c('difference')], c(0.025, 0.975))[1])
-  v.good <- which(out[, c('difference')] > quantile(out[, c('difference')], c(0.025, 0.975))[2])
-  text(out[v.good, c('lnL', 'difference')], labels = names(v.good), pos = 2)
-  text(out[v.bad, c('lnL', 'difference')], labels = names(v.bad), pos = 4)
-  out <- list(lnL.diff.mat = out, v.bad = v.bad, v.good = v.good, dot.sizes.best = dotSizes.best, dot.sizes.worst = dotSizes.worst)
+  if(opt[1] == 'both') {
+    plot(X, Y.best, cex = dotSizes.best * (bw.scalar / scalar), xlab = 'Tree log-likelihood', ylab = 'Number of loci for which tree is above quantile (B) or below quantile (W)', ylim = range(c(Y.best, Y.worst)), pch = 21, bg = 'black', col = 'gray')
+    points(X, Y.worst, cex = dotSizes.worst * (bw.scalar / scalar), bg = 'red', pch = 21, col = 'black')
+    segments(X, Y.best, X, Y.worst, lty = 'dashed')
+	}
+  else {
+    plot(out[, c('lnL', 'difference')], pch = 21, col = 'grey', bg = 'black', cex = 2)
+    abline(h = quantile(out[, c('difference')], c(0.025, 0.975)), lty = 'dashed')
+    v.bad <- which(out[, c('difference')] < quantile(out[, c('difference')], c(0.025, 0.975))[1])
+    v.good <- which(out[, c('difference')] > quantile(out[, c('difference')], c(0.025, 0.975))[2])
+    text(out[v.good, c('lnL', 'difference')], labels = names(v.good), pos = 2)
+    text(out[v.bad, c('lnL', 'difference')], labels = names(v.bad), pos = 4)
+    out <- list(lnL.diff.mat = out, v.bad = v.bad, v.good = v.good, dot.sizes.best = dotSizes.best, dot.sizes.worst = dotSizes.worst)
+	}
   return(out)
   } 
 
