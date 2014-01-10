@@ -1,6 +1,7 @@
 ## Functions to perform successive weighting using likelihood (SWUL)
 ## A Hipp, Sept 2010 (ahipp@mortonarb.org)
 ## Oct 2013: updated for PLoS ONE paper, revised to use RAxML
+## Jan 2014: updates plotting for PLoS ONE reviews, updated to consider tree conclusiveness
 
 require(ape)
 # require(seqinr)
@@ -54,25 +55,26 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = NA, scale.by = c('numTaxa','sd', 1), opt = c('diff', 'both'), add.opt = T, ...) {
+plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = NA, scale.by = c('numTaxa','sd', 1), opt = c('diff', 'both'), add.opt = T, cutoff.lnL = 1.5, ...) {
 ## each tree is a data point
 ## X: tree likelihood
 ## Y: 
   if(is.na(bw.scalar)) bw.scalar <- scalar
   X <- x$treeScores
   star.best <- which(names(X) == 'best')
-  bestTreeList <- apply(x$locusScores, 2, function(z) which(z > quantile(z, percentile[2])))
+  loc.scores <- x$locusScores[, diff(x) >= cutoff.lnL]
+  bestTreeList <- apply(loc.scores, 2, function(z) which(z > quantile(z, percentile[2])))
   bestTree <- unlist(bestTreeList)
-  worstTreeList <- apply(x$locusScores, 2, function(z) which(z < quantile(z, percentile[1])))
+  worstTreeList <- apply(loc.scores, 2, function(z) which(z < quantile(z, percentile[1])))
   worstTree <- unlist(worstTreeList)
   Y.best <- sapply(1:length(X), function(z) sum(bestTree == z))
   Y.worst <- sapply(1:length(X), function(z) sum(worstTree == z))
-  if(scale.by[1] == 'sd') dotSizes.best <- dotSizes.worst <- apply(x$locusScores, 1, sd) * scalar
+  if(scale.by[1] == 'sd') dotSizes.best <- dotSizes.worst <- apply(loc.scores, 1, sd) * scalar
   if(scale.by[1] == 'max-min') {
 	# THIS IS NOT RIGHT
 	warning('max-min dot sizes is not currently implemented correctly! do not put any stock in it at all!')
-	dotSizes.best <- abs(sapply(1:length(X), function(z) sum(c(1, -1) * range(x$locusScores[, z])))) * scalar
-	dotSizes.worst <- abs(sapply(1:length(X), function(z) sum(c(1, -1) * range(x$locusScores[, z])))) * scalar
+	dotSizes.best <- abs(sapply(1:length(X), function(z) sum(c(1, -1) * range(loc.scores[, z])))) * scalar
+	dotSizes.worst <- abs(sapply(1:length(X), function(z) sum(c(1, -1) * range(loc.scores[, z])))) * scalar
 	}
   if(scale.by[1] == 'numTaxa') {
 	dotSizes.best <- sapply(1:length(X), function(z) mean(x$locus.total[names(which(unlist(lapply(bestTreeList, function(y, locNum) {locNum %in% y}, locNum = z)) == T))], na.rm = TRUE)) * scalar
@@ -120,7 +122,7 @@ plot.besties <- function(x, tr = tree.rooted.di.noDupes.noOG.nni, x.text = 0, y.
 	}
   
   plot6(x$v.good, paste(fileBase, ".bestRatio.trees.out.pdf", sep = ''))
-  plot6(x$v.good, paste(fileBase, ".worstRatio.trees.out.pdf", sep = ''))
+  plot6(x$v.bad, paste(fileBase, ".worstRatio.trees.out.pdf", sep = ''))
   plot6(head(order(x$lnL.diff.mat[, 'lnL']), 6), paste(fileBase, ".worstScore.trees.out.pdf", sep = ''))
   plot6(tail(order(x$lnL.diff.mat[, 'lnL']), 6), paste(fileBase, ".bestScore.trees.out.pdf", sep = ''))
   plot6(tail(order(x$lnL.diff.mat[, 'Y.best']), 6), paste(fileBase, ".mostSupportingLoci.trees.out.pdf", sep = ''))
@@ -225,3 +227,5 @@ swulData <- function(fasta = RADdat, lnlRanks = NULL, locusVector, filename = "s
 	return(fasta)
 	} #end else
   }
+
+diff.swulLikelihoods <- function(x, ...) apply(x$locusScores, 2, function(z) abs(diff(range(z), ...)))
