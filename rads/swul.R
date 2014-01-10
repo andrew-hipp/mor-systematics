@@ -230,6 +230,7 @@ swulData <- function(fasta = RADdat, lnlRanks = NULL, locusVector, filename = "s
   }
 
 diff.swulLikelihoods <- function(x, ...) apply(x$locusScores, 2, function(z) abs(diff(range(z), ...)))
+
 compare.all.trees <- function(treeset, ...) {
   ntrees = length(treeset)
   outmat = matrix(NA, ntrees, ntrees)
