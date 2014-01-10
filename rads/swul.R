@@ -23,6 +23,7 @@ genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'),
   ## perms = number of permutations per maxmoves
   ## ... = additional arguments to pass along to rtree.phylo or rNNI
   ## works with nni, 12 nov 10
+  ## January 2014: as written, this doesn't unroot the tree. It ought to, unless you are evaluating trees in a rooted framework (e.g., not using GTR)
   if(class(x) != 'phylo') stop('This function requires a phylo object as its first argument')
   if(method[1] == 'nni') {
 	for(i in seq(maxmoves)) {
@@ -229,3 +230,13 @@ swulData <- function(fasta = RADdat, lnlRanks = NULL, locusVector, filename = "s
   }
 
 diff.swulLikelihoods <- function(x, ...) apply(x$locusScores, 2, function(z) abs(diff(range(z), ...)))
+compare.all.trees <- function(treeset, ...) {
+  ntrees = length(treeset)
+  outmat = matrix(NA, ntrees, ntrees)
+  for(i in 1:ntrees) {
+   for(j in 1:i) {
+    outmat[i, j] <- all.equal(treeset[[i]], treeset[[j]], ...)
+	} # close j
+  } # close i
+  outmat
+  }
