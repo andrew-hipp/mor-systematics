@@ -259,6 +259,31 @@ lengths.report <- function(dat, numtodo = 10, reportInterval = 2000, high.mem = 
   return(block.lengths)
   }
 
+subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', ...) {
+  ## only DNAStringSet export supported now
+  out <- list(
+    DNA = structure(vector('list', length(loci)), names = loci),
+    variable = structure(logical(length(loci)), names = loci)
+	)
+  inds.vector <- x$tips %in% taxa
+  for(i in loci) {
+    seq.index <- x$locus.index == i & inds.vector
+	out$DNA[[i]] <- DNAStringSet(x$seqs[seq.index])
+	names(out$DNA[[i]]) <- x$tips[seq.index == i]
+	out$variable[i] <- any(apply(consensusMatrix(out$DNA[[i]])[-c(15:17), ], 2, function(x) sum(x > 0) > 1))
+	}
+  return(out)
+  }
+  
+write.DNAStringSet <- function(x, format= 'phylip', padding = 30, filename = 'DNAStringSetOut.phy') {
+  # writes a sequence matrix to phylip format
+  x.width <- width(x)[1]
+  x <- as.character(x)
+  for(i in 1:length(x)) x[i] <- paste(names(x)[i], paste(rep(" ", (padding - nchar(names(x)[i]))), collapse = ''), x[i], sep = '')
+  writeLines(c(paste(length(x), x.width), x), filename)
+  return(0)
+  }
+  
 filter.by <- function(dat, taxa, threshold = 'all') {
   ## returns just loci for which the requested taxa are present at some threshold
   ## default to returning 'all'
