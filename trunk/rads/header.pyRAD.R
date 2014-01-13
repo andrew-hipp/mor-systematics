@@ -16,4 +16,5 @@
 ## swul -- a variety of functions for what used to be successive weighting under likelihood
 ## unique.multiPhylo -- fixes a bug in the ape function of the same name, and adds a useful attribute
 ## visualize.pyRAD -- generate distances and plots
+## workflows.pyRAD -- workflows and wrappers around other functions
 
