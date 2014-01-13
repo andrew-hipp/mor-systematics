@@ -11,7 +11,8 @@
 ## FUNCTIONS ARE BINNED INTO THE FOLLOWING FILES:
 ## read.pyRAD -- read files in
 ## write.pyRAD -- write pyRAD files out
-## manipulate.pyRAD -- create consensus files, subset loci
+## manipulate.pyRAD -- create consensus files
+## subset.pyRAD -- subset and do some data interconversion
 ## swul -- a variety of functions for what used to be successive weighting under likelihood
 ## unique.multiPhylo -- fixes a bug in the ape function of the same name, and adds a useful attribute
 ## visualize.pyRAD -- generate distances and plots
