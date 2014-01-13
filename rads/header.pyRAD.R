@@ -7,3 +7,12 @@
 ## uncomment if not already installed:
 #source("http://bioconductor.org/biocLite.R")
 #biocLite("Biostrings")
+
+## FUNCTIONS ARE BINNED INTO THE FOLLOWING FILES:
+## read.pyRAD -- read files in
+## write.pyRAD -- write pyRAD files out
+## manipulate.pyRAD -- create consensus files, subset loci
+## swul -- a variety of functions for what used to be successive weighting under likelihood
+## unique.multiPhylo -- fixes a bug in the ape function of the same name, and adds a useful attribute
+## visualize.pyRAD -- generate distances and plots
+
