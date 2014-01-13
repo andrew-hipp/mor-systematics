@@ -2,14 +2,16 @@ subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', ...) {
   ## only DNAStringSet export supported now
   out <- list(
     DNA = structure(vector('list', length(loci)), names = loci),
-    variable = structure(logical(length(loci)), names = loci)
+    variable = structure(logical(length(loci)), names = loci),
+	ntaxa = structure(integer(length(loci)), names = loci)
 	)
   inds.vector <- x$tips %in% taxa
   for(i in loci) {
     seq.index <- x$locus.index == i & inds.vector
 	out$DNA[[i]] <- DNAStringSet(x$seqs[seq.index])
-	names(out$DNA[[i]]) <- x$tips[seq.index == i]
+	names(out$DNA[[i]]) <- x$tips[seq.index]
 	out$variable[i] <- any(apply(consensusMatrix(out$DNA[[i]])[-c(15:17), ], 2, function(x) sum(x > 0) > 1))
+	out$ntaxa[i] <- sum(seq.index)
 	}
   return(out)
   }
