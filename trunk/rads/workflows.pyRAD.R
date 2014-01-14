@@ -11,9 +11,14 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
   locus.list <- locus.set$DNA[names(which(locus.set$ntaxa >= minTaxa))]
   if(onlyVariable) locus.list <- locus.list[names(which(locus.set$variable))]
   for(i in names(locus.list)) {
-    locus.taxa <- names(locus.list[[i]])[names(locus.list[i]) %in% taxa]
-	write.DNAStringSet(locus.list[i][locus.taxa], filename = paste(i, '.phy', sep = ''))
-	if(trees[1] != 'none') write.tree(lapply(trees, prune, tip = trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa]), file = paste(i, '.phy', sep = ''))
+    message(paste('Writing', i))
+	locus.taxa <- names(locus.list[[i]])[names(locus.list[[i]]) %in% taxa]
+	write.DNAStringSet(locus.list[[i]][locus.taxa], filename = paste(fileBase, '/', i, '.phy', sep = ''))
+	if(trees[1] != 'none') {
+	  trees.out <- lapply(trees, drop.tip, tip = trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa])
+	  class(trees.out) <- 'multiPhylo'
+	  write.tree(trees.out, file = paste(fileBase, '/', i, '.tre', sep = ''))
+	  }
   }
   ## AND CREATE BATCH FILE...
   ## AND EXPORT!
