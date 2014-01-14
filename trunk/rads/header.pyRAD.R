@@ -1,8 +1,12 @@
-## handling pyRAD data
-## A Hipp, 2012-09-18
+## pyRADinR
+## A package for handling pyRAD data
+## A Hipp, The Morton Arboretum, ahipp@mortonarb.org
+## VERSION HISTORY
+## -- 2012-09-18: initiated
 ## -- Sept 2012: accommodate new pyRAD format (GBS data)
 ## -- Dec 2012: new functions to help with exporting RAD data and blasting
 ## -- Jan 2013: consensus functions now use Biostrings instead of seqinr
+## -- Jan 2014: lots of modifications to SWUL so it is integrated into pyRADinR as a data exploration tool
 
 ## uncomment if not already installed:
 #source("http://bioconductor.org/biocLite.R")
@@ -18,3 +22,6 @@
 ## visualize.pyRAD -- generate distances and plots
 ## workflows.pyRAD -- workflows and wrappers around other functions
 
+require(Biostrings)
+require(ape)
+require(phangorn)
