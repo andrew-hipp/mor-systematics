@@ -2,10 +2,6 @@
 ## A Hipp, Sept 2010 (ahipp@mortonarb.org)
 ## Oct 2013: updated for PLoS ONE paper, revised to use RAxML
 ## Jan 2014: updates plotting for PLoS ONE reviews, updated to consider tree conclusiveness
-
-require(ape)
-# require(seqinr)
-require(phangorn)
   
 ## Functions:
 ##  genTrees - generates trees and PAUP commands to get site likelihoods - DONE
