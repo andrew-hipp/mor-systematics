@@ -1,4 +1,4 @@
-subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', ...) {
+subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', reportInterval = 20, ...) {
   ## only DNAStringSet export supported now
   out <- list(
     DNA = structure(vector('list', length(loci)), names = loci),
@@ -6,7 +6,15 @@ subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', ...) {
 	ntaxa = structure(integer(length(loci)), names = loci)
 	)
   inds.vector <- x$tips %in% taxa
+  counter = 0
+  start.time <- Sys.time()
   for(i in loci) {
+	counter <- counter + 1
+	if(counter / reportInterval - counter %/% reportInterval == 0) {
+  	   message(paste('... subsetting', counter, 'of', length(loci), 
+ 	   '-- Estimated time remaining =', round(((Sys.time() - start.time) / counter) * (length(loci) - counter), 1), attr(Sys.time() - start.time, 'units')
+  	   ))
+	}
     seq.index <- x$locus.index == i & inds.vector
 	out$DNA[[i]] <- DNAStringSet(x$seqs[seq.index])
 	names(out$DNA[[i]]) <- x$tips[seq.index]
