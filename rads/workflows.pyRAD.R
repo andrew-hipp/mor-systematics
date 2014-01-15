@@ -30,5 +30,6 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
   write.csv(tree.vector.matrix, paste(fileBase, '.0/', 'tree.vector.matrix.csv', sep = ''))
   ## AND CREATE BATCH FILE...
   ## AND EXPORT!
+  ## AND RETURN AN OBJECT WITH ALL PATHS NEEDED TO READ BACK IN AND KEEP ANALYZING!
   ## There will also need to be a read function
   }
