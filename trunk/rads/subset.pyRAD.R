@@ -1,5 +1,12 @@
-subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', reportInterval = 20, ...) {
-  ## only DNAStringSet export supported now
+subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', reportInterval = 20, nucVarType = c("strict", "relaxed"), ...) {
+## Arguments:
+##  x = pyRAD.loci object
+##  loci = loci to use (by name)
+##  taxa = taxa to use (by name)
+##  format = only DNAStringSet export supported now
+##  reportInterval = interval to use for reporting subsetting progress
+##  nucVarType = either strict for requiring variability to be due to 
+  excludedNucs <- switch(nucVarType, strict = 5:17, relaxed = 15:17)
   out <- list(
     DNA = structure(vector('list', length(loci)), names = loci),
     variable = structure(logical(length(loci)), names = loci),
@@ -18,7 +25,7 @@ subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', reportInte
     seq.index <- x$locus.index == i & inds.vector
 	out$DNA[[i]] <- DNAStringSet(x$seqs[seq.index])
 	names(out$DNA[[i]]) <- x$tips[seq.index]
-	out$variable[i] <- any(apply(consensusMatrix(out$DNA[[i]])[-c(15:17), ], 2, function(x) sum(x > 0) > 1))
+	out$variable[i] <- any(apply(consensusMatrix(out$DNA[[i]])[-c(excludedNucs), ], 2, function(x) sum(x > 0) > 1))
 	out$ntaxa[i] <- sum(seq.index)
 	}
   return(out)
