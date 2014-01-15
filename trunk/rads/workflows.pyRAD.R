@@ -11,7 +11,8 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
   locus.list <- locus.set$DNA[names(which(locus.set$ntaxa >= minTaxa))]
   if(onlyVariable) locus.list <- locus.list[names(which(locus.set$variable))]
   if(trees[1] != 'none') tree.vector.matrix <- matrix(NA, nrow = length(locus.list), ncol = length(trees), dimnames = list(names(locus.list), names(trees)))
-  analysisLines <- header
+  analysisLines <- vector('list', splitInto)
+  for(i in 1:splitInto) analysisLines[[i]] <- header
   batch = 0
   for(i in names(locus.list)) {
     if(batch == splitInto) batch <- 1
@@ -29,10 +30,10 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
 	  write.tree(trees.out, file = treeFileOut)
 	  tree.vector.matrix[i, ] <- attr(trees.out, "old2new.trees")
 	  }
-	analysisLines <- c(analysisLines, paste(raxPath, "-f G -s", datFileOut, "-m GTRGAMMA -z", treeFileOut, "-n", paste(i, '.lnL', sep = '')))
+	analysisLines[[i]] <- c(analysisLines[[i]], paste(raxPath, "-f G -s", datFileOut, "-m GTRGAMMA -z", treeFileOut, "-n", paste(i, '.lnL', sep = '')))
   }
   write.csv(tree.vector.matrix, paste(fileBase, '.0/', 'tree.vector.matrix.csv', sep = ''))
-  writeLines(c(header, analysisLines), paste('raxml.batch.', fileBase, sep = ''))
+  for(i in 1:splitInto) writeLines(analysisLines[[i]], paste('raxml.batch.', i, '.', fileBase, sep = ''))
   ## AND EXPORT!
   ## AND RETURN AN OBJECT WITH ALL PATHS NEEDED TO READ BACK IN AND KEEP ANALYZING!
   ## There will also need to be a read function
