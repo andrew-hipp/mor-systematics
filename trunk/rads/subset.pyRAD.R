@@ -6,7 +6,7 @@ subset.pyRAD.loci <- function(x, loci, taxa, format = 'DNAStringSet', reportInte
 ##  format = only DNAStringSet export supported now
 ##  reportInterval = interval to use for reporting subsetting progress
 ##  nucVarType = either strict for requiring variability to be due to 
-  excludedNucs <- switch(nucVarType, strict = 5:17, relaxed = 15:17)
+  excludedNucs <- switch(nucVarType[1], strict = 5:17, relaxed = 15:17)
   out <- list(
     DNA = structure(vector('list', length(loci)), names = loci),
     variable = structure(logical(length(loci)), names = loci),
