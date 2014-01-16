@@ -3,7 +3,7 @@
 ## Andrew Hipp, The Morton Arboretum, 2014
 
 gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'all', minTaxa = 3, onlyVariable = TRUE, fileBase = format(Sys.time(), "rads.%Y-%m-%d"), splitInto = 8, raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", header = "#!/bin/sh") {
-  if(!fileBase %in% dir()) lapply(paste(fileBase, ".", (0:splitInto), sep = ''), dir.create) # defaults to making a directory to hold all the files
+  if(!paste(fileBase, ".", (0), sep = '') %in% dir()) lapply(paste(fileBase, ".", (0:splitInto), sep = ''), dir.create) # defaults to making a directory to hold all the files
   if(loci[1] == "all") loci <- unique(rads$locus.index)[unique(rads$locus.index) != ""]
   if(taxa[1] == "all") taxa <- unique(rads$tips)[gsub('/', '', unique(rads$tips), fixed = TRUE) != ''] # gets rid of the mock tip that is left by the current version of read.pyRAD
   if(trees[1] != 'none') taxa <- intersect(taxa, trees[[1]]$tip.label)
