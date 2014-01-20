@@ -38,7 +38,7 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
 	  write.tree(trees.out, file = treeFileOut)
 	  cat(i, attr(trees.out, "old.index"), '\n', sep = '\t', file = indexFileOut)
 	  }
-	analysisLine <- paste(raxPath, "-f G -s", paste('././', datFileOut, sep = ''), "-m GTRGAMMA -z", paste('././', treeFileOut, sep = ''), "-n", paste(i, '.lnL', sep = ''))
+	analysisLine <- paste(raxPath, "-f G -s", paste('../', datFileOut, sep = ''), "-m GTRGAMMA -z", paste('../', treeFileOut, sep = ''), "-n", paste(i, '.lnL', sep = ''))
 	cat(analysisLine, '\n', file = analysisFileOut[[batch]])
   }
   
