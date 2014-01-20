@@ -44,6 +44,7 @@ genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'),
   }
 
 get.raxml.siteLikelihoods <- function(x)  {
+## gets likelihoods from the RAxML_perSiteLLs file
     lnL <- readLines(x)
     lnL <- strsplit(lnL[2:length(lnL)], "\t")
     names(lnL) <- unlist(lapply(lnL, function(x) x[1]))
@@ -52,6 +53,14 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
+get.raxml.treeLikelihoods <- function(x) {
+## gets likelihoods from the RAxML_info file
+	fileIn <- readLines(x)
+	out <- as.double(sapply(grep("Tree ", a, value=T), function(x) strsplit(x, ": ")[[1]][2]))
+	names(out) <- as.character(1:length(out))
+	out
+	}
+	
 plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = NA, scale.by = c('numTaxa','sd', 1), opt = c('diff', 'both'), add.opt = T, cutoff.lnL = 1.5, ...) {
 ## each tree is a data point
 ## X: tree likelihood
