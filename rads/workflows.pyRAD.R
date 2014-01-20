@@ -3,7 +3,15 @@
 ## Andrew Hipp, The Morton Arboretum, 2014
 
 gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'all', minTaxa = 3, onlyVariable = TRUE, fileBase = format(Sys.time(), "rads.%Y-%m-%d"), splitInto = 8, raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", header = "#!/bin/sh") {
+  # create directory structure
   if(!paste(fileBase, ".", (0), sep = '') %in% dir()) lapply(paste(fileBase, ".", (0:splitInto), sep = ''), dir.create) # defaults to making a directory to hold all the files
+  
+  # initiate log files
+  analysisFileOut <- lapply(paste(fileBase, '.0/raxml.batch.', 1:splitInto, '.', fileBase, '.sh', sep = ''), file, open = "a")
+  for(i in 1:splitInto) cat(header, '\n', file = analysisFileOut[[i]])
+  indexFileOut <- file(paste(fileBase, '.0/tree.index.lines.txt', sep = ''), 'a')
+  
+  # subset loci and trees
   if(loci[1] == "all") loci <- unique(rads$locus.index)[unique(rads$locus.index) != ""]
   if(taxa[1] == "all") taxa <- unique(rads$tips)[gsub('/', '', unique(rads$tips), fixed = TRUE) != ''] # gets rid of the mock tip that is left by the current version of read.pyRAD
   if(trees[1] != 'none') taxa <- intersect(taxa, trees[[1]]$tip.label)
@@ -11,8 +19,8 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
   locus.list <- locus.set$DNA[names(which(locus.set$ntaxa >= minTaxa))]
   if(onlyVariable) locus.list <- locus.list[names(which(locus.set$variable))]
   if(trees[1] != 'none') tree.vector.matrix <- matrix(NA, nrow = length(locus.list), ncol = length(trees), dimnames = list(names(locus.list), names(trees)))
-  analysisLines <- vector('list', splitInto)
-  for(i in 1:splitInto) analysisLines[[i]] <- header
+  
+  # subset each locus, write them out
   batch = 0
   for(i in names(locus.list)) {
     if(batch == splitInto) batch <- 1
@@ -28,12 +36,12 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
 	  message(paste('... kept', length(trees.out), 'trees'))
 	  treeFileOut <- paste(fileBase, '.', batch, '/', i, '.tre', sep = '')
 	  write.tree(trees.out, file = treeFileOut)
-	  tree.vector.matrix[i, ] <- attr(trees.out, "old.index")
+	  cat(i, attr(trees.out, "old.index"), '\n', sep = '\t', file = indexFileOut)
 	  }
-	analysisLines[[batch]] <- c(analysisLines[[batch]], paste(raxPath, "-f G -s", datFileOut, "-m GTRGAMMA -z", treeFileOut, "-n", paste(i, '.lnL', sep = '')))
+	analysisLine <- paste(raxPath, "-f G -s", paste('././', datFileOut, sep = ''), "-m GTRGAMMA -z", paste('././', treeFileOut, sep = ''), "-n", paste(i, '.lnL', sep = ''))
+	cat(analysisLine, '\n', file = analysisFileOut[[batch]])
   }
-  write.csv(tree.vector.matrix, paste(fileBase, '.0/', 'tree.vector.matrix.csv', sep = ''))
-  for(i in 1:splitInto) writeLines(analysisLines[[i]], paste('raxml.batch.', i, '.', fileBase, sep = ''))
+  
   ## AND EXPORT!
   ## AND RETURN AN OBJECT WITH ALL PATHS NEEDED TO READ BACK IN AND KEEP ANALYZING!
   ## There will also need to be a read function
