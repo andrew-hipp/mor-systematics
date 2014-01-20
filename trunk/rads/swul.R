@@ -9,58 +9,7 @@
 ##  rankLikelihoods - ranks likelihoods, counts likelihood steps, and calculates the goodness-of-fit for each locus to the optimal tree relative to the random tree set - DONE
 ##  swulData - generates a new dataset, cutting off either the best or worst sites by percentage
 
-genTrees <- function(x, N = 20, filebase = 'trial', method = c('nni', 'random'), maxmoves = 3, perms = c(length(nni(x)), as.integer(100-(length(nni(x))/2)), as.integer(100-(length(nni(x))/2))), software = c('raxml', 'paup'), ...) {
-  ## Arguments:
-  ## x = phylo tree
-  ## N = number of trees to generate per nni / spr stratum
-  ## filebase = file name base; a tree file (.tre) and paup command file (.nex) will be created for both
-  ## method = method for generating trees
-  ## maxmoves = maximum number of rearrangements per tree for nni or spr
-  ## perms = number of permutations per maxmoves
-  ## ... = additional arguments to pass along to rtree.phylo or rNNI
-  ## works with nni, 12 nov 10
-  ## January 2014: as written, this doesn't unroot the tree. It ought to, unless you are evaluating trees in a rooted framework (e.g., not using GTR)
-  if(class(x) != 'phylo') stop('This function requires a phylo object as its first argument')
-  if(method[1] == 'nni') {
-	for(i in seq(maxmoves)) {
-	  message(paste('doing maxmoves', i))
-	  if(i == 1) treeset <- nni(x) 
-	  else treeset <- c(treeset, rNNI(x, i, perms[i]))
-      }	# end i
-	} # end if	  
-  else if(method[1] == 'random') treeset = rtree.phylo(x, N, ...)
-  if(software[1] == 'raxml') {
-    message('writing raxml')
-	treeset[2:(length(treeset) + 1)] <- treeset[1:length(treeset)]
-	treeset[[1]] <- x
-	write.tree(treeset, file = paste(filebase, '.trees.tre', sep = ''))
-    # write.tree(x, file = paste(filebase, '.optimal.tre', sep = '')) ## no longer separating optimal from full trees
-    }
-  if(software[1] == 'raxml') {
-    message('RAxML chosen as analysis software. Currently, you just need to run this on your own to get the site likelihoods.Try something like this:\n
-	/home/andrew/code/raxml/standard-RAxML-7.7.2/raxmlHPC-PTHREADS-SSE3 -f g -T 10 -s d6m10.phy -m GTRGAMMA -z analysis.d6m10/RAxML_bestTree.d6m10.out -n d6m10.phy.reduced.siteLnL')
-	}
-  return(treeset)
-  }
 
-get.raxml.siteLikelihoods <- function(x)  {
-## gets likelihoods from the RAxML_perSiteLLs file
-    lnL <- readLines(x)
-    lnL <- strsplit(lnL[2:length(lnL)], "\t")
-    names(lnL) <- unlist(lapply(lnL, function(x) x[1]))
-    lnL <- unlist(lapply(lnL, function(x) x[2]))
-    lnL <- t(sapply(strsplit(lnL, " "), as.numeric)) # this is a matrix with trees as rows, site lnL as columns
-    return(lnL)
-	}
-
-get.raxml.treeLikelihoods <- function(x) {
-## gets likelihoods from the RAxML_info file
-	fileIn <- readLines(x)
-	out <- as.double(sapply(grep("Tree ", a, value=T), function(x) strsplit(x, ": ")[[1]][2]))
-	names(out) <- as.character(1:length(out))
-	out
-	}
-	
 plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = NA, scale.by = c('numTaxa','sd', 1), opt = c('diff', 'both'), add.opt = T, cutoff.lnL = 1.5, ...) {
 ## each tree is a data point
 ## X: tree likelihood
@@ -236,13 +185,3 @@ swulData <- function(fasta = RADdat, lnlRanks = NULL, locusVector, filename = "s
 
 diff.swulLikelihoods <- function(x, ...) apply(x$locusScores, 2, function(z) abs(diff(range(z), ...)))
 
-compare.all.trees <- function(treeset, ...) {
-  ntrees = length(treeset)
-  outmat = matrix(NA, ntrees, ntrees)
-  for(i in 1:ntrees) {
-   for(j in 1:i) {
-    outmat[i, j] <- all.equal(treeset[[i]], treeset[[j]], ...)
-	} # close j
-  } # close i
-  outmat
-  }
