@@ -2,7 +2,7 @@ match.lnL.to.trees <- function(locus.names, lnLprefix = 'RAxML_info.', lnLsuffix
   treeIndex <- read.delim(treeIndexFile, as.is = T, header = F)
   lnL.list <- lapply(paste(lnLprefix, locus.names, lnLsuffix, sep = ''), get.raxml.treeLikelihoods)
   names(lnL.list) <- locus.names
-  
+  }
 
 get.raxml.siteLikelihoods <- function(x)  {
 ## gets likelihoods from the RAxML_perSiteLLs file
