@@ -33,7 +33,7 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
 	  trees.out <- lapply(trees, drop.tip, tip = trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa])
 	  trees.out <- lapply(trees.out, unroot)
 	  class(trees.out) <- 'multiPhylo'
-	  trees.out <- unique(trees.out)
+	  trees.out <- unique(trees.out) # this really slows things down... if there were a way to speed this up it w/b great.
 	  message(paste('... kept', length(trees.out), 'trees'))
 	  treeFileOut <- paste(fileBase, '.', batch, '/', i, '.tre', sep = '')
 	  write.tree(trees.out, file = treeFileOut)
@@ -41,9 +41,5 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
 	  }
 	analysisLine <- paste(raxPath, "-f G -s", paste('../', datFileOut, sep = ''), "-m GTRGAMMA -z", paste('../', treeFileOut, sep = ''), "-n", paste(i, '.lnL', sep = ''))
 	cat(analysisLine, '\n', file = analysisFileOut[[batch]])
-  }
-  
-  ## AND EXPORT!
-  ## AND RETURN AN OBJECT WITH ALL PATHS NEEDED TO READ BACK IN AND KEEP ANALYZING!
-  ## There will also need to be a read function
+    }
   }
