@@ -1,10 +1,15 @@
-plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), output = c('jpg'), bw.scalar = NA, scale.by = c('numTaxa','sd', 1), opt = c('diff', 'both'), add.opt = T, cutoff.lnL = 1.5, ...) {
+plot.partitionedRAD <- function(radMat, scalar = 1, criterion = c('best.worst', 'percentile'),
+                                cutoff.lnL = 1.5, minTrees = 10, 
+								opt = c('diff', 'both'), add.opt = T, ...) {
 ## each tree is a data point
 ## X: tree likelihood
 ## Y: 
-  if(is.na(bw.scalar)) bw.scalar <- scalar
+  X <- colSums(radMat)
   X <- x$treeScores
-  star.best <- which(names(X) == 'best')
+  if(minTrees > 1) {
+    nTrees <- apply(radMat, 1, function(x) length(unique(x)))
+	radMat <- radMat[nTrees >= minTrees, ]
+	}
   loc.scores <- x$locusScores[, diff(x) >= cutoff.lnL]
   bestTreeList <- apply(loc.scores, 2, function(z) which(z > quantile(z, percentile[2])))
   bestTree <- unlist(bestTreeList)
@@ -49,30 +54,3 @@ plot.swulLikelihoods <- function(x, scalar = 1, percentile = c(0.025, 0.975), ou
 	}
   return(out)
   } 
-
-plot.besties <- function(x, tr = tree.rooted.di.noDupes.noOG.nni, x.text = 0, y.text = 20.5, fileBase = "quantileLoci", includeDate = T, ...) {
-## takes plot.swulLikelihood as input
-  if(includeDate) fileBase = paste(fileBase, format(Sys.time(), ".%Y-%m-%d"), sep = '')
-
-  plot6 <- function(trees, filename) {
-    pdf(filename, width = 11, height = 8.5)
-	layout(matrix(1:6, 2, 3))
-    for(i in trees) {
-      plot(ladderize(tr[[i]]))
-	  text(x.text, y.text, paste("Tree ", i, ", lnL = ", round(x$lnL.diff.mat[i, "lnL"], 1), '; loci for:against = ', x$lnL.diff.mat[i, "Y.best"], ":", x$lnL.diff.mat[i, "Y.worst"],  sep = ''), pos = 4, ...)
-	  }
-	dev.off()
-	}
-  
-  plot6(x$v.good, paste(fileBase, ".bestRatio.trees.out.pdf", sep = ''))
-  plot6(x$v.bad, paste(fileBase, ".worstRatio.trees.out.pdf", sep = ''))
-  plot6(head(order(x$lnL.diff.mat[, 'lnL']), 6), paste(fileBase, ".worstScore.trees.out.pdf", sep = ''))
-  plot6(tail(order(x$lnL.diff.mat[, 'lnL']), 6), paste(fileBase, ".bestScore.trees.out.pdf", sep = ''))
-  plot6(tail(order(x$lnL.diff.mat[, 'Y.best']), 6), paste(fileBase, ".mostSupportingLoci.trees.out.pdf", sep = ''))
-  plot6(tail(order(x$lnL.diff.mat[, 'Y.worst']), 6), paste(fileBase, ".mostRejectingLoci.trees.out.pdf", sep = ''))
- 
-}
-  
-
-
-

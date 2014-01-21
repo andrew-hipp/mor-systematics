@@ -8,6 +8,7 @@ match.lnL.to.trees <- function(directory = 'getwd()', lnLprefix = 'RAxML_info.',
     names(lnL.list[[i]]) <- unique(as.character(treeIndex[i,]))
 	out.mat[i, ] <- lnL.list[[i]][as.character(treeIndex[i,])]
 	}
+  class(out.mat) <- 'partitionedRAD'
   return(out.mat)
   }
 
