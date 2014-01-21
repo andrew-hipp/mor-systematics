@@ -1,7 +1,8 @@
 match.lnL.to.trees <- function(locus.names, lnLprefix = 'RAxML_info.', lnLsuffix = '.lnL', treeIndexFile = 'tree.index.lines.txt', directory = 'getwd()', ...) {
-  treeIndex <- read.delim(treeIndexFile, as.is = T, header = F)
+  treeIndex <- read.delim(treeIndexFile, as.is = T, header = F, row.names = 1)
   lnL.list <- lapply(paste(lnLprefix, locus.names, lnLsuffix, sep = ''), get.raxml.treeLikelihoods)
   names(lnL.list) <- locus.names
+  out.mat <- matrix(NA, nrow = length(locus.names), ncol = 
   }
 
 get.raxml.siteLikelihoods <- function(x)  {
