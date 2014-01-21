@@ -1,9 +1,14 @@
-match.lnL.to.trees <- function(locus.names, lnLprefix = 'RAxML_info.', lnLsuffix = '.lnL', treeIndexFile = 'tree.index.lines.txt', directory = 'getwd()', ...) {
-  treeIndex <- read.delim(treeIndexFile, as.is = T, header = F, row.names = 1)
-  lnL.list <- lapply(paste(lnLprefix, locus.names, lnLsuffix, sep = ''), get.raxml.treeLikelihoods)
+match.lnL.to.trees <- function(directory = 'getwd()', lnLprefix = 'RAxML_info.', lnLsuffix = '.lnL', treeIndexFile = 'tree.index.lines.txt', locus.names = NULL, ...) {
+  treeIndex <- read.delim(paste(directory, '/', treeIndexFile, sep = ''), as.is = T, header = F, row.names = 1)
+  if(is.null(locus.names)) locus.names <- row.names(treeIndex)
+  lnL.list <- lapply(paste(directory, '/', lnLprefix, locus.names, lnLsuffix, sep = ''), get.raxml.treeLikelihoods)
   names(lnL.list) <- locus.names
-  out.mat <- matrix(NA, nrow = length(locus.names), ncol = dim(treeIndex)[1], dimnames = list(locus.names, NULL))
-  
+  out.mat <- matrix(NA, nrow = length(locus.names), ncol = dim(treeIndex)[2], dimnames = list(locus.names, NULL))
+  for(i in locus.names) {
+    names(lnL.list[[i]]) <- unique(as.character(treeIndex[i,]))
+	out.mat[i, ] <- lnL.list[[i]][as.character(treeIndex[i,])]
+	}
+  return(out.mat)
   }
 
 get.raxml.siteLikelihoods <- function(x)  {
@@ -19,7 +24,7 @@ get.raxml.siteLikelihoods <- function(x)  {
 get.raxml.treeLikelihoods <- function(x) {
 ## gets likelihoods from the RAxML_info file
 	fileIn <- readLines(x)
-	out <- as.double(sapply(grep("Tree ", a, value=T), function(x) strsplit(x, ": ")[[1]][2]))
+	out <- as.double(sapply(grep("Tree ", fileIn, value=T), function(x) strsplit(x, ": ")[[1]][2]))
 	names(out) <- as.character(1:length(out))
 	out
 	}
