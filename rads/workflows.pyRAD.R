@@ -31,6 +31,7 @@ gen.RAD.loci.datasets <- function(rads, trees = 'none', loci = 'all', taxa = 'al
 	write.DNAStringSet(locus.list[[i]][locus.taxa], filename = datFileOut)
 	if(trees[1] != 'none') {
 	  trees.out <- lapply(trees, drop.tip, tip = trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa])
+	  trees.out <- lapply(trees.out, unroot)
 	  class(trees.out) <- 'multiPhylo'
 	  trees.out <- unique(trees.out)
 	  message(paste('... kept', length(trees.out), 'trees'))
