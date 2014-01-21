@@ -20,6 +20,7 @@ genTrees <- function(x, N = 200, filebase = 'trial', method = c('nni', 'random')
 		}
 	  # else treeset <- c(treeset, rNNI(x, i, perms[i]))
 	  else treeset <- c(treeset, lapply(unique(rNNI(x, i, perms[i] * 1.5)), function(x) x))
+	  treeset <- lapply(treeset, unroot)
 	  class(treeset) <- 'multiPhylo'
 	  treeset <- unique(treeset)[1:sum(perms[1:i], 1)]
 	  # just takes the first set of uniques... chops off non-uniques presented so far
