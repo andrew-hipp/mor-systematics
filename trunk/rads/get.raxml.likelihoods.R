@@ -24,7 +24,7 @@ get.raxml.siteLikelihoods <- function(x)  {
 
 get.raxml.treeLikelihoods <- function(x) {
 ## gets likelihoods from the RAxML_info file
-	messge(paste('working on file', x))
+	message(paste('working on file', x))
 	fileIn <- readLines(x)
 	out <- as.double(sapply(grep("Tree ", fileIn, value=T), function(x) strsplit(x, ": ")[[1]][2]))
 	names(out) <- as.character(1:length(out))
