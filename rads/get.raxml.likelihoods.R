@@ -16,6 +16,7 @@ match.lnL.to.trees <- function(directory = 'getwd()', lnLprefix = 'RAxML_info.',
 	if(class(error.out) == 'try-error') message(paste('assigning names to locus', i, 'failed'))
     else out.mat[i, ] <- lnL.list[[i]][as.character(treeIndex[i,])]
 	}
+  out.mat <- out.mat[apply(out.mat, 1, function(x) any(is.na(x))), ]
   class(out.mat) <- 'partitionedRAD'
   return(out.mat)
   }
