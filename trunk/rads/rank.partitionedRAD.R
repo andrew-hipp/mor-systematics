@@ -8,7 +8,7 @@ rank.partitionedRAD <- function(radMat, criterion = c('lnL.threshold', 'percenti
 	}
   if(min.overall.diff.lnL > 0) {
     lnL.diff <- abs(diff(t(apply(radMat, 1, range))))
-	radMat <- radMat[lnL.diff >= min.overall.diff.lnL, ]
+	radMat <- radMat[(lnL.diff >= min.overall.diff.lnL), ]
 	}
   if(criterion[1] == 'lnL.threshold') {
     bestMat <- t(apply(radMat, 1, function(x) abs(x - max(x)) <= threshold.lnL))
