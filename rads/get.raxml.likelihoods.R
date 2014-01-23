@@ -12,7 +12,12 @@ match.lnL.to.trees <- function(directory = 'getwd()', lnLprefix = 'RAxML_info.',
   locus.names <- raxml.worked ## added 2014-01-23
   out.mat <- matrix(NA, nrow = length(locus.names), ncol = dim(treeIndex)[2], dimnames = list(locus.names, NULL))
   for(i in locus.names) {
-    names(lnL.list[[i]]) <- unique(as.character(treeIndex[i,]))
+    lnL.names <- try(unique(as.character(treeIndex[i,])))
+	if(class(lnL.names) == 'try-error') {
+	  message(paste('assigning names to locus', i, 'failed'))
+	  next
+	  }
+	else names(lnL.list[[i]]) <- lnL.names
 	out.mat[i, ] <- lnL.list[[i]][as.character(treeIndex[i,])]
 	}
   class(out.mat) <- 'partitionedRAD'
