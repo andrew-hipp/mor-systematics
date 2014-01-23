@@ -1,5 +1,5 @@
 rank.partitionedRAD <- function(radMat, criterion = c('lnL.threshold', 'percentile'),
-                                minTrees = 10, min.overall.diff.lnL = 1.5, discardDoublecounts = TRUE,
+                                minTrees = 10, min.overall.diff.lnL = 1.5, discardDoubleCounts = TRUE,
 								threshold.lnL = 0) {
   # bestMat <- worstMat <- matrix(0, nrow = dim(radMat)[1], ncol = dim(radMat)[2], dimnames = dimnames(radMat))
   if(minTrees > 1) {
