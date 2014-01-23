@@ -7,7 +7,7 @@ rank.partitionedRAD <- function(radMat, criterion = c('lnL.threshold', 'percenti
 	radMat <- radMat[nTrees >= minTrees, ]
 	}
   if(min.overall.diff.lnL > 0) {
-    lnL.diff <- abs(diff(t(apply(radMat, 1, range))))
+    lnL.diff <- apply(radMat, 1, function(x) abs(diff(range(x))))
 	radMat <- radMat[(lnL.diff >= min.overall.diff.lnL), ]
 	}
   if(criterion[1] == 'lnL.threshold') {
