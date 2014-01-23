@@ -2,7 +2,9 @@ match.lnL.to.trees <- function(directory = 'getwd()', lnLprefix = 'RAxML_info.',
 ## updated 2014-01-23 to prune out files where no trees written -- TO TEST 
   treeIndex <- read.delim(paste(directory, '/', treeIndexFile, sep = ''), as.is = T, header = F, row.names = 1)
   if(is.null(locus.names)) locus.names <- row.names(treeIndex)
+  logfile = file(format(Sys.time(), "match.lnL.%Y-%m-%d.log.txt"), open = "a")
   lnL.list <- lapply(paste(directory, '/', lnLprefix, locus.names, lnLsuffix, sep = ''), get.raxml.treeLikelihoods)
+  close(logfile)
   names(lnL.list) <- locus.names
   raxml.worked <- names(which(lnL.list != 'FAIL')) ## added 2014-01-23
   lnL.list <- lnL.list[raxml.worked] ## added 2014-01-23
@@ -27,18 +29,16 @@ get.raxml.siteLikelihoods <- function(x)  {
     return(lnL)
 	}
 
-get.raxml.treeLikelihoods <- function(x) {
+get.raxml.treeLikelihoods <- function(x, logfile = NA) {
 ## gets likelihoods from the RAxML_info file
 ## updated 2014-01-23 to deliver a fail if no trees written
-    logfile = file(format(Sys.time(), "match.lnL.%Y-%m-%d.log.txt"), open = "a")
 	# cat(paste('working on file', x, '\n'), file = logfile)
 	fileIn <- readLines(x)
 	if(length(grep("Tree ", fileIn)) == 0) {
-	  cat('... file', x, 'had no trees in it.', '\n')
+	  if(!is.na(logfile)) cat('... file', x, 'had no trees in it.', '\n')
 	  return('FAIL')
 	  }
 	out <- as.double(sapply(grep("Tree ", fileIn, value=T), function(x) strsplit(x, ": ")[[1]][2]))
-	dev.off()
 	names(out) <- as.character(1:length(out))
 	out
 	}
