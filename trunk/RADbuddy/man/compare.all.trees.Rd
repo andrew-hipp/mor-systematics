@@ -1,69 +1,18 @@
 \name{compare.all.trees}
 \alias{compare.all.trees}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Compare all trees in a treeset, and return a matrix (lower diagonal only) indicating which pairwise comparisons are identical}
 \usage{
 compare.all.trees(treeset, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{treeset}{
-%%     ~~Describe \code{treeset} here~~
+  \item{treeset}{an object of class \code{\multiPhylo} or a list of \code{\phylo} objects}
+  \item{\dots}{additional arguments to be passed along to \code{\all.equal.phylo}}
 }
-  \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\details{Slow, tedious one-on-one comparison of trees, depending on the implementation in \code{\ape}. 
+         As written, this function is sensitive to rooting.}
+\value{A matrix of \code{\TRUE} and \code{\FALSE} values depending on whether the compared trees are identical in topology}
+\author{Andrew Hipp}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link{unique.multiPhylo}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (treeset, ...) 
-{
-    ntrees = length(treeset)
-    outmat = matrix(NA, ntrees, ntrees)
-    for (i in 1:ntrees) {
-        for (j in 1:i) {
-            outmat[i, j] <- all.equal(treeset[[i]], treeset[[j]], 
-                ...)
-        }
-    }
-    outmat
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
