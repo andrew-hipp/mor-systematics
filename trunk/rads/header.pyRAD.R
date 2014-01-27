@@ -25,3 +25,4 @@
 require(Biostrings)
 require(ape)
 require(phangorn)
+require(geiger)
