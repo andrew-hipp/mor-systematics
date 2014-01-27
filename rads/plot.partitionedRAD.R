@@ -3,7 +3,7 @@ plot.rankedPartitionedRAD <- function(x,
 									  widthScalar = 1,
 									  primeTreeColor = 'red',
 									  primeTreeCharacter = 19,
-									  filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."), paste(x$params, collapse = ''), '.pdf', sep = ''),
+									  filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."),  paste(c('minT','rangeL','diffL','noDoubles'), x$params, collapse = "_", sep = ''), '.pdf', sep = ''),
                                       panels = c('bestMat', 'worstMat', 'doubleCountMat'),
 									  ...) {
   if(class(x) != 'rankedPartitionedRAD') warning('Not the expected object class; this function may misbehave')
