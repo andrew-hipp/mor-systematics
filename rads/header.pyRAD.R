@@ -1,5 +1,6 @@
-## pyRADinR
-## A package for handling pyRAD data
+## RADbuddy
+## A package for handling RADseq data for phylogenetics, focused
+##   on integration with pyRAD
 ## A Hipp, The Morton Arboretum, ahipp@mortonarb.org
 ## VERSION HISTORY
 ## -- 2012-09-18: initiated
