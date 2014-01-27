@@ -7,7 +7,7 @@ plot.rankedPartitionedRAD <- function(x,
                                       panels = c('bestMat', 'worstMat', 'doubleCounts'),
 									  ...) {
   if(class(x) != 'rankedPartitionedRAD') warning('Not the expected object class; this function may misbehave')
-  if(!is.null(fileprefix)) pdf(paste(fileprefix, fileout, sep = '.'), width = 3*length(panels)*widthScalar, height = 3)
+  if(!is.null(fileprefix)) pdf(paste(fileprefix, filebase, sep = '.'), width = 3*length(panels)*widthScalar, height = 3)
   for(i in panels) {
     temp.ylab = switch(i, 
 	                   bestMat = 'Number of loci supporting tree',
