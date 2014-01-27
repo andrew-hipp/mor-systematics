@@ -13,7 +13,7 @@ plot.rankedPartitionedRAD <- function(x,
     temp.ylab = switch(i, 
 	                   bestMat = 'Number of loci supporting tree',
 					   worstMat = 'Number of loci disfavoring tree',
-					   doubleCountMat = 'Number of loci excluded, overlap between support and disfavor'
+					   doubleCountMat = 'Loci overlapping, excluded'
 					   )
 	plot(x$trees.lnL, colSums(x[[i]]), xlab = 'Tree log-likelihood, summed over loci', ylab = temp.ylab, ...)
     points(x$trees.lnL[1], colSums(x[[i]])[1], pch = primeTreeCharacter, col = primeTreeColor)
