@@ -1,11 +1,12 @@
 plot.rankedPartitionedRAD <- function(x, 
                                       fileprefix = NULL,
 									  widthScalar = .85,
+									  panels = c('bestMat', 'worstMat', 'doubleCountMat'),
+									  squareSize = switch(length(panels), 2 = 5, 3 = 3),
 									  primeTreeColor = 'red',
 									  primeTreeCharacter = 19,
 									  filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."),  paste(c('minT','rangeL','diffL','noDoubles'), x$params, collapse = "_", sep = ''), '.pdf', sep = ''),
-                                      panels = c('bestMat', 'worstMat', 'doubleCountMat'),
-									  ...) {
+                                      ...) {
   if(class(x) != 'rankedPartitionedRAD') warning('Not the expected object class; this function may misbehave')
   if(!is.null(fileprefix)) pdf(paste(fileprefix, filebase, sep = '.'), width = 3*length(panels)*widthScalar, height = 3)
   layout(matrix(seq(length(panels)), 1, length(panels)))
