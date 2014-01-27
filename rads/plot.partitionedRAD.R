@@ -1,6 +1,6 @@
 plot.rankedPartitionedRAD <- function(x, 
                                       fileprefix = NULL,
-									  widthScalar = 1,
+									  widthScalar = .8,
 									  primeTreeColor = 'red',
 									  primeTreeCharacter = 19,
 									  filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."),  paste(c('minT','rangeL','diffL','noDoubles'), x$params, collapse = "_", sep = ''), '.pdf', sep = ''),
