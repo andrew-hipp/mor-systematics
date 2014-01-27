@@ -23,5 +23,6 @@ rank.partitionedRAD <- function(radMat, criterion = c('lnL.threshold', 'percenti
 	radMat <- radMat[!doubleCounts, ]
 	}
   out <- list(bestMat = bestMat, worstMat = worstMat, doubleCounts = doubleCounts, trees.lnL = colSums(radMat))
+  class(out) <- 'rankedPartitionedRAD'
   out
   }
