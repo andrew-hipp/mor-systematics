@@ -1,15 +1,4 @@
-plot.partitionedRAD <- function(radMat, scalar = 1, criterion = c('best.worst', 'percentile'),
-                                cutoff.lnL = 1.5, minTrees = 10, 
-								opt = c('diff', 'both'), add.opt = T, ...) {
-## each tree is a data point
-## X: tree likelihood
-## Y: 
-  X <- colSums(radMat)
-  X <- x$treeScores
-  if(minTrees > 1) {
-    nTrees <- apply(radMat, 1, function(x) length(unique(x)))
-	radMat <- radMat[nTrees >= minTrees, ]
-	}
+  
   loc.scores <- x$locusScores[, diff(x) >= cutoff.lnL]
   bestTreeList <- apply(loc.scores, 2, function(z) which(z > quantile(z, percentile[2])))
   bestTree <- unlist(bestTreeList)
