@@ -1,5 +1,6 @@
 rank.partitionedRAD <- function(radMat, criterion = c('lnL.threshold', 'percentile'),
                                 minTrees = 10, min.overall.diff.lnL = 1.5, threshold.lnL = 0, discardDoubleCounts = TRUE) {
+  radMat.preLnLDiff <- radMat.preMinTrees <- NA
   if(minTrees > 1) {
     nTrees <- apply(radMat, 1, function(x) length(unique(x)))
 	radMat.preMinTrees <- radMat
