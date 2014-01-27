@@ -1,5 +1,5 @@
 genTrees <-
-function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves = 2, perms = c(length(nni(x)), as.integer(N-(length(nni(x))))), software = c('raxml', 'paup'), ...) {
+function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves = 2, perms = c(length(nni(x)), max(1, as.integer(N-(length(nni(x)))))), software = c('raxml', 'paup'), ...) {
   ## Arguments:
   ## x = phylo tree
   ## N = total number of trees to generate
@@ -30,7 +30,6 @@ function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves =
   else if(method[1] == 'random') treeset = c(x, rtree.phylo(x, N, ...))
   class(treeset) <- 'multiPhylo'
   if(software[1] == 'raxml') {
-    browser()
 	message('writing raxml')
 	write.tree(treeset, file = paste(filebase, '.trees.tre', sep = ''))
     # write.tree(x, file = paste(filebase, '.optimal.tre', sep = '')) ## no longer separating optimal from full trees
