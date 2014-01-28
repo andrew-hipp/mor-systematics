@@ -1,107 +1,43 @@
 \name{rank.partitionedRAD}
 \alias{rank.partitionedRAD}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Bin trees into 'suppported' or 'disfavored' by locus.}
+\description{This function takes output from \code{match.lnL.to.trees} and scores trees as 
+			 favored or disfavored for all loci that satisfy the criteria specified}
 \usage{
-rank.partitionedRAD(radMat, criterion = c("lnL.threshold", "percentile"), minTrees = 10, min.overall.diff.lnL = 1.5, threshold.lnL = 0, discardDoubleCounts = TRUE)
+rank.partitionedRAD(radMat, minTrees = 10, min.overall.diff.lnL = 5, threshold.lnL = 2, discardDoubleCounts = TRUE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{radMat}{
-%%     ~~Describe \code{radMat} here~~
+  \item{radMat}{matrix output from \code{match.lnL.to.trees}}
+  \item{minTrees}{integer, minimum number of unique trees required per locus}
+  \item{min.overall.diff.lnL}{minimum log-likelihood difference required between the most poorly-
+							  supported tree and the best supported tree for each locus}
+  \item{threshold.lnL}{the log-likelihood window for binning a tree into favored or disfavored}
+  \item{discardDoubleCounts}{determines whether that place any tree within both the favored and 
+							 disfavored bins should be counted (\code{TRUE}) or not 
+							 (\code{FALSE})}
 }
-  \item{criterion}{
-%%     ~~Describe \code{criterion} here~~
-}
-  \item{minTrees}{
-%%     ~~Describe \code{minTrees} here~~
-}
-  \item{min.overall.diff.lnL}{
-%%     ~~Describe \code{min.overall.diff.lnL} here~~
-}
-  \item{threshold.lnL}{
-%%     ~~Describe \code{threshold.lnL} here~~
-}
-  \item{discardDoubleCounts}{
-%%     ~~Describe \code{discardDoubleCounts} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+\details{This function works by first filtering loci by the minimum number of trees and the 
+		 overall range in log-likelihood, then binning trees into supported if they are within 
+		 \code{threshold.lnL} of the best-supported tree for each locus, and disfavored if they
+		 are within \code{threshold.lnL} of the least supported tree for each locus. Overlapping
+		 trees can occur when the range in log-likelihood is set to less than twice the threshold
+		 log-likelihood or quite near it.}
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+	A list composed of 7 matrices and one numeric vector. 
+	The matrices all have loci as the rows and trees as the columns:
+		\item{bestMat}{boolean; which trees are supported by which loci}
+		\item{worstMat}{boolean; which trees are disfavored by which loci}
+		\item{doubleCountMat}{boolean; which trees are double-counted by which loci}
+		\item{radMat}{the final likelihood matrix corresponding with \code{bestMat} and \code{worstMat}}
+		\item{radMat.preLnLDiff}{the likelihood matrix before filtering by lnL range}
+		\item{radMat.preMinTrees}{the likelihood matrix before filtering by minimum number of trees}
+		\item{radMat.preDoubleCounts }{the likelihood matrix before filtering by double counts}
+		\item{params}{the analysis parameters, in this order:
+					  minTrees, min.overall.diff.lnL, threshold.lnL, discardDoubleCounts}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\references{Hipp A.L., Eaton D.A.R., Cavender-Bares J., Fitzek E., Nipper R. & Manos P.S. (Accepted pending revision). A framework phylogeny of the American oak clade based on sequenced RAD data. PLoS ONE.}
+\author{Andrew Hipp}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+	\code{\link{match.lnL.to.trees}},
+	\code{\link{plot.rankedPartitionedRAD}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (radMat, criterion = c("lnL.threshold", "percentile"), 
-    minTrees = 10, min.overall.diff.lnL = 1.5, threshold.lnL = 0, 
-    discardDoubleCounts = TRUE) 
-{
-    radMat.preLnLDiff <- radMat.preMinTrees <- NA
-    if (minTrees > 1) {
-        nTrees <- apply(radMat, 1, function(x) length(unique(x)))
-        radMat.preMinTrees <- radMat
-        radMat <- radMat[nTrees >= minTrees, ]
-    }
-    if (min.overall.diff.lnL > 0) {
-        lnL.diff <- apply(radMat, 1, function(x) abs(diff(range(x))))
-        radMat.preLnLDiff <- radMat
-        radMat <- radMat[(lnL.diff >= min.overall.diff.lnL), 
-            ]
-    }
-    if (criterion[1] == "lnL.threshold") {
-        bestMat <- t(apply(radMat, 1, function(x) abs(x - max(x)) <= 
-            threshold.lnL))
-        worstMat <- t(apply(radMat, 1, function(x) abs(x - min(x)) <= 
-            threshold.lnL))
-        doubleCountMat <- bestMat & worstMat
-    }
-    if (discardDoubleCounts) {
-        doubleCounts <- apply(doubleCountMat, 1, sum) > 0
-        bestMat <- bestMat[!doubleCounts, ]
-        worstMat <- worstMat[!doubleCounts, ]
-        radMat.preDoubleCounts <- radMat
-        radMat <- radMat[!doubleCounts, ]
-    }
-    out <- list(bestMat = bestMat, worstMat = worstMat, doubleCountMat = doubleCountMat, 
-        radMat = radMat, radMat.preLnLDiff = radMat.preLnLDiff, 
-        radMat.preMinTrees = radMat.preMinTrees, radMat.preDoubleCounts = radMat.preDoubleCounts, 
-        params = c(minTrees, min.overall.diff.lnL, threshold.lnL, 
-            discardDoubleCounts))
-    class(out) <- "rankedPartitionedRAD"
-    out
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
