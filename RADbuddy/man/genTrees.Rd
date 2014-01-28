@@ -7,12 +7,10 @@ Generate permuted trees using rNNI or rtree, and check for uniqueness.
 This function generates a specified number of trees by permutation or random
 generation, then checks to make sure that they are unique before returning the
 original tree plus the generated trees
-
 }
 \usage{
 genTrees(x, N = 200, filebase = "trial", method = c("nni", "random"), maxmoves = 2, perms = c(length(nni(x)), max(1, as.integer(N - (length(nni(x)))))), software = c("raxml", "paup"), ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{an object of class \code{"phylo"}}
   \item{N}{number of new trees to return}

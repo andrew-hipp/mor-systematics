@@ -1,71 +1,24 @@
 \name{filter.by}
 \alias{filter.by}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Identify names of loci for which at the requested taxa are present, 
+       either all or some number of them}
+\description{Returns the names of loci for which the requested taxa are present at some threshold}
 \usage{
 filter.by(dat, taxa, threshold = "all")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{dat}{
-%%     ~~Describe \code{dat} here~~
+  \item{dat}{an object of class \code{pyRAD.loci} or \code{summary.pyRAD.loci}}
+  \item{taxa}{a character vector of taxa or individuals to identify in \code{dat}}
+  \item{threshold}{an integer setting the minimum number of taxa needed for each locus, 
+                   or "all" for all taxa}
 }
-  \item{taxa}{
-%%     ~~Describe \code{taxa} here~~
-}
-  \item{threshold}{
-%%     ~~Describe \code{threshold} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\details{Not currently called by any other functions in this package, but useful for quickly
+         identifying loci for which data are present in a specified number of individuals}
+\value{A character vector of locus names}
+\author{Andrew Hipp}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link{locus.picker}}, 
+  \code{\link{subset.pyRAD.loci}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (dat, taxa, threshold = "all") 
-{
-    if (!class(dat) \%in\% c("summary.pyRAD.loci", "pyRAD.loci")) 
-        stop("This function only works with summary.pyRAD.loci datatypes")
-    if (class(dat) == "pyRAD.loci") 
-        dat.mat <- dat$radSummary$inds.mat[taxa, ]
-    else dat.mat <- dat$inds.mat[taxa, ]
-    if (threshold == "all") 
-        threshold <- length(taxa)
-    return(names(which(apply(dat.mat, 2, sum) == threshold)))
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{manip}

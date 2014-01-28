@@ -1,70 +1,23 @@
 \name{get.raxml.treeLikelihoods}
 \alias{get.raxml.treeLikelihoods}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Extract likelihoods from a RAxML info file}
+\description{Reads the info file from a RAxML site-likelihood analysis with multiple input trees.
+			 Probably not often needed on its own, but used in \code{match.lnL.to.trees}.}
 \usage{
 get.raxml.treeLikelihoods(x, logfile = NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
+  \item{x}{file name of a RAxML .info file from site-likelihood analysis}
+  \item{logfile}{name of a log file, useful for recording any files that were not successfully
+				 read in}
 }
-  \item{logfile}{
-%%     ~~Describe \code{logfile} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\value{A named vector of class \code{double} with tree likelihoods, where the names are character 
+       equivalents of the tree numbers; or, if the file had no trees in it, the character vector
+	   "FAIL"}
+\author{Andrew Hipp}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+	\code{\link{match.lnL.to.trees}},
+	\code{\link{get.raxml.siteLikelihoods}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x, logfile = NA) 
-{
-    fileIn <- readLines(x)
-    if (length(grep("Tree ", fileIn)) == 0) {
-        if (!is.na(logfile)) 
-            cat("... file", x, "had no trees in it.", "\n")
-        return("FAIL")
-    }
-    out <- as.double(sapply(grep("Tree ", fileIn, value = T), 
-        function(x) strsplit(x, ": ")[[1]][2]))
-    names(out) <- as.character(1:length(out))
-    out
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{IO}
