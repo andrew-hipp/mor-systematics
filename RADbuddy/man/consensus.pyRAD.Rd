@@ -1,6 +1,6 @@
 \name{consensus.pyRAD}
 \alias{consensus.pyRAD}
-\\title{Generate a consensus sequence for each of the loci in a pyRAD.loci object}
+\title{Generate a consensus sequence for each of the loci in a pyRAD.loci object}
 \description{Uses \code{consensusString} [S4 method for signature 'DNAStringSet']
              from the \code{Biostrings} package to create
              a consensus sequence for each locus in a \code{pyRAD.loci} object. All options
