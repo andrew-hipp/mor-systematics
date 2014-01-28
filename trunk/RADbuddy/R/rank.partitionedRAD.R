@@ -1,6 +1,6 @@
 rank.partitionedRAD <-
-function(radMat, criterion = c('lnL.threshold', 'percentile'),
-                                minTrees = 10, min.overall.diff.lnL = 1.5, threshold.lnL = 0, discardDoubleCounts = TRUE) {
+function(radMat, minTrees = 10, min.overall.diff.lnL = 5, 
+		 threshold.lnL = 2, discardDoubleCounts = TRUE) {
   radMat.preLnLDiff <- radMat.preMinTrees <- NA
   if(minTrees > 1) {
     nTrees <- apply(radMat, 1, function(x) length(unique(x)))
@@ -12,12 +12,9 @@ function(radMat, criterion = c('lnL.threshold', 'percentile'),
 	radMat.preLnLDiff <- radMat
 	radMat <- radMat[(lnL.diff >= min.overall.diff.lnL), ]
 	}
-  if(criterion[1] == 'lnL.threshold') {
-    bestMat <- t(apply(radMat, 1, function(x) abs(x - max(x)) <= threshold.lnL))
-	worstMat <- t(apply(radMat, 1, function(x) abs(x - min(x)) <= threshold.lnL))
-	doubleCountMat <- bestMat & worstMat
-	}
-  ## other options here
+  bestMat <- t(apply(radMat, 1, function(x) abs(x - max(x)) <= threshold.lnL))
+  worstMat <- t(apply(radMat, 1, function(x) abs(x - min(x)) <= threshold.lnL))
+  doubleCountMat <- bestMat & worstMat
   if(discardDoubleCounts) {
     doubleCounts <- apply(doubleCountMat, 1, sum) > 0
 	bestMat <- bestMat[!doubleCounts, ]
