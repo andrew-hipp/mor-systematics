@@ -1,102 +1,36 @@
 \name{plot.rankedPartitionedRAD}
 \alias{plot.rankedPartitionedRAD}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Plot a \code{rankedPartitionedRAD} object}
+\description{This function creates a plot with 1-3 panels
+			 describing the number of loci supporting, disfavoring,
+			 or ambiguous for each tree, plotted against log-likelihood}
 \usage{
 plot.rankedPartitionedRAD(x, fileprefix = NULL, widthScalar = 0.85, panels = c("bestMat", "worstMat", "doubleCountMat"), squareSize = switch(as.character(length(panels)), `2` = 5, `3` = 3), primeTreeColor = "red", primeTreeCharacter = 19, filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."), paste(c("minT", "rangeL", "diffL", "noDoubles"), x$params, collapse = "_", sep = ""), ".pdf", sep = ""), ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
+  \item{x}{an object of class \code{rankedPartitionedRAD}}
+  \item{fileprefix}{prefix of the files to save; as written, you have to provide some prefix
+                    to identify the files, but the remainder of the file name defaults to a
+					combination of parameters and date}
+  \item{widthScalar}{a multiplier on the width of the entire plot to get the plotting panels square
+					 or not as you prefer}
+  \item{panels}{a character vector describing the order of panels; 
+				can be any of "bestMat", "worstMat", "doubleCountMat" in any order}
+  \item{squareSize}{the size of the panels in inches; defaults to 5" for a 2-panel plot, 
+					3" for a 3-panel plot, only because that works well in my trials}
+  \item{primeTreeColor}{the color of the dot representing the first tree in the matrix, which 
+						should be your original tree (unpermuted) if you've been following the 
+						workflow from \code{genTrees} through this final and exciting plot}
+  \item{primeTreeCharacter}{the character of the dot representing the first tree in the matrix}
+  \item{filebase}{the base of the file name for exported plots}
+  \item{\dots}{additional arguments passed to \code{plot}}
 }
-  \item{fileprefix}{
-%%     ~~Describe \code{fileprefix} here~~
-}
-  \item{widthScalar}{
-%%     ~~Describe \code{widthScalar} here~~
-}
-  \item{panels}{
-%%     ~~Describe \code{panels} here~~
-}
-  \item{squareSize}{
-%%     ~~Describe \code{squareSize} here~~
-}
-  \item{primeTreeColor}{
-%%     ~~Describe \code{primeTreeColor} here~~
-}
-  \item{primeTreeCharacter}{
-%%     ~~Describe \code{primeTreeCharacter} here~~
-}
-  \item{filebase}{
-%%     ~~Describe \code{filebase} here~~
-}
-  \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\details{This function as written only prints to pdf}
+\value{No value. This function is called for its side-effect of printing plots to a file.}
+\references{Hipp A.L., Eaton D.A.R., Cavender-Bares J., Fitzek E., Nipper R. & Manos P.S. (Accepted pending revision). A framework phylogeny of the American oak clade based on sequenced RAD data. PLoS ONE.}
+\author{Andrew Hipp}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+	\code{\link{rank.partitionedRAD}},
+	\code{\link{plot.locus.dist}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x, fileprefix = NULL, widthScalar = 0.85, panels = c("bestMat", 
-    "worstMat", "doubleCountMat"), squareSize = switch(as.character(length(panels)), 
-    `2` = 5, `3` = 3), primeTreeColor = "red", primeTreeCharacter = 19, 
-    filebase = paste(format(Sys.time(), "rad.partitioned.\%Y-\%m-\%d."), 
-        paste(c("minT", "rangeL", "diffL", "noDoubles"), x$params, 
-            collapse = "_", sep = ""), ".pdf", sep = ""), ...) 
-{
-    if (class(x) != "rankedPartitionedRAD") 
-        warning("Not the expected object class; this function may misbehave")
-    if (!is.null(fileprefix)) 
-        pdf(paste(fileprefix, filebase, sep = "."), width = squareSize * 
-            length(panels) * widthScalar, height = squareSize)
-    layout(matrix(seq(length(panels)), 1, length(panels)))
-    for (i in panels) {
-        temp.ylab = switch(i, bestMat = "Number of loci supporting tree", 
-            worstMat = "Number of loci disfavoring tree", doubleCountMat = "Loci overlapping, excluded")
-        plot(colSums(x$radMat), colSums(x[[i]]), xlab = "Tree log-likelihood, summed over loci", 
-            ylab = temp.ylab, ...)
-        points(colSums(x$radMat)[1], colSums(x[[i]])[1], pch = primeTreeCharacter, 
-            col = primeTreeColor)
-    }
-    dev.off()
-    return("done")
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{hplot}
