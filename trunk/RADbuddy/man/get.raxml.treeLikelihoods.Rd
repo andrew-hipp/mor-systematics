@@ -6,7 +6,6 @@
 \usage{
 get.raxml.treeLikelihoods(x, logfile = NA)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{file name of a RAxML .info file from site-likelihood analysis}
   \item{logfile}{name of a log file, useful for recording any files that were not successfully

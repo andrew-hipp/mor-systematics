@@ -6,7 +6,6 @@
 \usage{
 filter.by(dat, taxa, threshold = "all")
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{dat}{an object of class \code{pyRAD.loci} or \code{summary.pyRAD.loci}}
   \item{taxa}{a character vector of taxa or individuals to identify in \code{dat}}

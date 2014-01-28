@@ -4,7 +4,6 @@
 \usage{
 compare.all.trees(treeset, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{treeset}{an object of class \code{\multiPhylo} or a list of \code{\phylo} objects}
   \item{\dots}{additional arguments to be passed along to \code{\all.equal.phylo}}
@@ -14,5 +13,5 @@ compare.all.trees(treeset, ...)
 \value{A matrix of \code{\TRUE} and \code{\FALSE} values depending on whether the compared trees are identical in topology}
 \author{Andrew Hipp}
 \seealso{
-  \code{\link{unique.multiPhylo}}
+	\code{\link{unique.multiPhylo}}
 }
