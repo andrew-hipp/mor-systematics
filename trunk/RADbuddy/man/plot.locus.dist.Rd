@@ -1,150 +1,49 @@
 \name{plot.locus.dist}
 \alias{plot.locus.dist}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Plot a phylogeny with a graphical representation of locus sharing}
+\description{Plots a phylogeny lined up with the locus-sharing similarity matrix in graphical
+			 style}
 \usage{
-plot.locus.dist(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, point.pch = c(21, 25), tips = NULL, diag.col = "red", ...)
+plot.locus.dist(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, point.pch = c(21, 21), cols = c('black', 'red'), ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{locD}{
-%%     ~~Describe \code{locD} here~~
-}
-  \item{tr}{
-%%     ~~Describe \code{tr} here~~
-}
-  \item{trW}{
-%%     ~~Describe \code{trW} here~~
-}
-  \item{plotW}{
-%%     ~~Describe \code{plotW} here~~
-}
-  \item{labelsW}{
-%%     ~~Describe \code{labelsW} here~~
-}
-  \item{plotGap}{
-%%     ~~Describe \code{plotGap} here~~
-}
-  \item{scalar}{
-%%     ~~Describe \code{scalar} here~~
-}
-  \item{barH}{
-%%     ~~Describe \code{barH} here~~
-}
-  \item{point.pch}{
-%%     ~~Describe \code{point.pch} here~~
-}
-  \item{tips}{
-%%     ~~Describe \code{tips} here~~
-}
-  \item{diag.col}{
-%%     ~~Describe \code{diag.col} here~~
-}
-  \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
-}
+  \item{locD}{output from \code{locus.dist}}
+  \item{tr}{an object of class \code{phylo} with tips named the same as the rows of \code{locD}}
+  \item{trW}{width of the panels holding the tree}
+  \item{plotW}{width of the panel holding the matrix plot}
+  \item{labelsW}{width of the panel holding the taxon labels (right side of plot)}
+  \item{plotGap}{gap between the side panels and the central panel}
+  \item{scalar}{the scalar for the dots in the locus distance plot}
+  \item{barH}{height of the panel holding the }
+  \item{point.pch}{plot character (\code{pch}) for the off-diagonal and diagonal elements of the matrix plot}
+  \item{cols}{color for the off-diagonal and diagonal elements of the matrix plot}
+  \item{\dots}{additional arguments passed along to \code{text}}
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+	Use default options in \code{locus.dist} to get a sensible plot. 
+	Also, while different plotting characters can be defined for the off-diagonal and diagonal
+	elements of the matrix plot, these may be hard to compare with each other in size; probably
+	the diagonal elements are better distinguished by color or shading.
+	
+	Currently, this function is implemented using \code{layout}, which makes it rather clunky
+	and inflexible.
+	}
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
+	A list comprising:
+		\item{Xs}{the x-coordinates of dots in the matrix plot}
+		\item{heights}{heights of the bars at the top of the plot, which show the overlap of
+					   each individual averaged over all other individuals on the plot}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+}
+\author{Andrew Hipp}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+	\code{\link{plot.rankedPartitionedRAD}},
+	\code{\link{locus.dist}}	
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, 
-    scalar = 1.5, barH = 1, point.pch = c(21, 25), tips = NULL, 
-    diag.col = "red", ...) 
-{
-    require(geiger)
-    require(ape)
-    if (barH > 0) 
-        layout(matrix(c(2, 1, 3), 3, 1), widths = rep(trW + plotW + 
-            labelsW + plotGap * 2, 3), heights = c(barH, plotW, 
-            trW), TRUE)
-    orig.tips <- tr$tip.label
-    names(orig.tips) <- tips
-    if (!is.null(tips)) 
-        tr$tip.label <- tips
-    tr <- read.tree(text = write.tree(tr))
-    orig.tips <- orig.tips[gsub("_", " ", tr$tip.label, fixed = T)]
-    locD <- locD[orig.tips, orig.tips]
-    color.mat <- matrix("black", dim(locD)[1], dim(locD)[2])
-    if (!is.null(diag.col)) 
-        diag(color.mat) <- diag.col
-    nloci <- dim(locD)[1]
-    plot(transform(tr, "depth", trW), x.lim = c(0, trW + plotW + 
-        plotGap * 2 + labelsW), show.tip.label = F, no.margin = T)
-    xy <- matrix(seq(nloci), nloci, nloci, byrow = TRUE)
-    Xs <- plotW * (as.numeric(t(xy))/nloci) + trW + plotGap
-    points(Xs, as.numeric(xy), pch = point.pch[1], cex = as.numeric(locD) * 
-        scalar, bg = as.character(color.mat), col = "black")
-    if (labelsW > 0) 
-        text(rep((trW + plotW + plotGap * 2), length(tr$tip.label)), 
-            1:length(tr$tip.label), gsub("_", " ", tr$tip.label, 
-                fixed = T), pos = 4, ...)
-    if (barH > 0) {
-        Xs.1 = Xs[1:length(tr$tip.label)]
-        heights = apply(locD, 2, function(x) sum(x)/(dim(locD)[1] - 
-            1)) * barH
-        plot(1, xlim = c(0, trW + plotW + labelsW + plotGap * 
-            2), ylim = c(0, barH * 1.1), type = "n", axes = F)
-        segments(x0 = Xs.1, y0 = 0, x1 = Xs.1, y1 = heights, 
-            lwd = 10, lty = 1, lend = 2)
-        text(Xs.1, heights, round(heights, 2), pos = 3, cex = 0.5)
-    }
-    tr.x.max <- (length(tr$tip.label)/plotW) * (plotW + labelsW + 
-        plotGap)
-    tr.x.min <- -(length(tr$tip.label)/plotW) * (trW + plotGap)
-    legend.header.x <- (length(tr$tip.label)/plotW) * (plotW + 
-        plotGap)
-    legend.dots.x <- (length(tr$tip.label)/plotW) * (plotW + 
-        plotGap * 2)
-    legend.text.x <- (length(tr$tip.label)/plotW) * (plotW + 
-        plotGap * 3)
-    legend.y <- c(trW, trW * 0.6, trW * 0.2)
-    print(c(tr.x.min, tr.x.max))
-    plot(transform(tr, "depth", trW), x.lim = c(tr.x.min, tr.x.max), 
-        direction = "upwards", show.tip.label = F, no.margin = T)
-    points(rep(legend.dots.x, 2), legend.y[2:3], pch = point.pch, 
-        bg = "black", col = "black", cex = c(scalar, scalar/2))
-    text(c(legend.header.x, rep(legend.text.x, 2)), legend.y, 
-        c("Proportion of total loci", "1.0", "0.5"), cex = c(0.8, 
-            0.6, 0.6), pos = 4)
-    out = invisible(list(Xs = Xs[1:length(tr$tip.label)], heights = apply(locD, 
-        2, mean) * barH))
-    return(out)
-  }
+  data(oak.rads)
+  data(oak.tree)
+  plot.locus.dist(locus.dist(oaks, proportional = T), oak.tree)
+  plot.locus.dist(locus.dist(oaks, proportional = T, upper = T), ladderize(oak.tree), trW = 1, labelsW = 1, scalar = 3) # a nicer looking plot
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{hplot}

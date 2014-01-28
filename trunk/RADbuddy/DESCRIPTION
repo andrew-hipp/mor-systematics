@@ -1,10 +1,10 @@
-Package: RADbuddy
+Package: RADami
 Type: Package
 Title: A package for analysis of RADseq data in a phylogenetic context, integrating with pyRAD
-Version: 1.0
+Version: 1.0-1
 Date: 2014-01-27
 Author: Andrew Hipp <ahipp@mortonarb.org>
 Maintainer: Andrew Hipp <ahipp@mortonarb.org>
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
-Requires:
+License: GPL-3
+Requires: ape, geiger, Biostrings, phangorn

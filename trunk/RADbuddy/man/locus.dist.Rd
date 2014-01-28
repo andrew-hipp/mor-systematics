@@ -1,82 +1,35 @@
 \name{locus.dist}
 \alias{locus.dist}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Generate a pairwise similarity matrix for individuals based on locus-sharing patterns}
+\description{This function returns a pairwise similarity matrix based on how many loci or
+			 the proportion of loci shared between individuals.}
 \usage{
 locus.dist(pyIn, proportional = TRUE, upper = TRUE, diagonal = TRUE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{pyIn}{
-%%     ~~Describe \code{pyIn} here~~
+  \item{pyIn}{an object of class \code{pyRAD.loci}}
+  \item{proportional}{set to \code{TRUE} for a proportional similarity (scaled from 0 to 1), 
+					  \code{FALSE} for absolute number of loci shared}
+  \item{upper}{set to \code{TRUE} for a symmetrical matrix, \code{FALSE} for a lower-only matrix
+			   }
+  \item{diagonal}{set to \code{TRUE} to get the number (or percentage) of total loci reported
+				  for each individual}
 }
-  \item{proportional}{
-%%     ~~Describe \code{proportional} here~~
-}
-  \item{upper}{
-%%     ~~Describe \code{upper} here~~
-}
-  \item{diagonal}{
-%%     ~~Describe \code{diagonal} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\details{Under the \code{proportional = TRUE} option, this function normalizes based on all loci
+		 in the dataset. Thus, two individuals that share 100% of their loci, but both of which 
+		 have sequences for only 90% of the loci reported across the entire dataset, will report
+		 0.9 instead of 1.0.}
+\value{A square matrix with individuals as the rows and columns, and proportions or whole numbers
+	   in the cells}
+\author{Andrew Hipp}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+	\code{\link{plot.locus.dist}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (pyIn, proportional = TRUE, upper = TRUE, diagonal = TRUE) 
-{
-    if (class(pyIn) == "pyRAD.loci") 
-        pyIn <- pyIn$radSummary$inds.mat
-    numInds <- dim(pyIn)[1]
-    numLoci <- ifelse(proportional, dim(pyIn)[2], 1)
-    out <- matrix(NA, numInds, numInds, dimnames = list(row.names(pyIn), 
-        row.names(pyIn)))
-    for (i in 1:numInds) {
-        for (j in 1:i) {
-            out[i, j] <- sum(colSums(pyIn[c(i, j), ]) == 2)/numLoci
-        }
-    }
-    if (upper) 
-        out <- as.matrix(as.dist(out))
-    if (diagonal) 
-        diag(out) <- apply(pyIn, 1, sum)/numLoci
-    out
-  }
+	data(oaks)
+	temp <- locus.dist(oaks, proportional = T)
+	diag(temp) # this is how well everyone sequenced as a proportion
+	temp <- locus.dist(oaks, proportional = F)
+	temp[c(1,28),]# how well did a successful sequencing do in comparison to a poor sequencing?
+	temp[6:7,] # how about a 2010 sequencing (upper row) vs. a 2012 sequencing of the same library prep (lower row)?
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
