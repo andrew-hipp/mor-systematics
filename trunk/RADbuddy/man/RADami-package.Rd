@@ -1,42 +1,30 @@
-\name{RADbuddy-package}
-\alias{RADbuddy-package}
-\alias{RADbuddy}
+\name{RADami-package}
+\alias{RADami-package}
+\alias{RADami}
 \docType{package}
-\title{
-What the package does (short line)
-~~ package title ~~
-}
-\description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
-}
+\title{Downstream analysis of RADseq phylogenetic data, closely integrated with pyRAD output (http://www.dereneaton.com/software/)}
+\description{This package provides tools for manipulating and analyzing RADseq phylogenetic data after clustering, and in many cases after intial
+			 phylogenetic analyses have been performed. It begins with output from the pyRAD package by Deren Eataon (Eaton and Ree, 2013) and
+			 implements many analyses conducted in a recent phylogenetic analysis of oaks (Hipp et al., accepted).}
 \details{
 \tabular{ll}{
-Package: \tab RADbuddy\cr
+Package: \tab RADami\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
 Date: \tab 2014-01-27\cr
-License: \tab What license is it under?\cr
+License: \tab GPL-3\cr
 }
-~~ An overview of how to use the package, including the most ~~
-~~ important functions ~~
 }
-\author{
-Who wrote it
+\author{Andrew Hipp
 
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
+Maintainer: Andrew Hipp <ahipp@mortonarb.org>
 }
 \references{
-~~ Literature or other references for background information ~~
+Eaton D.A.R. & Ree R.H. (2013). Inferring Phylogeny and Introgression using RADseq Data: An Example from Flowering Plants (Pedicularis: Orobanchaceae). Systematic Biolology 62: 689-706.
+Hipp A.L., Eaton D.A.R., Cavender-Bares J., Fitzek E., Nipper R. & Manos P.S. (Accepted pending revision). A framework phylogeny of the American oak clade based on sequenced RAD data. PLoS ONE.
+http://www.dereneaton.com/software/
 }
-~~ Optionally other standard keywords, one per line, from file ~~
-~~ KEYWORDS in the R documentation directory ~~
 \keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
 \examples{
 ~~ simple examples of the most important functions ~~
 }
