@@ -1,94 +1,30 @@
 \name{consensus.pyRAD}
 \alias{consensus.pyRAD}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\\title{Generate a consensus sequence for each of the loci in a pyRAD.loci object}
+\description{Uses \code{consensusString} [S4 method for signature 'DNAStringSet']
+             from the \code{Biostrings} package to create
+             a consensus sequence for each locus in a \code{pyRAD.loci} object. All options
+			 in \code{consensusString} can be passed in. As a side-effect, writes
+			 a fasta-style file to \code{writeFile}.}
 \usage{
-consensus.pyRAD(pyIn, from = NA, to = NA, fastaNames = T, writeFile = "rads.con.1_100.txt", ...)
+consensus.pyRAD(pyIn, from = NA, to = NA, fastaNames = T, writeFile = "rads.con.txt", ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{pyIn}{
-%%     ~~Describe \code{pyIn} here~~
+  \item{pyIn}{an object of class \code{pyRAD.loci}}
+  \item{from}{first locus to summarize (by number, sequentially from the beginning of the file), 
+              or \code{NA} if all loci are to be used}
+  \item{to}{last locus to summarize (by number, sequentially from the beginning of the file), 
+            or \code{NA} if all loci are to be used}}
+  \item{fastaNames}{use \code{TRUE} to append a \code{>} to the front of each sequence title, making a fasta-
+                    style file}
+  \item{writeFile}{filename to which to write the sequences}
+  \item{\dots}{extra arguments to \code{consensusString}}
 }
-  \item{from}{
-%%     ~~Describe \code{from} here~~
-}
-  \item{to}{
-%%     ~~Describe \code{to} here~~
-}
-  \item{fastaNames}{
-%%     ~~Describe \code{fastaNames} here~~
-}
-  \item{writeFile}{
-%%     ~~Describe \code{writeFile} here~~
-}
-  \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
+\value{A character vector of sequences, with locus names as the vector names.}
+\author{Andrew Hipp}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (pyIn, from = NA, to = NA, fastaNames = T, writeFile = "rads.con.1_100.txt", 
-    ...) 
-{
-    if (class(pyIn) != "pyRAD.loci") 
-        stop("pyRAD input required, from read.pyRAD")
-    require(Biostrings)
-    allLoci <- unique(as.character(pyIn$locus.index))
-    allLoci <- allLoci[!allLoci == ""]
-    if (!is.na(from)) 
-        allLoci <- allLoci[from:to]
-    seqs <- as.character(pyIn$seqs)
-    loc.index <- as.character(pyIn$locus.index)
-    out <- character(0)
-    for (i in allLoci) {
-        message(i)
-        out <- c(out, consensusString(DNAStringSet(gsub("-", 
-            "N", seqs[loc.index == i])), ...))
-    }
-    if (fastaNames) 
-        allLoci <- paste(">", allLoci, sep = "")
-    names(out) <- allLoci
-    if (!is.na(writeFile)) 
-        write.table(out, writeFile, sep = "\n", quote = F, col.names = F)
-    return(out)
-  }
+  data(oak.rads)
+  temp = consensus.pyRAD(oaks, from=1, to = 10, writeFile = NA) # provide a filename if you want a file exported
+  temp
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{manip}

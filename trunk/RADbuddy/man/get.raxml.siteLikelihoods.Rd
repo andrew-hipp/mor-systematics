@@ -29,4 +29,4 @@ Andrew Hipp
   \code{\link{get.raxml.treeLikelihoods}},
   \code{\link{match.lnL.to.trees}} 
 }
-\keyword{likelihood}
+\keyword{manip}

@@ -1,6 +1,6 @@
 match.lnL.to.trees <-
 function(directory = 'getwd()', lnLprefix = 'RAxML_info.', lnLsuffix = '.lnL', treeIndexFile = 'tree.index.lines.txt', locus.names = NULL, ...) {
-## updated 2014-01-23 to prune out files where no trees written -- TO TEST 
+## updated 2014-01-23 to prune out files where no trees written 
   treeIndex <- read.delim(paste(directory, '/', treeIndexFile, sep = ''), as.is = T, header = F, row.names = 1)
   if(is.null(locus.names)) locus.names <- row.names(treeIndex)
   logfile = file(format(Sys.time(), "match.lnL.%Y-%m-%d.log.txt"), open = "a")

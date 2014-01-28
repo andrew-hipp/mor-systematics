@@ -1,141 +1,62 @@
 \name{gen.RAD.loci.datasets}
 \alias{gen.RAD.loci.datasets}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Generate datasets for partitioned RAD analysis}
+\description{This function takes a set of trees (typically from \code{genTrees}), RAD loci,
+             and some parameters about how taxa to include in the datasets, how many taxa
+			 at minimum need to be included in the datasets, and whether only variable loci
+			 will be included.}
 \usage{
-gen.RAD.loci.datasets(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4, onlyVariable = TRUE, fileBase = format(Sys.time(), "rads.%Y-%m-%d"), splitInto = 8, raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", header = "#!/bin/sh")
+gen.RAD.loci.datasets(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4, 
+                      onlyVariable = TRUE, fileBase = format(Sys.time(), "rads.%Y-%m-%d"), 
+					  splitInto = 8, 
+					  raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", 
+					  header = "#!/bin/sh")
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{rads}{
-%%     ~~Describe \code{rads} here~~
+  \item{rads}{an object of class \code{pyRAD.loc}}
+  \item{trees}{a set of trees, or 'none' if no trees are being used (e.g., if you just
+               want to export loci one-by-one for analysis)}
+  \item{loci}{a vector of locus names to include in analysis, or 'all.' Typically, use 'all'
+              here, because part of what this function does is subset loci for you based
+			  on criteria you provide}
+  \item{taxa}{a vector of taxa to include in analysis, or 'all' for all taxa}
+  \item{minTaxa}{an integer, specifying the minimum number of taxa required to export a locus}
+  \item{onlyVariable}{either \code{TRUE} or \code{FALSE} depending on whether loci should be 
+                      variable or not to be exported}
+  \item{fileBase}{base name for the directories and files created by this function; 
+                  defaults to a handy dated format}
+  \item{splitInto}{the number of folders to split files into for analysis, in case you
+                   want to run several instances of RAxML to get through analysis more
+				   quickly}
+  \item{raxPath}{the path to your RAxML executable}
+  \item{header}{header for the top of your shell scripts / bash files; not necessary
+                for a Windows batch file (\code{.bat}), but defaults to the header
+				needed for a Linux shell script}
 }
-  \item{trees}{
-%%     ~~Describe \code{trees} here~~
-}
-  \item{loci}{
-%%     ~~Describe \code{loci} here~~
-}
-  \item{taxa}{
-%%     ~~Describe \code{taxa} here~~
-}
-  \item{minTaxa}{
-%%     ~~Describe \code{minTaxa} here~~
-}
-  \item{onlyVariable}{
-%%     ~~Describe \code{onlyVariable} here~~
-}
-  \item{fileBase}{
-%%     ~~Describe \code{fileBase} here~~
-}
-  \item{splitInto}{
-%%     ~~Describe \code{splitInto} here~~
-}
-  \item{raxPath}{
-%%     ~~Describe \code{raxPath} here~~
-}
-  \item{header}{
-%%     ~~Describe \code{header} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\details{This function subsets the treeset you give it for all the loci imported, then
+         matched loci and treesets and a batch file for calculating the likelihood of all
+         trees for each locus. It is called for the side-effect of writing all these files.
+		 
+         All files are exported to a series of folders equal in number to \code{splitInto}
+		 + 1. As currently written, the folder with the suffix \code{.0} holds all batch files, an index of trees
+		 that matches the trees you hand to the function (as \code{trees}) with the trees
+		 it returns in each subset, and the \code{.info} output files that are used by 
+		 \code{get.raxml.treeLikelihoods} as well as the site-likelihood files. The 
+		 alignments and trees, as well as the reduced alignments created by RAxML, remain
+		 in the split folders (1 through \code{splitInto}).
+		
+		 This function is the workhorse of the partitioned RAD analysis and is time-consuming to run.
+         It could be executed in parallel and should be in future versions. What is most time-consuming
+		 is that for every treeset exported, the function makes sure that all trees are unique
+		 (see \code{unique.multiPhylo} from \code{ape}).}
+\value{no value. Called for the side effect of the files it exports.}
+\references{Hipp A.L., Eaton D.A.R., Cavender-Bares J., Fitzek E., Nipper R. & Manos P.S. (Accepted pending revision). A framework phylogeny of the American oak clade based on sequenced RAD data. PLoS ONE.}
+\author{Andrew Hipp}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4, 
-    onlyVariable = TRUE, fileBase = format(Sys.time(), "rads.\%Y-\%m-\%d"), 
-    splitInto = 8, raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", 
-    header = "#!/bin/sh") 
-{
-    if (!paste(fileBase, ".", (0), sep = "") \%in\% dir()) 
-        lapply(paste(fileBase, ".", (0:splitInto), sep = ""), 
-            dir.create)
-    analysisFileOut <- lapply(paste(fileBase, ".0/raxml.batch.", 
-        1:splitInto, ".", fileBase, ".sh", sep = ""), file, open = "a")
-    for (i in 1:splitInto) cat(header, "\n", file = analysisFileOut[[i]])
-    indexFileOut <- file(paste(fileBase, ".0/tree.index.lines.txt", 
-        sep = ""), "a")
-    if (loci[1] == "all") 
-        loci <- unique(rads$locus.index)[unique(rads$locus.index) != 
-            ""]
-    if (taxa[1] == "all") 
-        taxa <- unique(rads$tips)[gsub("/", "", unique(rads$tips), 
-            fixed = TRUE) != ""]
-    if (trees[1] != "none") 
-        taxa <- intersect(taxa, trees[[1]]$tip.label)
-    locus.set <- subset.pyRAD.loci(rads, loci, taxa)
-    locus.list <- locus.set$DNA[names(which(locus.set$ntaxa >= 
-        minTaxa))]
-    if (onlyVariable) 
-        locus.list <- locus.list[names(which(locus.set$variable))]
-    if (trees[1] != "none") 
-        tree.vector.matrix <- matrix(NA, nrow = length(locus.list), 
-            ncol = length(trees), dimnames = list(names(locus.list), 
-                names(trees)))
-    batch = 0
-    for (i in names(locus.list)) {
-        if (batch == splitInto) 
-            batch <- 1
-        else batch <- batch + 1
-        message(paste("Writing", i))
-        locus.taxa <- names(locus.list[[i]])[names(locus.list[[i]]) \%in\% 
-            taxa]
-        datFileOut <- paste(fileBase, ".", batch, "/", i, ".phy", 
-            sep = "")
-        write.DNAStringSet(locus.list[[i]][locus.taxa], filename = datFileOut)
-        if (trees[1] != "none") {
-            trees.out <- lapply(trees, drop.tip, tip = trees[[1]]$tip.label[!trees[[1]]$tip.label \%in\% 
-                locus.taxa])
-            trees.out <- lapply(trees.out, unroot)
-            class(trees.out) <- "multiPhylo"
-            trees.out <- unique(trees.out)
-            message(paste("... kept", length(trees.out), "trees"))
-            treeFileOut <- paste(fileBase, ".", batch, "/", i, 
-                ".tre", sep = "")
-            write.tree(trees.out, file = treeFileOut)
-            cat(i, "\t", paste(attr(trees.out, "old.index"), 
-                collapse = "\t"), "\n", sep = "", file = indexFileOut)
-        }
-        analysisLine <- paste(raxPath, "-f G -s", paste("../", 
-            datFileOut, sep = ""), "-m GTRGAMMA -z", paste("../", 
-            treeFileOut, sep = ""), "-n", paste(i, ".lnL", sep = ""))
-        cat(analysisLine, "\n", file = analysisFileOut[[batch]])
-    }
+  \code{\link{genTrees}},
+  \code{\link{get.raxml.treeLikelihoods}},
+  \code{\link{match.lnL.to.trees}},
+  \code{\link{rank.partitionedRAD}}
   }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{datagen}
+\keyword{manip}
