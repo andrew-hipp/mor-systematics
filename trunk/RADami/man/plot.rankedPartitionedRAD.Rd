@@ -4,7 +4,17 @@
 \description{This function creates a plot with 1-3 panels
 			 describing the number of loci supporting, disfavoring,
 			 or ambiguous for each tree, plotted against log-likelihood}
-\usage{plot.rankedPartitionedRAD(x, fileprefix = NULL, widthScalar = 0.85, panels = c("bestMat", "worstMat", "doubleCountMat"), squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3), primeTreeColor = "red", primeTreeCharacter = 19, filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."), paste(c("minT", "rangeL", "diffL", "noDoubles"), x$params, collapse = "_", sep = ""), ".pdf", sep = ""), ...)}
+\usage{
+	plot.rankedPartitionedRAD(x, 
+	fileprefix = NULL, 
+	widthScalar = 0.85, 
+	panels = c("bestMat", "worstMat", "doubleCountMat"), 
+	squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3), 
+	primeTreeColor = "red", 
+	primeTreeCharacter = 19, 
+	filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."), paste(c("minT", "rangeL", "diffL", "noDoubles"), x$params, collapse = "_", sep = ""), ".pdf", sep = ""), 
+	...)
+}
 \arguments{
   \item{x}{an object of class \code{rankedPartitionedRAD}}
   \item{fileprefix}{prefix of the files to save; as written, you have to provide some prefix
