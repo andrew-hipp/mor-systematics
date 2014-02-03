@@ -14,7 +14,7 @@ consensus.pyRAD(pyIn, from = NA, to = NA, fastaNames = T, writeFile = "rads.con.
   \item{from}{first locus to summarize (by number, sequentially from the beginning of the file), 
               or \code{NA} if all loci are to be used}
   \item{to}{last locus to summarize (by number, sequentially from the beginning of the file), 
-            or \code{NA} if all loci are to be used}}
+            or \code{NA} if all loci are to be used}
   \item{fastaNames}{use \code{TRUE} to append a \code{>} to the front of each sequence title, making a fasta-
                     style file}
   \item{writeFile}{filename to which to write the sequences}
