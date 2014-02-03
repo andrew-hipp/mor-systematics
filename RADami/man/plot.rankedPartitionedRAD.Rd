@@ -12,7 +12,7 @@
 	squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3), 
 	primeTreeColor = "red", 
 	primeTreeCharacter = 19, 
-	filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."), paste(c("minT", "rangeL", "diffL", "noDoubles"), x$params, collapse = "_", sep = ""), ".pdf", sep = ""), 
+	filebase = paste(format(Sys.time(), 'rad.partitioned.%Y-%m-%d.'), paste(c("minT", "rangeL", "diffL", "noDoubles"), x$params, collapse = "_", sep = ""), ".pdf", sep = ""), 
 	...)
 }
 \arguments{
