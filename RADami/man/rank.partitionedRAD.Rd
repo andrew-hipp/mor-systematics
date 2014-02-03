@@ -23,8 +23,7 @@ rank.partitionedRAD(radMat, minTrees = 10, min.overall.diff.lnL = 5, threshold.l
 		 trees can occur when the range in log-likelihood is set to less than twice the threshold
 		 log-likelihood or quite near it.}
 \value{
-	A list composed of 7 matrices and one numeric vector. 
-	The matrices all have loci as the rows and trees as the columns:
+	A list composed of 7 matrices and one numeric vector. The matrices all have loci as the rows and trees as the columns:
 		\item{bestMat}{boolean; which trees are supported by which loci}
 		\item{worstMat}{boolean; which trees are disfavored by which loci}
 		\item{doubleCountMat}{boolean; which trees are double-counted by which loci}
