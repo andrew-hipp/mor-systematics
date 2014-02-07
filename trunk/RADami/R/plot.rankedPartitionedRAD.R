@@ -6,8 +6,9 @@ function(x,
 									  squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3),
 									  primeTreeColor = 'red',
 									  primeTreeCharacter = 19,
-									  filebase = paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."),  paste(c('minT','rangeL','diffL','noDoubles'), x$params, collapse = "_", sep = ''), '.pdf', sep = ''),
+									  filebase = 'DEFAULT',
                                       ...) {
+  if(filebase == 'DEFAULT') filebase <- paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."),  paste(c('minT','rangeL','diffL','noDoubles'), x$params, collapse = "_", sep = ''), '.pdf', sep = '')
   if(class(x) != 'rankedPartitionedRAD') warning('Not the expected object class; this function may misbehave')
   if(!is.null(fileprefix)) pdf(paste(fileprefix, filebase, sep = '.'), width = squareSize*length(panels)*widthScalar, height = squareSize)
   layout(matrix(seq(length(panels)), 1, length(panels)))

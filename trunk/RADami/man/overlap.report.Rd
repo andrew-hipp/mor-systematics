@@ -24,5 +24,5 @@ overlap.report(dat, repPattern = "_re", origPattern = "_h")
 }
 \examples{
 	data(oak.rads)
-	overlap.report(oaks)
+	overlap.report(oak.rads)
 }

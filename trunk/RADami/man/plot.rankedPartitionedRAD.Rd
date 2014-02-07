@@ -5,14 +5,14 @@
 			 describing the number of loci supporting, disfavoring,
 			 or ambiguous for each tree, plotted against log-likelihood}
 \usage{
-	plot.rankedPartitionedRAD(x, 
+	\method{plot}{rankedPartitionedRAD}(x, 
 	fileprefix = NULL, 
 	widthScalar = 0.85, 
 	panels = c("bestMat", "worstMat", "doubleCountMat"), 
 	squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3), 
 	primeTreeColor = "red", 
 	primeTreeCharacter = 19, 
-	filebase = paste(format(Sys.time(), 'rad.partitioned.%Y-%m-%d.'), paste(c('minT', 'rangeL', 'diffL', 'noDoubles'), x$params, collapse = '_', sep = ''), '.pdf', sep = ''), 
+	filebase = 'DEFAULT',
 	...)
 }
 \arguments{
@@ -33,7 +33,7 @@
   \item{filebase}{the base of the file name for exported plots}
   \item{\dots}{additional arguments passed to \code{plot}}
 }
-\details{This function as written only prints to pdf}
+\details{This function as written only prints to pdf. Default filebase is pastes \code{rad.partitioned} with the date and the parameter values used. If default filebase is not desired, enter something other than "DEFAULT."}
 \value{No value. This function is called for its side-effect of printing plots to a file.}
 \references{Hipp A.L., Eaton D.A.R., Cavender-Bares J., Fitzek E., Nipper R. & Manos P.S. (Accepted pending revision). A framework phylogeny of the American oak clade based on sequenced RAD data. PLoS ONE.}
 \author{Andrew Hipp}

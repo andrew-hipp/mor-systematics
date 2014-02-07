@@ -1,101 +1,37 @@
 \name{summary.pyRAD.loci}
 \alias{summary.pyRAD.loci}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
+\title{Summary method for \code{pyRAD.loci} objects}
+\description{This function provides the summary stats used by }
 \usage{
-summary.pyRAD.loci(object, var.only = FALSE, ...)
+	\method{summary}{pyRAD.loci}(object, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{
-%%     ~~Describe \code{object} here~~
+  \item{object}{an object of class \code{pyRAD.loci}}
+  \item{\dots}{not currently used, but maintained for consistency with default \code{summary} method}
 }
-  \item{var.only}{
-%%     ~~Describe \code{var.only} here~~
-}
-  \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+\details{This is currently called by default by \code{read.pyRAD}, creating a list object called \code{radSummary}
+		 in value for that object.}
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+	A list with of the following objects:
+		\item{num.loci}{an integer, indicating how many loci there are in the object}
+		\item{tips.per.locus}{a list of character vectors, enumerating the tips in each locus}
+		\item{break.vectors}{a named character vector of the break lines between vectors, with names
+							 corresponding to locus names -- completely redundant with the same object in the 
+							 \code{pyRAD.loci} object}
+		\item{seqs.per.locus}{a list of named character vectors, enumerating the sequences in each locus, named
+							  by tips}
+		\item{num.inds.per.locus}{an integer vector, indicating how many individuals are in each locus}
+		\item{variable.loci}{a boolean vector, indicating which loci are variable (only using the pyRAD
+							 break vectors)}
+		\item{inds.mat}{a handy boolean matrix with individuals as the rows and loci as the columns; 
+						used in several places in \code{RADami}}
+		\item{locus.lengths}{an integer vector, indicating the length of each locus}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
+\author{Andrew Hipp}
+\note{Probably these functions could be teased apart to be more useful and save space, but for now
+		 they are left as is. At this point, there is actually a fair bit of redundancy.}
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+	\code{\link{read.pyRAD}},
+	\code{\link{print.pyRAD.loci}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (object, var.only = FALSE, ...) 
-{
-    message("\nDoing a pyRAD summary")
-    reportInterval <- 2000
-    locus.names <- as.character(unique(object$locus.index))
-    locus.names <- locus.names[locus.names != ""]
-    variable.loci <- locus.names[!is.na(object$seqs[object$breaks])]
-    if (var.only) 
-        locus.names <- variable.loci
-    num.loci <- length(locus.names)
-    tip.names <- as.character(unique(object$tips[-c(object$breaks, 
-        object$cons)]))
-    message("Splitting tips by locus name...")
-    tips.per.locus <- split(object$tips, object$locus.index)[locus.names]
-    seqs.per.locus <- split(object$seqs, object$locus.index)[locus.names]
-    num.inds.per.locus <- sapply(tips.per.locus, length)
-    inds.mat <- matrix(NA, nrow = length(tip.names), ncol = num.loci, 
-        dimnames = list(tip.names, locus.names))
-    message("Making tips matrix...")
-    start.time <- Sys.time()
-    for (i in seq(num.loci)) {
-        temp <- try(tip.names \%in\% tips.per.locus[[locus.names[i]]])
-        if (class(temp) != "try-error") {
-            inds.mat[, locus.names[i]] <- temp
-            names(seqs.per.locus[[i]]) <- tips.per.locus[[i]]
-        }
-        else (message(paste("Error occurred with locus", locus.names[i])))
-        if (i/reportInterval - i\%/\%reportInterval == 0) {
-            message(paste("...", i, "of", num.loci, "-- Estimated time remaining =", 
-                ((Sys.time() - start.time)/i) * (num.loci - i), 
-                attr(Sys.time() - start.time, "units")))
-        }
-    }
-    out <- list(num.loci = num.loci, tips.per.locus = tips.per.locus, 
-        break.vectors = object$break.vectors, seqs.per.locus = seqs.per.locus, 
-        num.inds.per.locus = num.inds.per.locus, variable.loci = variable.loci, 
-        inds.mat = inds.mat, locus.lengths = lengths.report(object, 
-            0))
-    class(out) <- "summary.pyRAD.loci"
-    out
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

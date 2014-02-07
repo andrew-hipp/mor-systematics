@@ -25,6 +25,3 @@ Hipp A.L., Eaton D.A.R., Cavender-Bares J., Fitzek E., Nipper R. & Manos P.S. (A
 http://www.dereneaton.com/software/
 }
 \keyword{ package }
-\examples{
-~~ simple examples of the most important functions ~~
-}

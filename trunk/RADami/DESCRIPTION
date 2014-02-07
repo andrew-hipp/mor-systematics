@@ -7,4 +7,4 @@ Author: Andrew Hipp <ahipp@mortonarb.org>
 Maintainer: Andrew Hipp <ahipp@mortonarb.org>
 Description: More about what it does (maybe more than one line)
 License: GPL-3
-Requires: ape, geiger, Biostrings, phangorn
+Depends: ape, geiger, Biostrings, phangorn

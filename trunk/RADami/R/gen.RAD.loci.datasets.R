@@ -1,6 +1,7 @@
 gen.RAD.loci.datasets <-
-function(rads, trees = 'none', loci = 'all', taxa = 'all', minTaxa = 4, onlyVariable = TRUE, fileBase = format(Sys.time(), "rads.%Y-%m-%d"), splitInto = 8, raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", header = "#!/bin/sh") {
+function(rads, trees = 'none', loci = 'all', taxa = 'all', minTaxa = 4, onlyVariable = TRUE, fileBase = "DEFAULT", splitInto = 8, raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", header = "#!/bin/sh") {
   # create directory structure
+  if(fileBase == 'DEFAULT') fileBase <- format(Sys.time(), "rads.%Y-%m-%d")
   if(!paste(fileBase, ".", (0), sep = '') %in% dir()) lapply(paste(fileBase, ".", (0:splitInto), sep = ''), dir.create) # defaults to making a directory to hold all the files
   
   # initiate log files

@@ -16,8 +16,7 @@ filter.by(dat, taxa, threshold = "all")
          identifying loci for which data are present in a specified number of individuals}
 \value{A character vector of locus names}
 \author{Andrew Hipp}
-\seealso{
-  \code{\link{locus.picker}}, 
+\seealso{ 
   \code{\link{subset.pyRAD.loci}}
 }
 \keyword{manip}

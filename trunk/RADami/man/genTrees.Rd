@@ -9,7 +9,7 @@ generation, then checks to make sure that they are unique before returning the
 original tree plus the generated trees
 }
 \usage{
-genTrees(x, N = 200, filebase = "trial", method = c("nni", "random"), maxmoves = 2, perms = c(length(nni(x)), max(1, as.integer(N - (length(nni(x)))))), software = c("raxml", "paup"), ...)
+genTrees(x, N = 200, filebase = "trial", method = c("nni", "random"), maxmoves = 2, perms = "DEFAULT", software = c("raxml", "paup"), ...)
 }
 \arguments{
   \item{x}{an object of class \code{"phylo"}}
@@ -23,7 +23,8 @@ genTrees(x, N = 200, filebase = "trial", method = c("nni", "random"), maxmoves =
   \item{\dots}{further arguments to be passed to rtree}
 }
 \details{
-The main need for this function is to ensure that the trees you get back are unique... mainly just a wrapper to rNNI and rtree
+The main need for this function is to ensure that the trees you get back are unique... mainly just a wrapper to rNNI and rtree. 
+\code{perms} defaults to \code{c(length(nni(x)), max(1, as.integer(N - (length(nni(x))))))}
 }
 \value{an object of class \code{"multiPhylo"}}
 \author{Andrew Hipp}
