@@ -7,7 +7,7 @@
 			 will be included.}
 \usage{
 gen.RAD.loci.datasets(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4, 
-                      onlyVariable = TRUE, fileBase = format(Sys.time(), "rads.%Y-%m-%d"), 
+                      onlyVariable = TRUE, fileBase = "DEFAULT", 
 					  splitInto = 8, 
 					  raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", 
 					  header = "#!/bin/sh")

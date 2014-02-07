@@ -25,9 +25,9 @@ lengths.report(dat, numtodo = 10, reportInterval = 2000, high.mem = TRUE)
 	\code{\link{summary.pyRAD.loci}}
 }
 \examples{
-  data(oaks)
-  lengths.report(oaks, -1) # returns all loci
-  lengths.report(oaks, 20) # returns only the first 20 loci
-  identical(oaks$radSummary$locus.lengths, lengths.report(oaks, -1)) # called in summarizing rads
+  data(oak.rads)
+  lengths.report(oak.rads, -1) # returns all loci
+  lengths.report(oak.rads, 20) # returns only the first 20 loci
+  identical(oak.rads$radSummary$locus.lengths, lengths.report(oak.rads, -1)) # called in summarizing rads
 }
 

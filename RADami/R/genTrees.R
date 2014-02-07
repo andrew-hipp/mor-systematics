@@ -1,5 +1,5 @@
 genTrees <-
-function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves = 2, perms = c(length(nni(x)), max(1, as.integer(N-(length(nni(x)))))), software = c('raxml', 'paup'), ...) {
+function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves = 2, perms = 'DEFAULT', software = c('raxml', 'paup'), ...) {
   ## Arguments:
   ## x = phylo tree
   ## N = total number of trees to generate
@@ -7,10 +7,11 @@ function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves =
   ## method = method for generating trees
   ## maxmoves = maximum number of rearrangements per tree for nni or spr
   ## perms = number of permutations per maxmoves
-  ## ... = additional arguments to pass along to rtree.phylo or rNNI
+  ## ... = additional arguments to pass along to rtree or rNNI
   ## works with nni, 12 nov 10
   ## January 2014: as written, this doesn't unroot the tree. It ought to, unless you are evaluating trees in a rooted framework (e.g., not using GTR)
   ## 20 January 2014: updated to make sure all trees are unique
+  if(perms == 'DEFAULT') perms <- c(length(nni(x)), max(1, as.integer(N-(length(nni(x))))))
   if(class(x) != 'phylo') stop('This function requires a phylo object as its first argument')
   if(method[1] == 'nni') {
 	for(i in seq(maxmoves)) {
@@ -27,7 +28,7 @@ function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves =
 	  # just takes the first set of uniques... chops off non-uniques presented so far
       }	# end i
 	} # end if	  
-  else if(method[1] == 'random') treeset = c(x, rtree.phylo(x, N, ...))
+  else if(method[1] == 'random') treeset = c(x, rtreePhylo(x, N, ...))
   class(treeset) <- 'multiPhylo'
   if(software[1] == 'raxml') {
 	message('writing raxml')

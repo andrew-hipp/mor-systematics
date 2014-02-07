@@ -1,8 +1,9 @@
 summary.pyRAD.loci <-
-function(object, var.only = FALSE, ...) {
+function(object, ...) {
 # Arguments:
 #  object = a pyRAD.loci object
-#  var.only = if T, only includes variable loci; as written, the function assumes a "*" if there is 
+#  var.only = if T, only includes variable loci; as written, the function assumes a "*" if there is
+#  REVISED 2014-02-04, so var.only option is excluded; doesn't make much sense in a summary method 
   message("\nDoing a pyRAD summary")
   reportInterval <- 2000 # this is just for screen reporting... only matters with really long files
   ## currently, locus.names includes a null (""), b/c the break lines have no locus name
@@ -10,7 +11,7 @@ function(object, var.only = FALSE, ...) {
   locus.names <- locus.names[locus.names != ""]
   ## REWRITE TO LOOK FOR BREAKLINES THAT HAVE * OR - IN THEM
   variable.loci <- locus.names[!is.na(object$seqs[object$breaks])] # note that this works with the pyRAD output we are currently using... should be checked
-  if(var.only) locus.names <- variable.loci
+  # if(var.only) locus.names <- variable.loci
   num.loci <- length(locus.names)
   tip.names <- as.character(unique(object$tips[-c(object$breaks, object$cons)]))
   message("Splitting tips by locus name...")

@@ -22,6 +22,6 @@ rad2mat(pyDat, fill.N = TRUE)
 	\code{\link{summary.pyRAD.loci}}
 }
 \examples{
-data(oak.rad)
-out <- rad2mat(oaks)
+data(oak.rads)
+out <- rad2mat(oak.rads)
 }

@@ -10,5 +10,6 @@ function(pyIn, proportional = TRUE, upper = TRUE, diagonal = TRUE) {
 	  }}
   if(upper) out <- as.matrix(as.dist(out))
   if(diagonal) diag(out) <- apply(pyIn, 1, sum) / numLoci
+  class(out) <- 'locus.dist'
   out
   }

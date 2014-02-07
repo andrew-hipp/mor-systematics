@@ -4,10 +4,10 @@
 \description{Plots a phylogeny lined up with the locus-sharing similarity matrix in graphical
 			 style}
 \usage{
-plot.locus.dist(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, point.pch = c(21, 21), cols = c('black', 'red'), ...)
+	\method{plot}{locus.dist}(x, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, point.pch = c(21, 21), cols = c('black', 'red'), ...)
 }
 \arguments{
-  \item{locD}{output from \code{locus.dist}}
+  \item{x}{output from \code{locus.dist}}
   \item{tr}{an object of class \code{phylo} with tips named the same as the rows of \code{locD}}
   \item{trW}{width of the panels holding the tree}
   \item{plotW}{width of the panel holding the matrix plot}
@@ -43,7 +43,7 @@ plot.locus.dist(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scala
 \examples{
   data(oak.rads)
   data(oak.tree)
-  plot.locus.dist(locus.dist(oaks, proportional = T), oak.tree)
-  plot.locus.dist(locus.dist(oaks, proportional = T, upper = T), ladderize(oak.tree), trW = 1, labelsW = 1, scalar = 3) # a nicer looking plot
+  plot.locus.dist(locus.dist(oak.rads, proportional = TRUE), oak.tree)
+  plot.locus.dist(locus.dist(oak.rads, proportional = TRUE, upper = TRUE), ladderize(oak.tree), trW = 1, labelsW = 1, scalar = 3) # a nicer looking plot
 }
 \keyword{hplot}

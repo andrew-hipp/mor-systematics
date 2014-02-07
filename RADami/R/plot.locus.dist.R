@@ -1,5 +1,6 @@
 plot.locus.dist <-
-function(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, point.pch = c(21,22), cols = c('black','red'), ...) {
+function(x, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, point.pch = c(21,21), cols = c('black','red'), ...) {
+ locD <- x
  if(barH > 0) layout(matrix(c(2,1,3),3,1), widths = rep(trW + plotW + labelsW + plotGap * 2, 3), heights = c(barH, plotW, trW), TRUE)
  orig.tips <- tr$tip.label
  names(orig.tips) <- orig.tips
@@ -12,7 +13,7 @@ function(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5
  pch.mat <- matrix(point.pch[1], dim(locD)[1], dim(locD)[2])
  diag(pch.mat) <- point.pch[2]
  nloci <- dim(locD)[1]
- plot(transform(tr, 'depth', trW), x.lim = c(0, trW + plotW + plotGap * 2 + labelsW), show.tip.label=F, no.margin = T)
+ plot(geiger::transform(tr, 'depth', trW), x.lim = c(0, trW + plotW + plotGap * 2 + labelsW), show.tip.label=F, no.margin = T)
  xy <- matrix(seq(nloci), nloci, nloci, byrow = TRUE)
  Xs <- plotW*(as.numeric(t(xy)) / nloci) + trW + plotGap
  points(Xs, as.numeric(xy), pch = as.numeric(pch.mat), cex = as.numeric(locD) * scalar, bg = as.character(color.mat), col = 'black')
@@ -33,7 +34,7 @@ function(locD, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5
  legend.text.x <- (length(tr$tip.label) / plotW) * (plotW + plotGap * 3)
  legend.y <- c(trW, trW * 0.6, trW * 0.2)
  # print(c(tr.x.min, tr.x.max))
- plot(transform(tr, 'depth', trW), x.lim = c(tr.x.min, tr.x.max), direction = 'upwards', show.tip.label=F, no.margin = T)
+ plot(geiger::transform(tr, 'depth', trW), x.lim = c(tr.x.min, tr.x.max), direction = 'upwards', show.tip.label=F, no.margin = T)
  points(rep(legend.dots.x, 2), legend.y[2:3], pch = point.pch[1], bg = cols[1], col = 'black', cex = c(scalar, scalar / 2))
  text(c(legend.header.x, rep(legend.text.x, 2)), legend.y, c('Proportion of total loci', '1.0', '0.5'), cex = c(0.8, 0.6, 0.6), pos = 4)
  out = invisible(list(Xs = Xs[1:length(tr$tip.label)], heights = apply(locD, 2, mean) * barH))

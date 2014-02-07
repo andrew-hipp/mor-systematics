@@ -15,7 +15,8 @@ read.pyRAD(filename, reportInterval = 20000, breakLinesSeparate = FALSE, doSumma
   \item{doSummary}{should \code{summary.pyRAD.loci} be run on the object and appended to the end?}
   \item{\dots}{extra arguments to be passed along to \code{readLines}}
 }
-\details{As written, this function has a lot of summary embedded in it. The }
+\details{As written, this function has a lot of summary embedded in it. The default \code{doSummary = TRUE}
+		 should be left for the other higher-level functions to work properly}
 \value{
 	A list with the following items:
 		\item{tips}{a character vector of the tips for each sequence}
@@ -30,7 +31,7 @@ read.pyRAD(filename, reportInterval = 20000, breakLinesSeparate = FALSE, doSumma
 						   what locus each belongs to}
 		\item{file.read}{name of the file read in}
 		\item{timestamp}{timestamp for exiting the function}
-		\item{radSummary}{an object of class \code{summary.pyRAD.loci}, if called}
+		\item{radSummary}{an object of class \code{summary.pyRAD.loci}, if called, which it is by default}
 }
 \author{Andrew Hipp}
 \seealso{
