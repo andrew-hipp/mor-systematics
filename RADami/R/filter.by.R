@@ -6,5 +6,5 @@ function(dat, taxa, threshold = 'all') {
   if(class(dat) == 'pyRAD.loci') dat.mat <- dat$radSummary$inds.mat[taxa, ]
     else dat.mat <- dat$inds.mat[taxa, ] # this is the case if you pass in a summary.pyRAD.loci object
   if(threshold == 'all') threshold <- length(taxa)
-  return(names(which(apply(dat.mat, 2, sum) == threshold)))
+  return(names(which(apply(dat.mat, 2, sum) >= threshold)))
   }
