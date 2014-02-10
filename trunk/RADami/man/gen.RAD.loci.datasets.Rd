@@ -8,8 +8,10 @@
 \usage{
 gen.RAD.loci.datasets(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4, 
                       onlyVariable = TRUE, fileBase = "DEFAULT", 
-					  splitInto = 8, 
-					  raxPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", 
+					  splitInto = 1, 
+					  cores = 10,
+					  raxSinglePath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", 
+					  raxMultiPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-PTHREADS-AVX", 
 					  header = "#!/bin/sh")
 }
 \arguments{
@@ -28,7 +30,9 @@ gen.RAD.loci.datasets(rads, trees = "none", loci = "all", taxa = "all", minTaxa 
   \item{splitInto}{the number of folders to split files into for analysis, in case you
                    want to run several instances of RAxML to get through analysis more
 				   quickly}
-  \item{raxPath}{the path to your RAxML executable}
+  \item{cores}{the number of processing cores to use for the RAxML full-matrix analysis}
+  \item{raxSinglePath}{the path to your RAxML executable, single-core installation}
+  \item{raxMultiPath}{the path to your RAxML executable, multi-core installation}
   \item{header}{header for the top of your shell scripts / bash files; not necessary
                 for a Windows batch file (\code{.bat}), but defaults to the header
 				needed for a Linux shell script}
