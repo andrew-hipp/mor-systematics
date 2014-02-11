@@ -6,7 +6,8 @@
 			 or ambiguous for each tree, plotted against log-likelihood}
 \usage{
 	\method{plot}{rankedPartitionedRAD}(x, 
-	fileprefix = NULL, 
+	tree.lnL.file = NULL,
+    fileprefix = NULL, 
 	widthScalar = 0.85, 
 	panels = c("bestMat", "worstMat", "doubleCountMat"), 
 	squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3), 
@@ -17,6 +18,7 @@
 }
 \arguments{
   \item{x}{an object of class \code{rankedPartitionedRAD}}
+  \item{tree.lnL.file}{file name of the info file written by RAxML; optional}
   \item{fileprefix}{prefix of the files to save; as written, you have to provide some prefix
                     to identify the files, but the remainder of the file name defaults to a
 					combination of parameters and date}
@@ -33,7 +35,10 @@
   \item{filebase}{the base of the file name for exported plots}
   \item{\dots}{additional arguments passed to \code{plot}}
 }
-\details{This function as written only prints to pdf. Default filebase is pastes \code{rad.partitioned} with the date and the parameter values used. If default filebase is not desired, enter something other than "DEFAULT."}
+\details{The x-axis will either be the tree likelihoods estimated by RAxML in a separate analysis (e.g., using the entire dataset),
+		 or the summed locus likelihoods from the partitioned RAD analysis if no filename is provided.
+		 This function as written only prints to pdf. Default filebase pastes \code{rad.partitioned} 
+		 with the date and the parameter values used. If default filebase is not desired, enter something other than "DEFAULT."}
 \value{No value. This function is called for its side-effect of printing plots to a file.}
 \references{Hipp A.L., Eaton D.A.R., Cavender-Bares J., Fitzek E., Nipper R. & Manos P.S. (Accepted pending revision). A framework phylogeny of the American oak clade based on sequenced RAD data. PLoS ONE.}
 \author{Andrew Hipp}
