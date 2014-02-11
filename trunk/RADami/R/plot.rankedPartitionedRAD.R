@@ -2,6 +2,7 @@ plot.rankedPartitionedRAD <-
 function(x, 
          tree.lnL.file = NULL,
 		 fileprefix = NULL,
+		 lnL.break = NULL,
          widthScalar = .85,
          panels = c('bestMat', 'worstMat', 'doubleCountMat'),
          squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3),
@@ -11,25 +12,37 @@ function(x,
          ...) {
   if(filebase == 'DEFAULT') filebase <- paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."),  paste(c('minT','rangeL','diffL','noDoubles'), x$params, collapse = "_", sep = ''), '.pdf', sep = '')
   if(class(x) != 'rankedPartitionedRAD') warning('Not the expected object class; this function may misbehave')
+  if(!is.null(lnL.break)) {
+    break.out <- try(names(lnL.break) <- panels, silent = TRUE)
+	if(class(break.out) == 'try-error') warning('lnL.break not equal in length to panels, so ignored')
+	}
   if(is.null(tree.lnL.file)) {
     trees.lnL <- colSums(x$radMat)
-	temp.xlab <- 'Tree log-likelihood, full data matrix'
+	temp.xlab <- 'Tree log-likelihood, summed over loci'
 	}
   else {
     trees.lnL <- get.raxml.treeLikelihoods(tree.lnL.file)
-	temp.xlab <- 'Tree log-likelihood, summed over loci'
+	temp.xlab <- 'Tree log-likelihood, full data matrix'
 	}
   if(!is.null(fileprefix)) pdf(paste(fileprefix, filebase, sep = '.'), width = squareSize*length(panels)*widthScalar, height = squareSize)
   layout(matrix(seq(length(panels)), 1, length(panels)))
+  panelCount <- 0
   for(i in panels) {
-    temp.ylab = switch(i, 
+    panelCount <- panelCount + 1
+	temp.ylab = switch(i, 
 	                   bestMat = 'Number of loci supporting tree',
 					   worstMat = 'Number of loci disfavoring tree',
 					   doubleCountMat = 'Loci overlapping, excluded'
 					   )
-	plot(trees.lnL, colSums(x[[i]]), xlab = temp.xlab, ylab = temp.ylab, ...)
-    points(trees.lnL[1], colSums(x[[i]])[1], pch = primeTreeCharacter, col = primeTreeColor)
+	mat.lnL <- colSums(x[[i]])
+	if(!is.null(lnL.break)) {
+	  trees.x <- trees.lnL[trees.lnL > lnL.break[panelCount]]
+	  mat.y <- mat.lnL[trees.lnL > lnL.break[panelCount]]
+	  print(lnL.break[panelCount])
+	  }
+	plot(trees.x, mat.y, xlab = temp.xlab, ylab = temp.ylab, ...)
+    points(trees.x[1], mat.y[1], pch = primeTreeCharacter, col = primeTreeColor)
 	}
-  dev.off()
+  if(!is.null(fileprefix)) dev.off()
   return('done')
   }
