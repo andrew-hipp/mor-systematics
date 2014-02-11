@@ -46,8 +46,16 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	datFileOut <- paste(fileBase, '.', batch, '/', i, '.phy', sep = '')
 	write.DNAStringSet(locus.list[[i]][locus.taxa], filename = datFileOut)
 	if(trees[1] != 'none') {
-	  trees.out <- lapply(trees, ape::drop.tip, tip = trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa])
-	  trees.out <- lapply(trees.out, unroot)
+	  trees.out <- try(lapply(trees, drop.tip, tip = trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa]))
+	  if(class(trees.out) == "try-error") {
+	    message('...error with drop.tip -- bailing out...')
+		next
+		}
+	  trees.out <- try(lapply(trees.out, unroot))
+	  if(class(trees.out) == "try-error") {
+	    message('...error with unroot -- bailing out...')
+		next
+		}
 	  class(trees.out) <- 'multiPhylo'
 	  trees.out <- unique(trees.out) # this really slows things down... if there were a way to speed this up it w/b great.
 	  message(paste('... kept', length(trees.out), 'trees'))
