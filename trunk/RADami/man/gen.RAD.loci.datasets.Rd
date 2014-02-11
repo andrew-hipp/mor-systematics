@@ -9,7 +9,7 @@
 gen.RAD.loci.datasets(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4, 
                       onlyVariable = TRUE, fileBase = "DEFAULT", 
 					  splitInto = 1, 
-					  cores = 10,
+					  cores = 2,
 					  raxSinglePath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", 
 					  raxMultiPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-PTHREADS-AVX", 
 					  header = "#!/bin/sh")
