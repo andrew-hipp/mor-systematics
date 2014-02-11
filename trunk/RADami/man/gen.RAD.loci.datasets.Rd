@@ -15,7 +15,7 @@ gen.RAD.loci.datasets(rads, trees = "none", loci = "all", taxa = "all", minTaxa 
 					  header = "#!/bin/sh")
 }
 \arguments{
-  \item{rads}{an object of class \code{pyRAD.loc}}
+  \item{rads}{an object of class \code{pyRAD.loci}}
   \item{trees}{a set of trees, or 'none' if no trees are being used (e.g., if you just
                want to export loci one-by-one for analysis)}
   \item{loci}{a vector of locus names to include in analysis, or 'all.' Typically, use 'all'
