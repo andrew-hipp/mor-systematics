@@ -9,6 +9,7 @@
 	tree.lnL.file = NULL,
 	fileprefix = NULL, 
 	lnL.break = NULL,
+	regression = NULL,
 	widthScalar = 0.85, 
 	panels = c("bestMat", "worstMat", "doubleCountMat"), 
 	squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3), 
@@ -23,8 +24,10 @@
   \item{fileprefix}{prefix of the files to save; as written, you have to provide some prefix
                     to identify the files if you want a pdf, but the remainder of the file name 
 					defaults to a combination of parameters and date}
-  \item{lnL.break}{a vector, which should be of length one or the length of \code{panels};
+  \item{lnL.break}{a numeric vector, which should be the length of \code{panels};
 				   if not null, the lowest tree likelihood to show on each panel}
+  \item{regression}{a boolean vector, which should be the length of \code{panels};
+				   if not null, whether to draw a linear fit line on each panel}
   \item{widthScalar}{a multiplier on the width of the entire plot to get the plotting panels square
 					 or not as you prefer}
   \item{panels}{a character vector describing the order of panels; 
