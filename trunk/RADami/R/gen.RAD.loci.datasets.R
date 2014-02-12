@@ -70,6 +70,7 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	  else {
 	    trees.out <- trees
 		class(trees.out) <- 'multiPhylo'
+		}
 	  message(paste('... kept', length(trees.out), 'trees'))
 	  treeFileOut <- paste(fileBase, '.', batch, '/', i, '.tre', sep = '')
 	  write.tree(trees.out, file = treeFileOut)
