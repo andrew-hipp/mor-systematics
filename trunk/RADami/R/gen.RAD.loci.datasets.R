@@ -38,17 +38,18 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   if(trees[1] != 'none') tree.vector.matrix <- matrix(NA, nrow = length(locus.list), ncol = length(trees), dimnames = list(names(locus.list), names(trees)))
   
   # subset each locus, write them out
-  batch = 0
+  batch = counter = 0
   trees <- lapply(trees, function(x) x) #this is a workaround -- lapply wasn't workind correctly on multiPhylo object from nni
   for(i in names(locus.list)) {
     if(batch == splitInto) batch <- 1
 	  else batch <- batch + 1
-	message(paste('Doing', i))
+	if(as.integer(counter/1000) - counter/1000 == 0) message(paste('Doing', i))
 	locus.taxa <- names(locus.list[[i]])[names(locus.list[[i]]) %in% taxa]
 	datFileOut <- paste(fileBase, '.', batch, '/', i, '.phy', sep = '')
 	write.DNAStringSet(locus.list[[i]][locus.taxa], filename = datFileOut)
 	if(trees[1] != 'none') {
-	  trees.out <- try(lapply(trees, drop.tip, tip = trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa]))
+	  toDrop <- trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa]
+	  if(length(toDrop) > 0) trees.out <- try(lapply(trees, drop.tip, tip = toDrop))
 	  if(class(trees.out) == "try-error") {
 	    message('...error with drop.tip -- bailing out...')
 		next
