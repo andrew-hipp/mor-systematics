@@ -5,6 +5,8 @@ Version: 1.0-1
 Date: 2014-01-27
 Author: Andrew Hipp <ahipp@mortonarb.org>
 Maintainer: Andrew Hipp <ahipp@mortonarb.org>
-Description: More about what it does (maybe more than one line)
+Description: This package implements import, export, and downstream analysis of RADseq data, 
+			tailored to the pyRAD package by Deren Eaton (http://dereneaton.com/software) 
 License: GPL-3
 Depends: ape, geiger, Biostrings, phangorn
+Recommends: car

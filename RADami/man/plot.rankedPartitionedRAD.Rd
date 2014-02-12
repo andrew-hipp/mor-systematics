@@ -10,11 +10,14 @@
 	fileprefix = NULL, 
 	lnL.break = NULL,
 	regression = NULL,
+	ci = NULL,
 	widthScalar = 0.85, 
 	panels = c("bestMat", "worstMat", "doubleCountMat"), 
 	squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3), 
 	primeTreeColor = "red", 
 	primeTreeCharacter = 19, 
+	highlight.points = NULL, 
+	highlight.colors = NULL,
 	filebase = 'DEFAULT',
 	...)
 }
@@ -28,6 +31,8 @@
 				   if not null, the lowest tree likelihood to show on each panel}
   \item{regression}{a boolean vector, which should be the length of \code{panels};
 				   if not null, whether to draw a linear fit line on each panel}
+  \item{ci}{a numeric vector, the length of \code{panels}; 
+            what CI to show on each regression, or \code{0} for no CI}
   \item{widthScalar}{a multiplier on the width of the entire plot to get the plotting panels square
 					 or not as you prefer}
   \item{panels}{a character vector describing the order of panels; 
@@ -38,6 +43,8 @@
 						should be your original tree (unpermuted) if you've been following the 
 						workflow from \code{genTrees} through this final and exciting plot}
   \item{primeTreeCharacter}{the character of the dot representing the first tree in the matrix}
+  \item{highlight.points}{number of any trees to highlight}
+  \item{highlight.colors}{colors vector or single color for highlighted points}
   \item{filebase}{the base of the file name for exported plots}
   \item{\dots}{additional arguments passed to \code{plot}}
 }
@@ -46,7 +53,9 @@
 		 This function as written prints to pdf if you enter a \code{fileprefix}, to the screen if you don't.
 		 Default filebase pastes \code{rad.partitioned} with the date and the parameter values used. 
 		 If default filebase is not desired, enter something other than "DEFAULT."}
-\value{No value. This function is called for its side-effect of printing plots to a file.}
+\value{This function is called primarily for its side-effect of printing plots to a file.
+		It returns, invisibly, a list of the fit objects for each panel, only relevant 
+		if you set any elements of \code{regression} to \code{TRUE}.}
 \references{Hipp A.L., Eaton D.A.R., Cavender-Bares J., Fitzek E., Nipper R. & Manos P.S. (Accepted pending revision). A framework phylogeny of the American oak clade based on sequenced RAD data. PLoS ONE.}
 \author{Andrew Hipp}
 \seealso{
