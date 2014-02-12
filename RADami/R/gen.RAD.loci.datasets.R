@@ -30,8 +30,8 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   
   # subset loci and trees
   if(loci[1] == "all") loci <- unique(rads$locus.index)[unique(rads$locus.index) != ""]
-  if(taxa[1] == "all") taxa <- unique(rads$tips)[gsub('/', '', unique(rads$tips), fixed = TRUE) != ''] # gets rid of the mock tip that is left by the current version of read.pyRAD
   if(trees[1] != 'none') taxa <- intersect(taxa, trees[[1]]$tip.label)
+  if(length(taxa) <- 0) error('no taxa match between your RAD and tree datasets: please check names and try again')
   locus.set <- subset.pyRAD.loci(rads, loci, taxa)
   locus.list <- locus.set$DNA[names(which(locus.set$ntaxa >= minTaxa))]
   if(onlyVariable) locus.list <- locus.list[names(which(locus.set$variable))]
@@ -39,10 +39,11 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   
   # subset each locus, write them out
   batch = 0
+  trees <- lapply(trees, function(x) x) #this is a workaround -- lapply wasn't workind correctly on multiPhylo object from nni
   for(i in names(locus.list)) {
     if(batch == splitInto) batch <- 1
 	  else batch <- batch + 1
-	message(paste('Writing', i))
+	message(paste('Doing', i))
 	locus.taxa <- names(locus.list[[i]])[names(locus.list[[i]]) %in% taxa]
 	datFileOut <- paste(fileBase, '.', batch, '/', i, '.phy', sep = '')
 	write.DNAStringSet(locus.list[[i]][locus.taxa], filename = datFileOut)
