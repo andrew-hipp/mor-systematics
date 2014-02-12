@@ -31,7 +31,7 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   # subset loci and trees
   if(loci[1] == "all") loci <- unique(rads$locus.index)[unique(rads$locus.index) != ""]
   if(trees[1] != 'none') taxa <- intersect(taxa, trees[[1]]$tip.label)
-  if(length(taxa) <- 0) error('no taxa match between your RAD and tree datasets: please check names and try again')
+  if(length(taxa) == 0) error('no taxa match between your RAD and tree datasets: please check names and try again')
   locus.set <- subset.pyRAD.loci(rads, loci, taxa)
   locus.list <- locus.set$DNA[names(which(locus.set$ntaxa >= minTaxa))]
   if(onlyVariable) locus.list <- locus.list[names(which(locus.set$variable))]
