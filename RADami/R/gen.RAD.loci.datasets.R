@@ -42,10 +42,12 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   trees <- lapply(trees, function(x) x) #this is a workaround -- lapply wasn't workind correctly on multiPhylo object from nni
 #  trees <- lapply(trees, unroot) # moved up here to try to get rid of unrooting error below
   for(i in names(locus.list)) {
-    error <- 0
+    indexString <- NULL
+	error <- 0
 	if(batch == splitInto) batch <- 1
 	  else batch <- batch + 1
-	if(counter %/% 1000 - counter/1000 == 0) message(paste('Doing', i))
+	# if(counter %/% 100 - counter/100 == 0) message(paste('Doing', i))
+	message(paste('Doing', i))
 	counter <- counter + 1
 	locus.taxa <- names(locus.list[[i]])[names(locus.list[[i]]) %in% taxa]
 	datFileOut <- paste(fileBase, '.', batch, '/', i, '.phy', sep = '')
@@ -76,12 +78,14 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	  else {
 	    trees.out <- trees
 		class(trees.out) <- 'multiPhylo'
+		indexString == paste(seq(length(trees.out)), collapse = '\t')
 		}
 	  if(error == 1) next
 	  message(paste('... kept', length(trees.out), 'trees'))
 	  treeFileOut <- paste(fileBase, '.', batch, '/', i, '.tre', sep = '')
 	  write.tree(trees.out, file = treeFileOut)
-	  cat(i, '\t', paste(attr(trees.out, "old.index"), collapse = '\t'), '\n', sep = '', file = indexFileOut)
+	  if(is.null(indexString)) indexString <- paste(attr(trees.out, "old.index"), collapse = '\t')
+	  cat(i, '\t', indexString, '\n', sep = '', file = indexFileOut)
 	  }
 	analysisLine <- paste(raxSinglePath, "-f G -s", paste('../', datFileOut, sep = ''), "-m GTRGAMMA -z", paste('../', treeFileOut, sep = ''), "-n", paste(i, '.lnL', sep = ''))
 	cat(analysisLine, '\n', file = analysisFileOut[[batch]])
