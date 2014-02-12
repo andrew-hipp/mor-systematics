@@ -43,7 +43,8 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   for(i in names(locus.list)) {
     if(batch == splitInto) batch <- 1
 	  else batch <- batch + 1
-	if(as.integer(counter/1000) - counter/1000 == 0) message(paste('Doing', i))
+	if(counter %/% 1000 - counter/1000 == 0) message(paste('Doing', i))
+	counter <- counter + 1
 	locus.taxa <- names(locus.list[[i]])[names(locus.list[[i]]) %in% taxa]
 	datFileOut <- paste(fileBase, '.', batch, '/', i, '.phy', sep = '')
 	write.DNAStringSet(locus.list[[i]][locus.taxa], filename = datFileOut)
