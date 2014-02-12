@@ -60,10 +60,16 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	      message('...error with unroot -- bailing out...')
 		  next
 		  }
+	    class(trees.out) <- 'multiPhylo'
+	    trees.out <- try(unique(trees.out)) # this really slows things down... if there were a way to speed this up it w/b great.
+		if(class(trees.out) == 'try.error') {
+		  message('...error with unique.multiPhylo -- bailing out...')
+		  next
+		  }
 		}
-	  else trees.out <- trees
-	  class(trees.out) <- 'multiPhylo'
-	  trees.out <- unique(trees.out) # this really slows things down... if there were a way to speed this up it w/b great.
+	  else {
+	    trees.out <- trees
+		class(trees.out) <- 'multiPhylo'
 	  message(paste('... kept', length(trees.out), 'trees'))
 	  treeFileOut <- paste(fileBase, '.', batch, '/', i, '.tre', sep = '')
 	  write.tree(trees.out, file = treeFileOut)
