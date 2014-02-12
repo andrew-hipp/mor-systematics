@@ -78,7 +78,7 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	  else {
 	    trees.out <- trees
 		class(trees.out) <- 'multiPhylo'
-		indexString == paste(seq(length(trees.out)), collapse = '\t')
+		indexString <- paste(seq(length(trees.out)), collapse = '\t')
 		}
 	  if(error == 1) next
 	  message(paste('... kept', length(trees.out), 'trees'))
