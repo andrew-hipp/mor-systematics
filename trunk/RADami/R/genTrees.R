@@ -1,5 +1,5 @@
 genTrees <-
-function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves = 2, perms = 'DEFAULT', software = c('raxml', 'paup'), ...) {
+function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves = 2, perms = 'DEFAULT', software = c('raxml'), ...) {
   ## Arguments:
   ## x = phylo tree
   ## N = total number of trees to generate
@@ -24,7 +24,8 @@ function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves =
 	  else treeset <- c(treeset, lapply(unique(rNNI(x, i, perms[i] * 1.5)), function(x) x))
 	  treeset <- lapply(treeset, unroot)
 	  class(treeset) <- 'multiPhylo'
-	  treeset <- unique(treeset)[1:sum(perms[1:i], 1)]
+	  if(length(treeset) >= sum(perms[1:i], 1)) treeset <- unique(treeset)[1:sum(perms[1:i], 1)]
+	  else(warning(paste('Treeset only includes', length(treeset), 'trees of the', sum(perms[1:i], 1), 'expected')))
 	  # just takes the first set of uniques... chops off non-uniques presented so far
       }	# end i
 	} # end if	  
@@ -35,9 +36,5 @@ function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves =
 	write.tree(treeset, file = paste(filebase, '.trees.tre', sep = ''))
     # write.tree(x, file = paste(filebase, '.optimal.tre', sep = '')) ## no longer separating optimal from full trees
     }
-  if(software[1] == 'raxml') {
-    message('RAxML chosen as analysis software. Currently, you just need to run this on your own to get the site likelihoods.Try something like this:\n
-	/home/andrew/code/raxml/standard-RAxML-7.7.2/raxmlHPC-PTHREADS-SSE3 -f g -T 10 -s d6m10.phy -m GTRGAMMA -z analysis.d6m10/RAxML_bestTree.d6m10.out -n d6m10.phy.reduced.siteLnL')
-	}
   return(treeset)
   }
