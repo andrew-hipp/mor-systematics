@@ -7,6 +7,7 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 					  raxMultiPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-PTHREADS-AVX", 
 					  header = "#!/bin/sh")
 					  {
+  if(taxa == 'all') taxa <- row.names(rads$radSummary$inds.mat)
   # create directory structure
   if(fileBase == 'DEFAULT') fileBase <- format(Sys.time(), "rads.%Y-%m-%d")
   if(!paste(fileBase, ".", (0), sep = '') %in% dir()) lapply(paste(fileBase, ".", (0:splitInto), sep = ''), dir.create) # defaults to making a directory to hold all the files
