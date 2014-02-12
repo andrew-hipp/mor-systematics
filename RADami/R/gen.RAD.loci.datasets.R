@@ -41,7 +41,8 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   batch = counter = 0
   trees <- lapply(trees, function(x) x) #this is a workaround -- lapply wasn't workind correctly on multiPhylo object from nni
   for(i in names(locus.list)) {
-    if(batch == splitInto) batch <- 1
+    error <- 0
+	if(batch == splitInto) batch <- 1
 	  else batch <- batch + 1
 	if(counter %/% 1000 - counter/1000 == 0) message(paste('Doing', i))
 	counter <- counter + 1
@@ -53,18 +54,21 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	  if(length(toDrop) > 0) {
 	    trees.out <- try(lapply(trees, drop.tip, tip = toDrop))
 	    if(class(trees.out) == "try-error") {
-	    message('...error with drop.tip -- bailing out...')
-		next
+	      message('...error with drop.tip -- bailing out...')
+		  error <- 1
+		  next
 		  }
 	    trees.out <- try(lapply(trees.out, unroot))
 	    if(class(trees.out) == "try-error") {
 	      message('...error with unroot -- bailing out...')
+		  error <- 1
 		  next
 		  }
 	    class(trees.out) <- 'multiPhylo'
 	    trees.out <- try(unique(trees.out)) # this really slows things down... if there were a way to speed this up it w/b great.
 		if(class(trees.out) == 'try.error') {
 		  message('...error with unique.multiPhylo -- bailing out...')
+		  error <- 1
 		  next
 		  }
 		}
@@ -72,6 +76,7 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	    trees.out <- trees
 		class(trees.out) <- 'multiPhylo'
 		}
+	  if(error == 1) next
 	  message(paste('... kept', length(trees.out), 'trees'))
 	  treeFileOut <- paste(fileBase, '.', batch, '/', i, '.tre', sep = '')
 	  write.tree(trees.out, file = treeFileOut)
