@@ -38,8 +38,9 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   if(trees[1] != 'none') tree.vector.matrix <- matrix(NA, nrow = length(locus.list), ncol = length(trees), dimnames = list(names(locus.list), names(trees)))
   
   # subset each locus, write them out
-  batch = counter = 0
+  batch <- counter <- 0
   trees <- lapply(trees, function(x) x) #this is a workaround -- lapply wasn't workind correctly on multiPhylo object from nni
+#  trees <- lapply(trees, unroot) # moved up here to try to get rid of unrooting error below
   for(i in names(locus.list)) {
     error <- 0
 	if(batch == splitInto) batch <- 1
@@ -66,7 +67,7 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 		  }
 	    class(trees.out) <- 'multiPhylo'
 	    trees.out <- try(unique(trees.out)) # this really slows things down... if there were a way to speed this up it w/b great.
-		if(class(trees.out) == 'try.error') {
+		if(class(trees.out) == 'try-error') {
 		  message('...error with unique.multiPhylo -- bailing out...')
 		  error <- 1
 		  next
