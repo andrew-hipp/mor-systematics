@@ -23,10 +23,6 @@ function(radMat, minTrees = 10, min.overall.diff.lnL = 5,
 	radMat <- radMat[!doubleCounts, ]
 	}
   out <- list(bestMat = bestMat, worstMat = worstMat, doubleCountMat = doubleCountMat, 
-			  radMat = radMat,
-			  radMat.preLnLDiff = radMat.preLnLDiff,
-			  radMat.preMinTrees = radMat.preMinTrees,
-			  radMat.preDoubleCounts = radMat.preDoubleCounts,
 			  params = c(minTrees, min.overall.diff.lnL, threshold.lnL, discardDoubleCounts))
   class(out) <- 'rankedPartitionedRAD'
   out

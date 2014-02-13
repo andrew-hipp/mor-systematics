@@ -24,7 +24,7 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
   rad2phy(rad2mat(rads), taxa, filter.by(rads, taxa = taxa, threshold = minTaxa), datFileOut)
   treeFileOut <- paste(fileBase, '.0/fullTreeSet.tre', sep = '')
   write.tree(trees, treeFileOut)
-  analysisLine <- paste(raxMultiPath, "-f G -s", paste('../', datFileOut, sep = ''), "-T", cores, "-m GTRGAMMA -z", paste('../', treeFileOut, sep = ''), "-n", paste(i, '.lnL', sep = ''))
+  analysisLine <- paste(raxMultiPath, "-f G -s", paste('../', datFileOut, sep = ''), "-T", cores, "-m GTRGAMMA -z", paste('../', treeFileOut, sep = ''), "-n fullMatrixOut.lnL")
   cat(analysisLine, '\n', file = fullMatrixAnalysisFile)
   close(fullMatrixAnalysisFile)
   
