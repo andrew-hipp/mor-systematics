@@ -25,6 +25,7 @@ function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves =
 	  treeset <- lapply(treeset, unroot)
 	  class(treeset) <- 'multiPhylo'
 	  if(length(treeset) >= sum(perms[1:i], 1)) treeset <- unique(treeset)[1:sum(perms[1:i], 1)]
+	  treeset <- treeset[!sapply(treeset, is.null)]
 	  else(warning(paste('Treeset only includes', length(treeset), 'trees of the', sum(perms[1:i], 1), 'expected')))
 	  # just takes the first set of uniques... chops off non-uniques presented so far
       }	# end i

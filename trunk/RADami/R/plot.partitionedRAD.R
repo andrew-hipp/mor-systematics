@@ -1,6 +1,5 @@
-plot.rankedPartitionedRAD <-
+plot.partitionedRAD <-
 function(x, 
-         tree.lnL.file = NULL,
 		 fileprefix = NULL,
 		 lnL.break = NULL,
 		 regression = NULL,
@@ -14,8 +13,10 @@ function(x,
 		 highlight.colors = NULL,
          filebase = 'DEFAULT',
          ...) {
+  trees.lnL <- attr(x, 'full.lnL')
+  x <- rank.partitionedRAD(x)
+  out.lnL <- list(trees.lnL = trees.lnL)
   if(filebase == 'DEFAULT') filebase <- paste(format(Sys.time(), "rad.partitioned.%Y-%m-%d."),  paste(c('minT','rangeL','diffL','noDoubles'), x$params, collapse = "_", sep = ''), '.pdf', sep = '')
-  if(class(x) != 'rankedPartitionedRAD') warning('Not the expected object class; this function may misbehave')
   if(!is.null(lnL.break)) {
 	if(length(lnL.break) != length(panels)) {
 	  warning('lnL.break not equal in length to panels, so ignored')
@@ -33,15 +34,12 @@ function(x,
 	ci <- rep(0, length(panels))
 	}
    fit <- pred.y <- vector('list', length(panels))
- if(is.null(tree.lnL.file)) {
-    trees.lnL <- colSums(x$radMat)
-	temp.xlab <- 'Tree log-likelihood, summed over loci'
+  temp.xlab <- 'Tree log-likelihood, full data matrix'
+  if(!is.null(fileprefix)) {
+    filename <- paste(fileprefix, filebase, sep = '.')
+	pdf(filename, width = squareSize*length(panels)*widthScalar, height = squareSize)
 	}
-  else {
-    trees.lnL <- get.raxml.treeLikelihoods(tree.lnL.file)
-	temp.xlab <- 'Tree log-likelihood, full data matrix'
-	}
-  if(!is.null(fileprefix)) pdf(paste(fileprefix, filebase, sep = '.'), width = squareSize*length(panels)*widthScalar, height = squareSize)
+  else(filename = NA)
   layout(matrix(seq(length(panels)), 1, length(panels)))
   panelCount <- 0
   for(i in panels) {
@@ -60,6 +58,7 @@ function(x,
 	  trees.x <- trees.lnL
 	  mat.y <- mat.lnL
 	  }
+	out.lnL[[paste(i, panelCount, sep = "_Panel")]] <- cbind(trees.x, mat.y)
 	plot(trees.x, mat.y, xlab = temp.xlab, ylab = temp.ylab, type = 'n', ...)
 	points(trees.x[-c(1)], mat.y[-c(1)], ...)
     points(trees.x[1], mat.y[1], pch = primeTreeCharacter, col = primeTreeColor)
@@ -76,6 +75,6 @@ function(x,
 	  }
 	}
   if(!is.null(fileprefix)) dev.off()
-  out <- list(fit = fit, pred.y = pred.y)
+  out <- list(fit = fit, pred.y = pred.y, out.lnL = out.lnL, filename = filename)
   return(invisible(out))
   }

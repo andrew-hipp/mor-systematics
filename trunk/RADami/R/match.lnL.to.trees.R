@@ -3,6 +3,7 @@ match.lnL.to.trees <- function(directory = 'getwd()',
 							   treeIndexFile = 'tree.index.lines.txt', locus.names = NULL, ...) {
 ## updated 2014-01-23 to prune out files where no trees written 
   treeIndex <- read.delim(paste(directory, '/', treeIndexFile, sep = ''), as.is = T, header = F, row.names = 1)
+  full.lnL <- try(get.raxml.treeLikelihoods(paste(directory, '/RAxML_info.fullMatrixOut.lnL', sep = ''))) # added 2014-02-13
   if(is.null(locus.names)) locus.names <- row.names(treeIndex)
   logfile = file(format(Sys.time(), "match.lnL.%Y-%m-%d.log.txt"), open = "a")
   lnL.list <- lapply(paste(directory, '/', lnLprefix, locus.names, lnLsuffix, sep = ''), get.raxml.treeLikelihoods)
@@ -19,6 +20,7 @@ match.lnL.to.trees <- function(directory = 'getwd()',
     else out.mat[i, ] <- lnL.list[[i]][as.character(treeIndex[i,])]
 	}
   out.mat <- out.mat[-c(which(apply(out.mat, 1, function(x) any(is.na(x))))), ]
+  if(class(full.lnL) != 'try-error') attr(out.mat, 'full.lnL') <- full.lnL
   class(out.mat) <- 'partitionedRAD'
   return(out.mat)
   }
