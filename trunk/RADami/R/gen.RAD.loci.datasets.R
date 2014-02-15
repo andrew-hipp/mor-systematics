@@ -51,7 +51,6 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	counter <- counter + 1
 	locus.taxa <- names(locus.list[[i]])[names(locus.list[[i]]) %in% taxa]
 	datFileOut <- paste(fileBase, '.', batch, '/', i, '.phy', sep = '')
-	write.DNAStringSet(locus.list[[i]][locus.taxa], filename = datFileOut)
 	if(trees[1] != 'none') {
 	  toDrop <- trees[[1]]$tip.label[!trees[[1]]$tip.label %in% locus.taxa]
 	  if(length(toDrop) > 0) {
@@ -84,6 +83,7 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
 	  message(paste('... kept', length(trees.out), 'trees'))
 	  treeFileOut <- paste(fileBase, '.', batch, '/', i, '.tre', sep = '')
 	  write.tree(trees.out, file = treeFileOut)
+	  write.DNAStringSet(locus.list[[i]][locus.taxa], filename = datFileOut)
 	  if(is.null(indexString)) indexString <- paste(attr(trees.out, "old.index"), collapse = '\t')
 	  cat(i, '\t', indexString, '\n', sep = '', file = indexFileOut)
 	  }
