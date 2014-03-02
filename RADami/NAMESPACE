@@ -1,1 +1,7 @@
-exportPattern("^[[:alpha:]]+")
+exportPattern("^[^unique]")
+
+S3method(plot, locus.dist)
+S3method(plot, partitionedRAD)
+S3method(plot, rankedPartitionedRAD)
+S3method(print, pyRAD.loci)
+S3method(summary, pyRAD.loci)
