@@ -7,7 +7,8 @@
 			 in \code{consensusString} can be passed in. As a side-effect, writes
 			 a fasta-style file to \code{writeFile}.}
 \usage{
-consensus.pyRAD(pyIn, from = NA, to = NA, fastaNames = T, writeFile = "rads.con.txt", ...)
+consensus.pyRAD(pyIn, from = NA, to = NA, fastaNames = T, 
+                writeFile = "rads.con.txt", ...)
 }
 \arguments{
   \item{pyIn}{an object of class \code{pyRAD.loci}}

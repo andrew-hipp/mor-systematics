@@ -5,7 +5,8 @@
 			 pyRAD loci file and stores it in a form to facilitate a variety of downstream
 			 analyses coded in this package.}
 \usage{
-read.pyRAD(filename, reportInterval = 20000, breakLinesSeparate = FALSE, doSummary = TRUE, ...)
+read.pyRAD(filename, reportInterval = 20000, breakLinesSeparate = FALSE, 
+           doSummary = TRUE, ...)
 }
 \arguments{
   \item{filename}{name of the pyRAD loci file}

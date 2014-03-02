@@ -4,7 +4,8 @@
 \description{This function takes output from \code{match.lnL.to.trees} and scores trees as 
 			 favored or disfavored for all loci that satisfy the criteria specified}
 \usage{
-rank.partitionedRAD(radMat, minTrees = 10, min.overall.diff.lnL = 5, threshold.lnL = 2, discardDoubleCounts = TRUE)
+rank.partitionedRAD(radMat, minTrees = 10, min.overall.diff.lnL = 5, threshold.lnL = 2,
+                    discardDoubleCounts = TRUE)
 }
 \arguments{
   \item{radMat}{matrix output from \code{match.lnL.to.trees}}

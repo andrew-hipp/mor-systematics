@@ -9,7 +9,8 @@ generation, then checks to make sure that they are unique before returning the
 original tree plus the generated trees
 }
 \usage{
-genTrees(x, N = 200, filebase = "trial", method = c("nni", "random"), maxmoves = 2, perms = "DEFAULT", software = c("raxml"), ...)
+genTrees(x, N = 200, filebase = "trial", method = c("nni", "random"), 
+         maxmoves = 2, perms = "DEFAULT", software = c("raxml"), ...)
 }
 \arguments{
   \item{x}{an object of class \code{"phylo"}}
