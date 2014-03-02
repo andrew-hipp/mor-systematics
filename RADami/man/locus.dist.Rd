@@ -31,5 +31,5 @@ locus.dist(pyIn, proportional = TRUE, upper = TRUE, diagonal = TRUE)
 	diag(temp) # this is how well everyone sequenced as a proportion
 	temp <- locus.dist(oak.rads, proportional = FALSE)
 	temp[c(1,28),]# how well did a successful sequencing do in comparison to a poor sequencing?
-	temp[6:7,] # how about a 2010 sequencing (upper row) vs. a 2012 sequencing of the same library prep (lower row)?
+	temp[6:7,] # ... and 2010 sequencing (upper row) vs. 2012 sequencing of the same library?
 }

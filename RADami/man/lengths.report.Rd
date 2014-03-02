@@ -28,6 +28,6 @@ lengths.report(dat, numtodo = 10, reportInterval = 2000, high.mem = TRUE)
   data(oak.rads)
   lengths.report(oak.rads, -1) # returns all loci
   lengths.report(oak.rads, 20) # returns only the first 20 loci
-  identical(oak.rads$radSummary$locus.lengths, lengths.report(oak.rads, -1)) # called in summarizing rads
+  identical(oak.rads$radSummary$locus.lengths, lengths.report(oak.rads, -1))
 }
 
