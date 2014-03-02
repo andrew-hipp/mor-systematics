@@ -9,4 +9,3 @@ Description: This package implements import, export, and downstream analysis of 
 			integrating with the pyRAD package by Deren Eaton (http://dereneaton.com/software) 
 License: GPL-3
 Depends: ape, geiger, Biostrings, phangorn
-Suggests: car
