@@ -3,7 +3,8 @@
 \title{Export a \code{rad.mat} object to a phylip file}
 \description{This function takes output from \code{rad2mat} and writes it to a phylip file, ready for analysis by RAxML or other software}
 \usage{
-rad2phy(pyDat, inds = row.names(pyDat), loci = dimnames(pyDat)[[2]], outfile = "pyMat.out.phy", padding = 50, verbose = FALSE)
+rad2phy(pyDat, inds = row.names(pyDat), loci = dimnames(pyDat)[[2]],
+        outfile = "pyMat.out.phy", padding = 50, verbose = FALSE)
 }
 \arguments{
   \item{pyDat}{an object of class \code{rad.mat}}

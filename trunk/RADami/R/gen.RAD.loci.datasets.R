@@ -3,8 +3,8 @@ function(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4,
                       onlyVariable = TRUE, fileBase = "DEFAULT", 
 					  splitInto = 1, 
 					  cores = 2,
-					  raxSinglePath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-AVX", 
-					  raxMultiPath = "~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-PTHREADS-AVX", 
+					  raxSinglePath = "raxmlHPC-AVX", 
+					  raxMultiPath = "raxmlHPC-PTHREADS-AVX", 
 					  header = "#!/bin/sh")
 					  {
   if(taxa == 'all') taxa <- row.names(rads$radSummary$inds.mat)
