@@ -46,6 +46,7 @@
   data(oak.rads)
   data(oak.tree)
   plot.locus.dist(locus.dist(oak.rads, proportional = TRUE), oak.tree)
-  plot.locus.dist(locus.dist(oak.rads, proportional = TRUE, upper = TRUE), ladderize(oak.tree), trW = 1, labelsW = 1, scalar = 3) # a nicer looking plot
+  plot.locus.dist(locus.dist(oak.rads, proportional = TRUE, upper = TRUE), 
+                  ladderize(oak.tree), trW = 1, labelsW = 1, scalar = 3) # a nicer looking plot
 }
 \keyword{hplot}
