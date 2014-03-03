@@ -1,7 +1,7 @@
 Package: RADami
 Type: Package
 Title: R Package for Phylogenetic Analysis of RADseq Data
-Version: 1.0-2
+Version: 1.0-3
 Date: 2014-03-03
 Author: Andrew L. Hipp <ahipp@mortonarb.org>
 Maintainer: Andrew L. Hipp <ahipp@mortonarb.org>
