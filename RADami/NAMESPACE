@@ -1,6 +1,8 @@
 exportPattern("^[^unique]")
 
-import(geiger, Biostrings, phangorn, ape)
+import(ape, Biostrings)
+importFrom(geiger, heights)
+importFrom(phangorn, nni, rNNI)
 
 S3method(plot, locus.dist)
 S3method(plot, partitionedRAD)
