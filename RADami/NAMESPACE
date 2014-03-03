@@ -1,7 +1,7 @@
 exportPattern("^[^unique]")
 
 import(ape, Biostrings)
-importFrom(geiger, heights)
+importFrom(geiger, heights, rescale)
 importFrom(phangorn, nni, rNNI)
 
 S3method(plot, locus.dist)
