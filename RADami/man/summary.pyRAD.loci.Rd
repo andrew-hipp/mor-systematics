@@ -1,11 +1,10 @@
 \name{summary.pyRAD.loci}
 \alias{summary.pyRAD.loci}
 \title{Summary method for \code{pyRAD.loci} objects}
-\description{This function provides the summary stats used by }
+\description{This function provides the summary stats used by many functions in \code{RADami}}
 \usage{
-	\method{summary}{pyRAD.loci}(object, ...)
+\method{summary}{pyRAD.loci}(object, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{an object of class \code{pyRAD.loci}}
   \item{\dots}{not currently used, but maintained for consistency with default \code{summary} method}
