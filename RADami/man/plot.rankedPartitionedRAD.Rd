@@ -5,8 +5,7 @@
 			 describing the number of loci supporting, disfavoring,
 			 or ambiguous for each tree, plotted against log-likelihood}
 \usage{
-\method{plot}{
-rankedPartitionedRAD}(x, 
+\method{plot}{rankedPartitionedRAD}(x, 
      tree.lnL.file = NULL,
      fileprefix = NULL, 
      lnL.break = NULL,
