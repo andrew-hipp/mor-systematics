@@ -5,8 +5,11 @@
              \code{DNAStringSet} format) from a \code{pyRAD.loci}, subsetting
 			 by loci and taxa provided as arguments}
 \usage{
-\method{subset}{pyRAD.loci}(x, loci, taxa, format = "DNAStringSet", reportInterval = 500,
-                            nucVarType = c("verystrict", "strict", "relaxed"), ...)
+\method{subset}{
+pyRAD.loci
+}
+(x, loci, taxa, format = "DNAStringSet", reportInterval = 500,
+           nucVarType = c("verystrict", "strict", "relaxed"), ...)
 }
 \arguments{
   \item{x}{an object of class \code{pyRAD.loci}}
