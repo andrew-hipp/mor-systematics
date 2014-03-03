@@ -13,7 +13,11 @@ function(x, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, b
  pch.mat <- matrix(point.pch[1], dim(locD)[1], dim(locD)[2])
  diag(pch.mat) <- point.pch[2]
  nloci <- dim(locD)[1]
- plot(geiger::transform(tr, 'depth', trW), x.lim = c(0, trW + plotW + plotGap * 2 + labelsW), show.tip.label=F, no.margin = T)
+ tr.rescaled <- tr
+ tree.scalar <- trW / max(heights(tr.rescaled))
+ tr.rescaled$edge.length <- tr.rescaled$edge.length * tree.scalar
+ #plot(geiger::transform(tr, 'depth', trW), x.lim = c(0, trW + plotW + plotGap * 2 + labelsW), show.tip.label=F, no.margin = T)
+ plot(tr.rescaled, x.lim = c(0, trW + plotW + plotGap * 2 + labelsW), show.tip.label=F, no.margin = T)
  xy <- matrix(seq(nloci), nloci, nloci, byrow = TRUE)
  Xs <- plotW*(as.numeric(t(xy)) / nloci) + trW + plotGap
  points(Xs, as.numeric(xy), pch = as.numeric(pch.mat), cex = as.numeric(locD) * scalar, bg = as.character(color.mat), col = 'black')
