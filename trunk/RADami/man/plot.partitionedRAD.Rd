@@ -5,21 +5,20 @@
 			 describing the number of loci supporting, disfavoring,
 			 or ambiguous for each tree, plotted against log-likelihood}
 \usage{
-\method{plot}{
-partitionedRAD}(x, 
-               fileprefix = NULL,
-               lnL.break = NULL,
-               regression = NULL,
-               ci = NULL,
-               widthScalar = .85,
-               panels = c('bestMat', 'worstMat', 'doubleCountMat'),
-               squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3),
-               primeTreeColor = 'red',
-               primeTreeCharacter = 19,
-               highlight.points = NULL, 
-               highlight.colors = NULL,
-               filebase = 'DEFAULT',
-               ...)
+\method{plot}{partitionedRAD}(x, 
+     fileprefix = NULL,
+     lnL.break = NULL,
+     regression = NULL,
+     ci = NULL,
+     widthScalar = .85,
+     panels = c('bestMat', 'worstMat', 'doubleCountMat'),
+     squareSize = switch(as.character(length(panels)), '2' = 5, '3' = 3),
+     primeTreeColor = 'red',
+     primeTreeCharacter = 19,
+     highlight.points = NULL, 
+     highlight.colors = NULL,
+     filebase = 'DEFAULT',
+     ...)
 }
 \arguments{
   \item{x}{an object of class \code{partitionedRAD}}
