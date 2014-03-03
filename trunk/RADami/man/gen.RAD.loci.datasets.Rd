@@ -8,11 +8,11 @@
 \usage{
 gen.RAD.loci.datasets(rads, trees = "none", loci = "all", taxa = "all", minTaxa = 4, 
                       onlyVariable = TRUE, fileBase = "DEFAULT", 
-					  splitInto = 1, 
-					  cores = 2,
-					  raxSinglePath = "raxmlHPC-AVX", 
-					  raxMultiPath = "raxmlHPC-PTHREADS-AVX", 
-					  header = "#!/bin/sh")
+                      splitInto = 1, 
+                      cores = 2,
+                      raxSinglePath = "raxmlHPC-AVX", 
+                      raxMultiPath = "raxmlHPC-PTHREADS-AVX", 
+                      header = "#!/bin/sh")
 }
 \arguments{
   \item{rads}{an object of class \code{pyRAD.loci}}

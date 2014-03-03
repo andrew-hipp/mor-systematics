@@ -4,9 +4,11 @@
 \description{Plots a phylogeny lined up with the locus-sharing similarity matrix in graphical
 			 style}
 \usage{
-	\method{plot}{locus.dist}(x, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25,
-	                          scalar = 1.5, barH = 1, point.pch = c(21, 21), 
-							  cols = c('black', 'red'), ...)
+\method{plot}{
+locus.dist
+}(x, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25,
+           scalar = 1.5, barH = 1, point.pch = c(21, 21), 
+           cols = c('black', 'red'), ...)
 }
 \arguments{
   \item{x}{output from \code{locus.dist}}
