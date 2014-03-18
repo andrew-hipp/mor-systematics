@@ -4,6 +4,10 @@ New features:
 - subset.pyRAD.loci adds snpsOnly option, allowing user to just export SNP positions for loci
 - Added group.pyRAD.loci to identify loci that have > n individuals of each of the groups submitted [NO DOCS YET]
 - Added tidyName to clean up names for comparing names that may have messy characters added [NO DOCS YET]
+- Added genotypes.pyRAD.loci to export genotype matrices to hierfstat [NO DOCS YET]
+
+Other notes:
+- There is an indexing problem in hierfstat's getal function that we are getting around by sorting our group numbers in genotypes [NOT DOCUMENTED; will notify hierfstat developers]
 
 v1.0-3  3 March 2014
 - On CRAN
