@@ -1,0 +1,20 @@
+group.pyRAD.loci <- function(dat, groups, mins = 10, loci = dimnames(dat$radSummary$inds.mat)[[2]], use.tidyName = TRUE, ...) {
+# arguments:
+#  dat is a pyRAD.loci object
+#  groups is a list of individuals (can be named) in the groups
+#  
+# value: a matrix with the number of individuals in each group for each locus
+
+  if(use.tidyName) {
+    row.names(dat$radSummary$inds.mat) <- tidyName(row.names(dat$radSummary$inds.mat), ...)
+	groups <- lapply(groups, tidyName, ...)
+	}
+  inds.mats <- lapply(groups, function(x) temp <- dat$radSummary$inds.mat[x[x %in% row.names(dat$radSummary$inds.mat)], ])
+  out <- sapply(inds.mats, function(x) apply(x, 2, sum))
+  if(!is.na(mins[1])) leave.in <- apply(out, 1, function(x) all(x >= mins))
+  else leave.in <- rep(TRUE, dim(out)[1])
+  out <- cbind(out[leave.in, ], total = colSums(dat$radSummary$inds.mat)[leave.in])
+  if(!is.na(loci[1])) out <- out[intersect(row.names(out), loci), ]
+  out
+  }
+ 

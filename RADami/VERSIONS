@@ -1,2 +1,9 @@
+v1.0-4, 2014-03-18
+New features:
+- subset.pyRAD.loci adds snpLocs to its value, identifying locations of SNPs in the exported data
+- subset.pyRAD.loci adds snpsOnly option, allowing user to just export SNP positions for loci
+- Added group.pyRAD.loci to identify loci that have > n individuals of each of the groups submitted [NO DOCS YET]
+- Added tidyName to clean up names for comparing names that may have messy characters added [NO DOCS YET]
+
 v1.0-3  3 March 2014
 - On CRAN
