@@ -1,4 +1,4 @@
-v1.0-4, 2014-03-18
+v1.0-4, 2014-03-18 through xxx
 New features:
 - subset.pyRAD.loci adds snpLocs to its value, identifying locations of SNPs in the exported data
 - subset.pyRAD.loci adds snpsOnly option, allowing user to just export SNP positions for loci
@@ -6,6 +6,9 @@ New features:
 - Added tidyName to clean up names for comparing names that may have messy characters added [NO DOCS YET]
 - Added genotypes.pyRAD.loci to export genotype matrices to hierfstat [NO DOCS YET]
 - write.DNAStringSet now does fasta as well as phylip
+
+Bug fixes:
+- subset.pyRAD.loci worked inconsistently when it was exporting SNP dataset and only one SNP was discovered; fixed
 
 Other notes:
 - There is an indexing problem in hierfstat's getal function that we are getting around by sorting our group numbers in genotypes [NOT DOCUMENTED; will notify hierfstat developers]
