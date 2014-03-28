@@ -36,8 +36,12 @@ function(x, loci, taxa, format = 'DNAStringSet', reportInterval = 500,
 	out$variable[i] <- length(out$snpLocs[[i]] > 0)
 	out$ntaxa[i] <- sum(seq.index)
 	if(snpsOnly) {
-	  tempDNA <- as.matrix(out$DNA[[i]])[, out$snpLocs[[i]]]
-	  out$DNA[[i]] <- DNAStringSet(apply(tempDNA, 1, paste, collapse = ''))
+	  tempDNA <- as.matrix(as.matrix(out$DNA[[i]])[, out$snpLocs[[i]]])
+	  out$DNA[[i]] <- try(DNAStringSet(apply(tempDNA, 1, paste, collapse = '')))
+	  if(class(out$DNA[[i]]) == 'try-error') {
+	    message(paste('failed on locus', i))
+		out$DNA[[i]] <- NULL
+		}
 	  } # close if
 	} # close i
   class(out) <- 'subset.pyRAD.loci'
