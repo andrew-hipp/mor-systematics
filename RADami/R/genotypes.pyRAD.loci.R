@@ -1,5 +1,4 @@
 genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quercus = inds.quercus),
-                                 mins = c(5,5), 
                                  loci = 'all', taxa = 'all', useSnps = c('first', 'all'), concat = c(FALSE, TRUE), 
 								 use.tidyName = TRUE, na.rm = c('columns', 'rows', 'none'), maxAlleles = 2, 
 								 tidyVals = c('-', '.','>', '_', ' ', 'oak'), sortByGroups = TRUE) {
@@ -16,7 +15,8 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
                                                  with only SNPs exported')
   if(taxa != 'all') {
     dat$DNA <- lapply(dat$DNA, function(x) x[names(x) %in% taxa])
-	dat$DNA <- dat$DNA[sapply(dat$DNA, length) > 
+	dat$DNA <- dat$DNA[sapply(dat$DNA, length) > 0]
+	}
   if(loci != 'all') dat$DNA <- dat$DNA[loci]
   out <- structure(vector('list', length(dat$DNA)), names = names(dat$DNA))
   duplicated.members <- unlist(groups)[duplicated(unlist(groups))]
