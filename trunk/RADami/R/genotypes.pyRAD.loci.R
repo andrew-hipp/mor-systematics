@@ -14,6 +14,8 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 
   if(!'subset.pyRAD.loci' %in% class(dat)) stop('Currently, this function is written to require DNAStringSet output from subset.pyRAD.loci,\n
                                                  with only SNPs exported')
+  if(taxa != 'all') dat$DNA <- lapply(dat$DNA, function(x) x[names(x) %in% taxa])
+  if(loci != 'all') dat$DNA <- dat$DNA[loci]
   out <- structure(vector('list', length(dat$DNA)), names = names(dat$DNA))
   duplicated.members <- unlist(groups)[duplicated(unlist(groups))]
   if(length(duplicated.members) > 0) warning('Some individuals are duplicated between groups; excluding duplicates from export, including first')
