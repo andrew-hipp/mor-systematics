@@ -9,7 +9,7 @@ group.subset.pyRAD.loci <- function(dat, groups, mins = 10, loci = names(dat$DNA
     names(dat$DNA) <- tidyName(names(dat$DNA), ...)
 	groups <- lapply(groups, tidyName, ...)
 	}
-  out <- mcapply(dat$DNA, function(x) c(sapply(groups, function(y) sum(names(x) %in% y)), total = length(x)), mc.cores = 4)
+  out <- mcmapply(dat$DNA, function(x) c(sapply(groups, function(y) sum(names(x) %in% y)), total = length(x)), mc.cores = 4)
   if(!is.na(mins[1])) leave.in <- apply(out, 1, function(x) all(x >= mins))
   else leave.in <- rep(TRUE, dim(out)[1])
   if(!is.na(loci[1])) out <- out[intersect(row.names(out), loci), ]
