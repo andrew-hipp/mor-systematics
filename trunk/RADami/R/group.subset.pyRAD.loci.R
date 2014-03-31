@@ -6,7 +6,7 @@ group.subset.pyRAD.loci <- function(dat, groups, mins = 10, loci = names(dat$DNA
 # value: a matrix with the number of individuals in each group for each locus
 
   if(use.tidyName) {
-    names(dat$DNA) <- tidyName(names(dat$DNA), ...)
+    dat$DNA <- lapply(dat$DNA, function(x) {names(x) <- tidyName(names(dat$DNA), ...); x})
 	groups <- lapply(groups, tidyName, ...)
 	}
   out <- sapply(dat$DNA, function(x) c(sapply(groups, function(y) sum(names(x) %in% y)), total = length(x)))
