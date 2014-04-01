@@ -59,16 +59,15 @@ function(x, loci, taxa, format = 'DNAStringSet', reportInterval = 500,
 	if(snpsOnly) {
 	  do.it.snps <- function(i) {
 	    tempDNA <- as.matrix(as.matrix(out$DNA[[i]])[, out$snpLocs[[i]]])
-		out <- try(DNAStringSet(apply(tempDNA, 1, paste, collapse = '')))
-		if(class(out) == 'try-error') message(paste('failed on locus', i))
-		return(out)
+		snps.out <- try(DNAStringSet(apply(tempDNA, 1, paste, collapse = '')))
+		if(class(snps.out) == 'try-error') message(paste('failed on locus', i))
+		return(snps.out)
 	    } # close do.it.snps
 	  out$DNA <- mclapply(loci, do.it.snps, mc.cores = cores)
-	  names(out) <- loci
-	  out <- out[sapply(out, class) != 'try-error']
+	  names(out$DNA) <- loci
+	  out$DNA <- out$DNA[sapply(out$DNA, class) != 'try-error']
 	  } # close if snpsOnly
-	  var.temp <- length(snps.temp > 0)
-	  out$ntaxa[i] <- sum(seq.index)
+	out$ntaxa <- sum(seq.index)
 	out$variable <- sapply(out$snpLocs, function(i) length(i) > 0)
 	} # close else -- the multicore branch
   class(out) <- 'subset.pyRAD.loci'
