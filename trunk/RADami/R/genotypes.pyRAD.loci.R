@@ -26,17 +26,17 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
   
 ## 3. Translate SNPs to genotypes
   do.this <- function(y) {
-    trans.dna <- t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x]))
-	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
-	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('C', '2', x)))
-	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('G', '3', x)))
-	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('T', '4', x)))
-	trans.dna <- t(apply(trans.dna, 1, function(x) {x[nchar(x) == 1] <- paste(x[nchar(x) == 1], x[nchar(x) == 1], sep = ''); return(x)}))
-	trans.dna <- trans.dna[!apply(trans.dna, 1, function(x) any(nchar(x) > maxAlleles)), ]
-	if(na.rm[1] == 'rows') trans.dna <- trans.dna[!apply(trans.dna, 1, function(x) any(is.na(x))), ]
-	if(na.rm[1] == 'columns') trans.dna <- trans.dna[, !apply(trans.dna, 2, function(x) any(is.na(x)))]
+    trans.dna <- as.matrix(t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x])))
+	trans.dna <- as.matrix(t(apply(trans.dna, 1, function(x) gsub('A', '1', x))))
+	trans.dna <- as.matrix(t(apply(trans.dna, 1, function(x) gsub('C', '2', x))))
+	trans.dna <- as.matrix(t(apply(trans.dna, 1, function(x) gsub('G', '3', x))))
+	trans.dna <- as.matrix(t(apply(trans.dna, 1, function(x) gsub('T', '4', x))))
+	trans.dna <- as.matrix(t(apply(trans.dna, 1, function(x) {x[nchar(x) == 1] <- paste(x[nchar(x) == 1], x[nchar(x) == 1], sep = ''); return(x)})))
+	trans.dna <- as.matrix(trans.dna[!apply(trans.dna, 1, function(x) any(nchar(x) > maxAlleles)), ])
+	if(na.rm[1] == 'rows') trans.dna <- as.matrix(trans.dna[!apply(trans.dna, 1, function(x) any(is.na(x))), ])
+	if(na.rm[1] == 'columns') trans.dna <- as.matrix(trans.dna[, !apply(trans.dna, 2, function(x) any(is.na(x)))])
 	groupMembership <- groups.vector[match(tidyName(row.names(trans.dna), tidyVals), tidyName(names(groups.vector), tidyVals))]
-	out[[i]] <- as.data.frame(cbind(groupMembership = groupMembership, t(apply(trans.dna,1,as.integer))))
+	out[[i]] <- as.data.frame(cbind(groupMembership = groupMembership, as.matrix(t(apply(trans.dna,1,as.integer)))))
 	row.names(out[[i]]) <- row.names(trans.dna)
 	if(sortByGroups) out[[i]] <- out[[i]][order(out[[i]]$groupMembership), ]
 	return(out)
