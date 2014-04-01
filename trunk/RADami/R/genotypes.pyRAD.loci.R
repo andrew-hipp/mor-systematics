@@ -43,8 +43,8 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	if(sortByGroups) dna.out <- dna.out[order(dna.out$groupMembership), ]
 	return(dna.out)
 	}
-  out <- lapply(dat$DNA, do.this)
-  # out <- mclapply(dat$DNA, do.this, mc.cores = cores)
+  # out <- lapply(dat$DNA, do.this)
+  out <- mclapply(dat$DNA, do.this, mc.cores = cores)
   out <- out[!apply(t(sapply(out, dim)), 1, function(x) sum(x == 0) > 0)] # gets rid of all the matrices in which some dimension == 0
   attr(out, 'groupMembership') <- t(sapply(out, function(w) sapply(1:2, function(x) sum(w$groupMembership == x))))
   out
