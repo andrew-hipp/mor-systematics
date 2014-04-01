@@ -27,7 +27,7 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 ## 3. Translate SNPs to genotypes
   do.this <- function(y) {
 	counter = counter + 1
-	message(paste('Doing data', i))
+	message(paste('Doing data', counter))
 	trans.dna <- t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x]))
 	# if(is.null(trans.dna)) trans.dna <- cbind(trans.dna, dummy.column = rep('A', length(trans.dna)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
