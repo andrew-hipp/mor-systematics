@@ -26,11 +26,10 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
   
 ## 3. Translate SNPs to genotypes
   do.this <- function(y) {
-	assign('counter', counter + 1, envir = .GlobalEnv)
-	message(paste('Doing data', counter))
-	# if(counter == 469) browser()
+	# assign('counter', counter + 1, envir = .GlobalEnv)
+	# message(paste('Doing data', counter))
+	# if(counter == xx) browser()
 	trans.dna <- t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x]))
-	# if(is.null(trans.dna)) trans.dna <- cbind(trans.dna, dummy.column = rep('A', length(trans.dna)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('C', '2', x)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('G', '3', x)))
@@ -48,11 +47,11 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	return(dna.out)
 	}
   
-  assign("counter", 0, envir = .GlobalEnv)
+  # assign("counter", 0, envir = .GlobalEnv)
   
-  out <- lapply(dat$DNA, do.this)
-  # out <- mclapply(dat$DNA, do.this, mc.cores = cores)
-  out <- out[class(out) %in% c('data.frame', 'matrix')] # gets rid of anything that isn't a matrix or a data.frame
+  #  out <- lapply(dat$DNA, do.this)
+  out <- mclapply(dat$DNA, do.this, mc.cores = cores)
+  # out <- out[class(out) %in% c('data.frame', 'matrix')] # gets rid of anything that isn't a matrix or a data.frame
   out <- out[!apply(t(sapply(out, dim)), 1, function(x) sum(x == 0) > 0)] # gets rid of all the matrices in which some dimension == 0
   attr(out, 'groupMembership') <- t(sapply(out, function(w) sapply(1:2, function(x) sum(w$groupMembership == x))))
   out
