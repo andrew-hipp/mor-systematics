@@ -26,6 +26,8 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
   
 ## 3. Translate SNPs to genotypes
   do.this <- function(y) {
+	counter = counter + 1
+	message(paste('Doing data', i))
 	trans.dna <- t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x]))
 	# if(is.null(trans.dna)) trans.dna <- cbind(trans.dna, dummy.column = rep('A', length(trans.dna)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
@@ -43,8 +45,11 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	if(sortByGroups) dna.out <- dna.out[order(dna.out$groupMembership), ]
 	return(dna.out)
 	}
-  # out <- lapply(dat$DNA, do.this)
-  out <- mclapply(dat$DNA, do.this, mc.cores = cores)
+  
+  counter = 0 
+  
+  out <- lapply(dat$DNA, do.this)
+  # out <- mclapply(dat$DNA, do.this, mc.cores = cores)
   out <- out[!apply(t(sapply(out, dim)), 1, function(x) sum(x == 0) > 0)] # gets rid of all the matrices in which some dimension == 0
   attr(out, 'groupMembership') <- t(sapply(out, function(w) sapply(1:2, function(x) sum(w$groupMembership == x))))
   out
