@@ -37,8 +37,9 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	if(na.rm[1] == 'rows') trans.dna <- as.matrix(trans.dna)[!apply(as.matrix(trans.dna), 1, function(x) any(is.na(x))), ]
 	if(na.rm[1] == 'columns') trans.dna <- as.matrix(trans.dna)[, !apply(as.matrix(trans.dna), 2, function(x) any(is.na(x)))]
 	groupMembership <- groups.vector[match(tidyName(row.names(as.matrix(trans.dna)), tidyVals), tidyName(names(groups.vector), tidyVals))]
-	dna.out <- as.data.frame(cbind(groupMembership = groupMembership, as.matrix(t(apply(as.matrix(trans.dna),1,as.integer)))))
-	row.names(dna.out) <- row.names(trans.dna)
+	if(is.null(dim(trans.dna))) trans.dna <- as.matrix(trans.dna)
+	dna.out <- as.data.frame(cbind(groupMembership = groupMembership, t(apply(trans.dna,1,as.integer))))
+	row.names(dna.out) <- row.names(trans.dna) # necessary?
 	if(sortByGroups) dna.out <- dna.out[order(dna.out$groupMembership), ]
 	return(dna.out)
 	}
