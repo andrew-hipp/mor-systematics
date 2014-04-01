@@ -13,11 +13,11 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 
   if(!'subset.pyRAD.loci' %in% class(dat)) stop('Currently, this function is written to require DNAStringSet output from subset.pyRAD.loci,\n
                                                  with only SNPs exported')
-  if(taxa != 'all') {
+  if(taxa[1] != 'all') {
     dat$DNA <- lapply(dat$DNA, function(x) x[names(x) %in% taxa])
 	dat$DNA <- dat$DNA[sapply(dat$DNA, length) > 0]
 	}
-  if(loci != 'all') dat$DNA <- dat$DNA[loci]
+  if(loci[1] != 'all') dat$DNA <- dat$DNA[loci]
   out <- structure(vector('list', length(dat$DNA)), names = names(dat$DNA))
   duplicated.members <- unlist(groups)[duplicated(unlist(groups))]
   if(length(duplicated.members) > 0) warning('Some individuals are duplicated between groups; excluding duplicates from export, including first')
@@ -37,8 +37,8 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	if(na.rm[1] == 'rows') trans.dna <- as.matrix(trans.dna)[!apply(as.matrix(trans.dna), 1, function(x) any(is.na(x))), ]
 	if(na.rm[1] == 'columns') trans.dna <- as.matrix(trans.dna)[, !apply(as.matrix(trans.dna), 2, function(x) any(is.na(x)))]
 	groupMembership <- groups.vector[match(tidyName(row.names(as.matrix(trans.dna)), tidyVals), tidyName(names(groups.vector), tidyVals))]
-	if(is.null(dim(trans.dna))) trans.dna <- as.matrix(trans.dna)
-	dna.out <- as.data.frame(cbind(groupMembership = groupMembership, t(apply(trans.dna,1,as.integer))))
+	if(is.null(dim(trans.dna))) dna.out <- as.data.frame(cbind(groupMembership = groupMembership, as.integer(trans.dna)))
+	else dna.out <- as.data.frame(cbind(groupMembership = groupMembership, t(apply(trans.dna,1,as.integer))))
 	row.names(dna.out) <- row.names(trans.dna) # necessary?
 	if(sortByGroups) dna.out <- dna.out[order(dna.out$groupMembership), ]
 	return(dna.out)
