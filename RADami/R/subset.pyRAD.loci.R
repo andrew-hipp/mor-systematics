@@ -67,7 +67,7 @@ function(x, loci, taxa, format = 'DNAStringSet', reportInterval = 500,
 	  names(out$DNA) <- loci
 	  out$DNA <- out$DNA[sapply(out$DNA, class) != 'try-error']
 	  } # close if snpsOnly
-	out$ntaxa <- sum(seq.index)
+	out$ntaxa <- sapply(out$DNA, length)
 	out$variable <- sapply(out$snpLocs, function(i) length(i) > 0)
 	} # close else -- the multicore branch
   class(out) <- 'subset.pyRAD.loci'
