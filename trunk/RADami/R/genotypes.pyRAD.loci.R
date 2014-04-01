@@ -1,7 +1,7 @@
 genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quercus = inds.quercus),
                                  loci = 'all', taxa = 'all', useSnps = c('first', 'all'), concat = c(FALSE, TRUE), 
 								 use.tidyName = TRUE, na.rm = c('columns', 'rows', 'none'), maxAlleles = 2, 
-								 tidyVals = c('-', '.','>', '_', ' ', 'oak'), sortByGroups = TRUE) {
+								 tidyVals = c('-', '.','>', '_', ' ', 'oak'), sortByGroups = TRUE, cores = 8) {
 ##  Makes a dataframe of SNP calls from a pyRAD.loci object for export to hierfstat
 ##  arguments:
 ##    dat = currently requires a subset.pyRAD.loci object
@@ -25,8 +25,8 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
   for(i in 1:length(groups)) groups.vector[groups[[i]]][!names(groups.vector[groups[[i]]]) %in% duplicated.members] <- i
   
 ## 3. Translate SNPs to genotypes
-  for(i in 1:length(dat$DNA)) {
-    trans.dna <- t(apply(as.matrix(dat$DNA[[i]]), 1, function(x) IUPAC_CODE_MAP[x]))
+  do.this <- function(y) {
+    trans.dna <- t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x]))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('C', '2', x)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('G', '3', x)))
@@ -39,7 +39,9 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	out[[i]] <- as.data.frame(cbind(groupMembership = groupMembership, t(apply(trans.dna,1,as.integer))))
 	row.names(out[[i]]) <- row.names(trans.dna)
 	if(sortByGroups) out[[i]] <- out[[i]][order(out[[i]]$groupMembership), ]
-	} # close i
+	return(out)
+	}
+  out <- mclapply(dat$DNA, do.this, mc.cores = cores)
   out <- out[!apply(t(sapply(out, dim)), 1, function(x) sum(x == 0) > 0)] # gets rid of all the matrices in which some dimension == 0
   attr(out, 'groupMembership') <- t(sapply(out, function(w) sapply(1:2, function(x) sum(w$groupMembership == x))))
   out
