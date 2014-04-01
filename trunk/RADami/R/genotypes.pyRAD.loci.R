@@ -28,7 +28,7 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
   do.this <- function(y) {
 	assign('counter', counter + 1, envir = .GlobalEnv)
 	message(paste('Doing data', counter))
-	if(counter == 194) browser()
+	# if(counter == 194) browser()
 	trans.dna <- t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x]))
 	# if(is.null(trans.dna)) trans.dna <- cbind(trans.dna, dummy.column = rep('A', length(trans.dna)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
@@ -42,6 +42,7 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	groupMembership <- groups.vector[match(tidyName(row.names(as.matrix(trans.dna)), tidyVals), tidyName(names(groups.vector), tidyVals))]
 	if(is.null(dim(trans.dna))) dna.out <- as.data.frame(cbind(groupMembership = groupMembership, as.integer(trans.dna)))
 	else dna.out <- as.data.frame(cbind(groupMembership = groupMembership, t(apply(trans.dna,1,as.integer))))
+	if(any(dim(dna.out) == 0)) return(dna.out)
 	row.names(dna.out) <- row.names(trans.dna) # necessary?
 	if(sortByGroups) dna.out <- dna.out[order(dna.out$groupMembership), ]
 	return(dna.out)
