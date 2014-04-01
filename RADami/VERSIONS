@@ -1,5 +1,10 @@
 v1.0-4, 2014-03-18 through xxx
 New features:
+- multicore support in:
+	* subset.pyRAD.loci 
+	* group.pyRAD.loci
+	* group.subset.pyRAD.loci
+	* genotypes.pyRAD.loci
 - subset.pyRAD.loci adds snpLocs to its value, identifying locations of SNPs in the exported data
 - subset.pyRAD.loci adds snpsOnly option, allowing user to just export SNP positions for loci
 - Added group.pyRAD.loci to identify loci that have > n individuals of each of the groups submitted [NO DOCS YET]
