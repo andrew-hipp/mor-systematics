@@ -46,7 +46,7 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	return(dna.out)
 	}
   
-  counter = 0 
+  assign("counter", 0, envir = .GlobalEnv)
   
   out <- lapply(dat$DNA, do.this)
   # out <- mclapply(dat$DNA, do.this, mc.cores = cores)
