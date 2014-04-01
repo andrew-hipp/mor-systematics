@@ -37,10 +37,10 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 	if(na.rm[1] == 'rows') trans.dna <- as.matrix(trans.dna)[!apply(as.matrix(trans.dna), 1, function(x) any(is.na(x))), ]
 	if(na.rm[1] == 'columns') trans.dna <- as.matrix(trans.dna)[, !apply(as.matrix(trans.dna), 2, function(x) any(is.na(x)))]
 	groupMembership <- groups.vector[match(tidyName(row.names(as.matrix(trans.dna)), tidyVals), tidyName(names(groups.vector), tidyVals))]
-	out[[i]] <- as.data.frame(cbind(groupMembership = groupMembership, as.matrix(t(apply(as.matrix(trans.dna),1,as.integer)))))
-	row.names(out[[i]]) <- row.names(trans.dna)
-	if(sortByGroups) out[[i]] <- out[[i]][order(out[[i]]$groupMembership), ]
-	return(out)
+	dna.out <- as.data.frame(cbind(groupMembership = groupMembership, as.matrix(t(apply(as.matrix(trans.dna),1,as.integer)))))
+	row.names(dna.out) <- row.names(trans.dna)
+	if(sortByGroups) dna.out <- dna.out[order(dna.out$groupMembership), ]
+	return(dna.out)
 	}
   out <- mclapply(dat$DNA, do.this, mc.cores = cores)
   out <- out[!apply(t(sapply(out, dim)), 1, function(x) sum(x == 0) > 0)] # gets rid of all the matrices in which some dimension == 0
