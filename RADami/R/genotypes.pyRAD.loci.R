@@ -28,7 +28,7 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
   do.this <- function(y) {
 	assign('counter', counter + 1, envir = .GlobalEnv)
 	message(paste('Doing data', counter))
-	# if(counter == 194) browser()
+	if(counter == 469) browser()
 	trans.dna <- t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x]))
 	# if(is.null(trans.dna)) trans.dna <- cbind(trans.dna, dummy.column = rep('A', length(trans.dna)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
