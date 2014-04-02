@@ -9,7 +9,7 @@ function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.txt', c
   if(!is.na(from)) allLoci <- allLoci[from:to]
   seqs <- as.character(pyIn$seqs)
   loc.index <- as.character(pyIn$locus.index)
-  if(cores = 1) {
+  if(cores == 1) {
     out <- character(0)
     for (i in allLoci) out <- c(out, consensusString(DNAStringSet(gsub("-", "N", seqs[loc.index == i])), ...))
     }
