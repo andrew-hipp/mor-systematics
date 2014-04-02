@@ -15,6 +15,7 @@ group.pyRAD.loci <- function(dat, groups, mins = 10, loci = dimnames(dat$radSumm
   else leave.in <- rep(TRUE, dim(out)[1])
   out <- cbind(out[leave.in, ], total = colSums(dat$radSummary$inds.mat)[leave.in])
   if(!is.na(loci[1])) out <- out[intersect(row.names(out), loci), ]
+  attr(out, 'groups') = groups
   out
   }
  
