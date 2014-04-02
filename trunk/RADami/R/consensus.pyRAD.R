@@ -1,5 +1,5 @@
 consensus.pyRAD <-
-function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.txt', ...) {
+function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.txt', cores = 1, ...) {
 ## originally used seqinr to generate a consensus sequence for each pyRAD locus
 ## 2013-01-04: updated to use Biostrings, which works better 
 ##             - deleted arguments: method = 'majority', threshold = 0.001
@@ -9,8 +9,11 @@ function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.txt', .
   if(!is.na(from)) allLoci <- allLoci[from:to]
   seqs <- as.character(pyIn$seqs)
   loc.index <- as.character(pyIn$locus.index)
-  out <- character(0)
-  for (i in allLoci) out <- c(out, consensusString(DNAStringSet(gsub("-", "N", seqs[loc.index == i])), ...))
+  if(cores = 1) {
+    out <- character(0)
+    for (i in allLoci) out <- c(out, consensusString(DNAStringSet(gsub("-", "N", seqs[loc.index == i])), ...))
+    }
+  else out <- mcmapply(allLoci, function(i) consensusString(DNAStringSet(gsub("-", "N", seqs[loc.index == i])), ...), mc.cores = cores)
   if(fastaNames) allLoci <- paste(">", allLoci, sep = "")
   names(out) <- allLoci
   if(!is.na(writeFile)) write.table(out, writeFile, sep = "\n", quote = F, col.names = F)
