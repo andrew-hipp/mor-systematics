@@ -13,7 +13,7 @@ function(pyIn, from = NA, to = NA, fastaNames = T, writeFile = 'rads.con.txt', c
     out <- character(0)
     for (i in allLoci) out <- c(out, consensusString(DNAStringSet(gsub("-", "N", seqs[loc.index == i])), ...))
     }
-  else out <- mcmapply(allLoci, function(i) consensusString(DNAStringSet(gsub("-", "N", seqs[loc.index == i])), ...), mc.cores = cores)
+  else out <- mcmapply(function(i) consensusString(DNAStringSet(gsub("-", "N", seqs[loc.index == i])), ...), allLoci, mc.cores = cores)
   if(fastaNames) allLoci <- paste(">", allLoci, sep = "")
   names(out) <- allLoci
   if(!is.na(writeFile)) write.table(out, writeFile, sep = "\n", quote = F, col.names = F)
