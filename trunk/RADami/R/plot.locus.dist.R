@@ -1,5 +1,5 @@
 plot.locus.dist <-
-function(x, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, point.pch = c(21,21), cols = c('black','red'), ...) {
+function(x, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, barH = 1, barW = 10, bar.cex = 0.5, point.pch = c(21,21), cols = c('black','red'), ...) {
  locD <- x
  if(barH > 0) layout(matrix(c(2,1,3),3,1), widths = rep(trW + plotW + labelsW + plotGap * 2, 3), heights = c(barH, plotW, trW), TRUE)
  orig.tips <- tr$tip.label
@@ -26,10 +26,10 @@ function(x, tr, trW = 3, plotW = 5, labelsW = 3, plotGap = 0.25, scalar = 1.5, b
    Xs.1 = Xs[1:length(tr$tip.label)]
    heights = apply(locD, 2, function(x) sum(x) / (dim(locD)[1]-1)) * barH 
    plot(1, xlim = c(0, trW + plotW + labelsW + plotGap * 2), ylim = c(0, barH * 1.1), type = 'n', axes = F) # just to move to next layout area
-   segments(x0 = Xs.1, y0 = 0, x1 = Xs.1, y1 = heights, lwd = 10, lty = 1, lend = 2)
+   segments(x0 = Xs.1, y0 = 0, x1 = Xs.1, y1 = heights, lwd = barW, lty = 1, lend = 2)
    # axis(side = 4, pos = tail(Xs, 1) + plotGap, las = 2, cex.axis = 0.6) # right side
    # axis(side = 2, pos = Xs[1] - plotGap, las = 2, cex.axis = 0.6) # left side
-   text(Xs.1, heights, round(heights, 2), pos = 3, cex = 0.5) # numbers above bars
+   text(Xs.1, heights, round(heights, 2), pos = 3, cex = bar.cex) # numbers above bars
    }
  tr.x.max <- (length(tr$tip.label) / plotW) * (plotW + labelsW + plotGap)
  tr.x.min <- -(length(tr$tip.label) / plotW) * (trW + plotGap)
