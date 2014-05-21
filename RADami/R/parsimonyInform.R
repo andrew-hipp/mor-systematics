@@ -35,6 +35,6 @@ require(plyr)
 	out <- switch(option[1], mean = mean(stat), first = stat[1], all = stat)
 	return(out)
 	}
-  out <- mclapply(dat, return.option[1], mc.cores = cores)
+  out <- mclapply(dat$DNA, return.option[1], mc.cores = cores)
   out
   }
