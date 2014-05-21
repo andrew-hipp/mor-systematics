@@ -37,3 +37,4 @@ require(plyr)
 	}
   out <- mclapply(dat, return.option[1], mc.cores = cores)
   out
+  }
