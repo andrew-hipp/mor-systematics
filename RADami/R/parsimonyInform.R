@@ -15,7 +15,7 @@ require(plyr)
 ## per locus, calculate so that it ranges from 0 to 1, where a zero is only when there are no variable sites, 
 ## and a 1 is when one or all variable nucleotides are perfect. Then, do stats either over all SNPs or just for first SNP in each locus
   if(!"subset.pyRAD.loci" %in% class(dat)) stop("this function requires an object of class subset.pyRAD.loci") 
-  if(use.tidyNames) bipartition = lapply(bipartition, tidyNames)
+  if(use.tidyNames) bipartition = lapply(bipartition, tidyName)
   nucs = c('a', 'g', 'c', 't', 'A', 'G', 'C', 'T')
   ## nasty embedded function
   mat.stats <- function(datmat, bip) { 
@@ -27,7 +27,7 @@ require(plyr)
   do.it <- function(workingMat, option = c('mean', 'first', 'all')) {
     variable <- apply(as.character(phyDat(as.matrix(workingMat))),2, function(x) length(unique(x[x %in% nucs]))) > 1
     if(sum(variable) == 0) return(0) # even if we get past this without returning 0, there may be columns that have ambiguities
-	if(use.tidyNames) row.names(workingMat) <- tidyNames(row.names(workingMat))
+	if(use.tidyNames) row.names(workingMat) <- tidyName(row.names(workingMat))
     dom.mat1 <- mat.stats(workingMat, bipartition[[1]])
 	dom.mat2 <- mat.stats(workingMat, bipartition[[2]])
 	sameDomFactor <- ifelse(dom.mat1$x == dom.mat2$x, -1 * (dom.mat1$total + dom.mat2$total), 0)
