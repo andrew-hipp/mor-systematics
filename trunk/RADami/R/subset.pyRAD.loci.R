@@ -13,7 +13,7 @@ function(x, loci, taxa, format = 'DNAStringSet', reportInterval = 500,
   excludedNucs <- switch(nucVarType[1], verystrict = 5:17, strict = 5:17, relaxed = 15:17)
   nucThresh <- switch(nucVarType[1], verystrict = 2, strict = 1, relaxed = 1)
   if(use.tidyName) inds.vector <- tidyName(x$tips, ...) %in% tidyName(taxa, ...)
-  else x$tips %in% taxa
+  else inds.vector <- x$tips %in% taxa
   counter = 0
   start.time <- Sys.time()
   if(cores == 1) {
