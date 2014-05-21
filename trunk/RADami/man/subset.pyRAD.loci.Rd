@@ -2,8 +2,8 @@
 \alias{subset.pyRAD.loci}
 \title{Subsets a \code{pyRAD.loci} object}
 \description{This function returns a dataset (at this point, only in 
-             \code{DNAStringSet} format) from a \code{pyRAD.loci}, subsetting
-			 by loci and taxa provided as arguments}
+             \code{DNAStringSet} format) from a \code{pyRAD.loci} object, 
+			 subsetting by loci and taxa provided as arguments}
 \usage{
 \method{subset}{pyRAD.loci}(x, loci, taxa, format = "DNAStringSet", reportInterval = 500,
        nucVarType = c("verystrict", "strict", "relaxed"), ...)
