@@ -21,7 +21,10 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
   mat.stats <- function(datmat, bip) { 
 	mat <- datmat[row.names(datmat) %in% bip, ]
 	mat.sums <- lapply(apply(mat, 2, count), function(x) x[x$x %in% nucs, ])
-	dom.mat <- cbind(do.call(rbind, lapply(mat.sums, function(y) y[which(y$freq == max(y$freq)), ])), total = sapply(mat.sums, function(x) sum(x$freq)))
+	# in dom.mat below, if there is a tie for most common nucleotide, the first is taken; 
+	# it should not matter on average whether the most common nucleotide matches the other group most common in this case, 
+	# as 0.5 == 1-0.5
+	dom.mat <- cbind(do.call(rbind, lapply(mat.sums, function(y) y[which(y$freq == max(y$freq))[1], ])), total = sapply(mat.sums, function(x) sum(x$freq)))
 	return(dom.mat)
 	}
   do.it <- function(workingMat, option = c('mean', 'first', 'all')) {
@@ -36,10 +39,10 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	statNum <- dom.mat1$freq + dom.mat2$freq
 	statNum <- ifelse(as.character(dom.mat1$x) == as.character(dom.mat2$x), dom.mat1$total + dom.mat2$total - statNum, statNum)
 	stat <- statNum / (dom.mat1$total + dom.mat2$total)
-	if(option == 'max') out <- max(stat, na.rm = T)
-	if(option == 'first') out <- stat[1]
-	if(option == 'all') out <- stat
-	if(option == 'mean') out <- mean(stat, na.rm = T)
+	if(option[1] == 'max') out <- max(stat, na.rm = T)
+	if(option[1] == 'first') out <- stat[1]
+	if(option[1] == 'all') out <- stat
+	if(option[1] == 'mean') out <- mean(stat, na.rm = T)
 	return(out)
 	}
   out <- mclapply(dat$DNA, do.it, option = return.option[1], mc.cores = cores)
