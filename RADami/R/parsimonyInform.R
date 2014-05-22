@@ -19,7 +19,7 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
   nucs = c('a', 'g', 'c', 't', 'A', 'G', 'C', 'T')
   ## nasty embedded function
   mat.stats <- function(datmat, bip) { 
-	mat <- datmat[row.names(datmat) %in% bip, ]
+	mat <- as.matrix(datmat[row.names(datmat) %in% bip, ]) # use as.matrix here to ensure that we don't get a vector, when only one nucleotide is variable
 	mat.sums <- lapply(apply(mat, 2, count), function(x) x[x$x %in% nucs, ])
 	# in dom.mat below, if there is a tie for most common nucleotide, the first is taken; 
 	# it should not matter on average whether the most common nucleotide matches the other group most common in this case, 
