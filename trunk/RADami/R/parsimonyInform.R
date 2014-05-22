@@ -1,4 +1,4 @@
-parsimonyInformBipartition <- function(dat, bipartition, return.option = c('mean', 'first', 'all'), use.tidyNames = TRUE, cores = 2) {
+parsimonyInformBipartition <- function(dat, bipartition, return.option = c('max', 'mean', 'first', 'all'), use.tidyNames = TRUE, cores = 2) {
 ## calculates the parsimony informativeness of a locus / dataset for one bipartition
 ## Arguments:
 ##   dat = an object of class subset.pyRAD.loci
@@ -32,8 +32,10 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	if(use.tidyNames) row.names(workingMat) <- tidyName(row.names(workingMat))
     dom.mat1 <- mat.stats(workingMat, bipartition[[1]])
 	dom.mat2 <- mat.stats(workingMat, bipartition[[2]])
-	sameDomFactor <- ifelse(as.character(dom.mat1$x) == as.character(dom.mat2$x), -1 * (dom.mat1$total + dom.mat2$total), 0)
-	stat <- (dom.mat1$freq + dom.mat2$freq - sameDomFactor) / dom.mat1$total + dom.mat2$total
+	statNum <- dom.mat1$freq + dom.mat2$freq
+	statNum <- ifelse(as.character(dom.mat1$x) == as.character(dom.mat2$x), dom.mat1$total + dom.mat2$total - statNum, statNum)
+	stat <- statNum / (dom.mat1$total + dom.mat2$total)
+	if(option == 'max') out <- max(stat, na.rm = T)
 	if(option == 'first') out <- stat[1]
 	if(option == 'all') out <- stat
 	if(option == 'mean') out <- mean(stat, na.rm = T)
