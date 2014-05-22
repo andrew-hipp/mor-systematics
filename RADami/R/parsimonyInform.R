@@ -10,7 +10,7 @@ parsimonyInformBipartition <- function(dat, bipartition, return.option = c('mean
 ##                       + (number of tips with dominant nucleotide for set 2)
 ##                       - (total tips if dominant in set 1 is the same as dominant in set 2))
 ##                       / total number of tips
-require(plyr)
+require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 
 ## per locus, calculate so that it ranges from 0 to 1, where a zero is only when there are no variable sites, 
 ## and a 1 is when one or all variable nucleotides are perfect. Then, do stats either over all SNPs or just for first SNP in each locus
@@ -37,6 +37,6 @@ require(plyr)
 	if(option == 'mean') out <- mean(stat, na.rm = T)
 	return(out)
 	}
-  out <- mclapply(dat$DNA, return.option[1], mc.cores = cores)
+  out <- mclapply(dat$DNA, do.it, option = return.option[1], mc.cores = cores)
   out
   }
