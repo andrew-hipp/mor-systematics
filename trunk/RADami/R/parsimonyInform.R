@@ -31,7 +31,7 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
     workingMat <- as.matrix(workingMat) ## need to pass along a matrix
 	variable <- apply(as.character(phyDat(workingMat)),2, function(x) length(unique(x[x %in% nucs]))) > 1
     if(sum(variable) == 0) return(0) # even if we get past this without returning 0, there may be columns that have ambiguities
-	workingMat <- workingMat[, variable]
+	workingMat <- as.matrix(workingMat[, variable]) # use as.matrix here to ensure that we don't get a vector, when only one nucleotide is variable
 	if(use.tidyNames) row.names(workingMat) <- tidyName(row.names(workingMat))
     dom.mat1 <- mat.stats(workingMat, bipartition[[1]])
 	dom.mat2 <- mat.stats(workingMat, bipartition[[2]])
