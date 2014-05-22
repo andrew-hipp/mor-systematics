@@ -12,12 +12,15 @@ New features:
 - Added tidyName to clean up names for comparing names that may have messy characters added [NO DOCS YET]
 - Added genotypes.pyRAD.loci to export genotype matrices to hierfstat [NO DOCS YET]
 - write.DNAStringSet now does fasta as well as phylip
+- plot.locus.dist.R now lets you set bar width and the cex for labels above the bars
 
 Bug fixes:
 - subset.pyRAD.loci worked inconsistently when it was exporting SNP dataset and only one SNP was discovered; fixed
 
 Other notes:
-- There is an indexing problem in hierfstat's getal function that we are getting around by sorting our group numbers in genotypes [NOT DOCUMENTED; will notify hierfstat developers]
+- There is an indexing problem in hierfstat's getal function that we are getting around by sorting our group numbers in genotypes [NOT DOCUMENTED; need to notify hierfstat developers]
+
+**************************************
 
 v1.0-3  3 March 2014
 - On CRAN
