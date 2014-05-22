@@ -1,4 +1,4 @@
-parsimonyInformBipartition <- function(dat, bipartition, return.option = c('max', 'mean', 'first', 'all'), use.tidyNames = TRUE, cores = 2) {
+parsimonyInformBipartition <- function(dat, bipartition, minPerGroup = 5, return.option = c('max', 'mean', 'first', 'all'), use.tidyNames = TRUE, cores = 2) {
 ## calculates the parsimony informativeness of a locus / dataset for one bipartition
 ## Arguments:
 ##   dat = an object of class subset.pyRAD.loci
@@ -32,6 +32,7 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	if(use.tidyNames) row.names(workingMat) <- tidyName(row.names(workingMat))
     dom.mat1 <- mat.stats(workingMat, bipartition[[1]])
 	dom.mat2 <- mat.stats(workingMat, bipartition[[2]])
+	if(any(max(dom.mat1$total) < minPerGroup, max(dom.mat2$total) < minPerGroup)) return(NA) # return NA if we don't have a minimum number of individuals for at least some columns
 	statNum <- dom.mat1$freq + dom.mat2$freq
 	statNum <- ifelse(as.character(dom.mat1$x) == as.character(dom.mat2$x), dom.mat1$total + dom.mat2$total - statNum, statNum)
 	stat <- statNum / (dom.mat1$total + dom.mat2$total)
