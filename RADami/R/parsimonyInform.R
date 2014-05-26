@@ -29,8 +29,8 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	return(dom.mat)
 	}
   do.it <- function(workingMat, option = c('mean', 'first', 'all', 'mean.all')) {
-    N = dim(workingMat)[2]
 	workingMat <- as.matrix(workingMat) ## need to pass along a matrix
+    N = dim(workingMat)[2]
 	variable <- apply(as.character(phyDat(workingMat)),2, function(x) length(unique(x[x %in% nucs]))) > 1
     if(sum(variable) == 0) return(0) # even if we get past this without returning 0, there may be columns that have ambiguities
 	workingMat <- as.matrix(workingMat[, variable]) # use as.matrix here to ensure that we don't get a vector, when only one nucleotide is variable
