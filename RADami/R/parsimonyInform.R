@@ -49,7 +49,7 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	return(out)
 	}
   out <- mclapply(dat$DNA, do.it, option = return.option[1], mc.cores = cores)
-  if(return.option[1] %in% c('max', 'first', 'mean')) out <- unlist(out)
+  if(return.option[1] %in% c('max', 'first', 'mean', 'mean.all')) out <- unlist(out)
   if(remove.errors) out <- out[-grep('Error', out)] ## I don't think this is actually needed when the data are formatted correctly
   out
   }
