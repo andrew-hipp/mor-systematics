@@ -28,7 +28,7 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	dom.mat <- cbind(do.call(rbind, lapply(mat.sums, function(y) y[which(y$freq == max(y$freq))[1], ])), total = sapply(mat.sums, function(x) sum(x$freq)))
 	return(dom.mat)
 	}
-  do.it <- function(workingMat, option = c('mean', 'first', 'all')) {
+  do.it <- function(workingMat, option = c('mean', 'first', 'all', 'mean.all')) {
     N = dim(workingMat)[2]
 	workingMat <- as.matrix(workingMat) ## need to pass along a matrix
 	variable <- apply(as.character(phyDat(workingMat)),2, function(x) length(unique(x[x %in% nucs]))) > 1
