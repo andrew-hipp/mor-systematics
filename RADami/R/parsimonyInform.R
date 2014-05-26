@@ -29,7 +29,8 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	return(dom.mat)
 	}
   do.it <- function(workingMat, option = c('mean', 'first', 'all')) {
-    workingMat <- as.matrix(workingMat) ## need to pass along a matrix
+    N = dim(workingMat)[2]
+	workingMat <- as.matrix(workingMat) ## need to pass along a matrix
 	variable <- apply(as.character(phyDat(workingMat)),2, function(x) length(unique(x[x %in% nucs]))) > 1
     if(sum(variable) == 0) return(0) # even if we get past this without returning 0, there may be columns that have ambiguities
 	workingMat <- as.matrix(workingMat[, variable]) # use as.matrix here to ensure that we don't get a vector, when only one nucleotide is variable
@@ -44,6 +45,7 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	if(option[1] == 'first') out <- stat[1]
 	if(option[1] == 'all') out <- stat
 	if(option[1] == 'mean') out <- mean(stat, na.rm = T)
+	if(option[1] == 'mean.all') out <- sum(stat, na.rm = T) / N
 	return(out)
 	}
   out <- mclapply(dat$DNA, do.it, option = return.option[1], mc.cores = cores)
