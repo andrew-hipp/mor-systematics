@@ -1,5 +1,5 @@
 parsimonyInformBipartition <- function(dat, bipartition, minPerGroup = 5, 
-     return.option = c('max', 'mean', 'first', 'all'), use.tidyNames = TRUE, remove.errors = FALSE, cores = 2) {
+     return.option = c('max', 'mean', 'first', 'all', 'mean.all'), use.tidyNames = TRUE, remove.errors = FALSE, cores = 2) {
 ## calculates the parsimony informativeness of a locus / dataset for one bipartition
 ## Arguments:
 ##   dat = an object of class subset.pyRAD.loci
