@@ -1,4 +1,5 @@
-parsimonyInformBipartition <- function(dat, bipartition, minPerGroup = 5, return.option = c('max', 'mean', 'first', 'all'), use.tidyNames = TRUE, cores = 2) {
+parsimonyInformBipartition <- function(dat, bipartition, minPerGroup = 5, 
+     return.option = c('max', 'mean', 'first', 'all'), use.tidyNames = TRUE, remove.errors = FALSE, cores = 2) {
 ## calculates the parsimony informativeness of a locus / dataset for one bipartition
 ## Arguments:
 ##   dat = an object of class subset.pyRAD.loci
@@ -46,5 +47,7 @@ require(plyr) #CHANGE THIS TO importfrom(plyr, count)
 	return(out)
 	}
   out <- mclapply(dat$DNA, do.it, option = return.option[1], mc.cores = cores)
+  if(return.option[1] %in% c('max', 'first', 'mean')) out <- unlist(out)
+  if(remove.errors) out <- out[-grep('Error', out)] ## I don't think this is actually needed when the data are formatted correctly
   out
   }
