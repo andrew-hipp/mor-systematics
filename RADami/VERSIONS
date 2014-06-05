@@ -6,6 +6,7 @@ New features:
 	* group.pyRAD.loci
 	* group.subset.pyRAD.loci
 	* subset.pyRAD.loci 
+- Added LG.plot to plot loci to linkage groups, after blasting to mapped markers
 - subset.pyRAD.loci adds snpLocs to its value, identifying locations of SNPs in the exported data
 - subset.pyRAD.loci adds snpsOnly option, allowing user to just export SNP positions for loci
 - Added group.pyRAD.loci to identify loci that have > n individuals of each of the groups submitted [NO DOCS YET]
