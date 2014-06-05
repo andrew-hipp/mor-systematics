@@ -1,4 +1,4 @@
-LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA, lg.name = 'LG', pos.name = 'consensus', lg = NA, tickBounds = c(-0.1, 0.1), label = TRUE, tick.cex = 0.4, markDupes = c('left', 'right', 'n'), markOverlaps = TRUE, totals = TRUE, extraValues = NA, ...) {
+LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA, lg.name = 'LG', pos.name = 'consensus', lg = NA, tickBounds = c(-0.1, 0.1), label = TRUE, tick.cex = 0.4, markDupes = c('left', 'right', 'n'), markOverlaps = TRUE, totals = TRUE, ...) {
 ## plots the linkage group locations of loci, given a b6 output of loci blasted to mapped markers, and map positions of the markers
 ## doesn't really belong in pyRAD, but it's the most convenient spot for it to live right now
 ## ARGUMENTS:
@@ -17,7 +17,7 @@ LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA
   x <- as.data.frame(cbind(lociBlast, markerPositions[lociBlast$target, ]))
   if(is.na(lg[1])) lg <- sort(unique(x[[lg.name]]))
   lg.ranges <- t(sapply(lg, function(z) range(x[[pos.name]][(x[[lg.name]] == z)], na.rm = TRUE)))
-  plot(1, xlim = c(0, length(lg) + 1), ylim = c(-1, max(lg.ranges) + 20), type = 'n', xaxt = 'n', ...)
+  plot(1, xlim = c(0, length(lg) + 1), ylim = c(-1, max(lg.ranges) + 20), type = 'n', xaxt = 'n', ylab = 'Map distance (cM)', xlab = 'Linkage group', ...)
   axis(1, at = seq(length(lg)), labels = lg, cex.axis = 0.6)
   for(i in 1:length(lg)) {
 	segments(i, 0, i, lg.ranges[i, 2], ...)
@@ -27,10 +27,12 @@ LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA
 	if(markDupes[1] != 'n') {
 	  xpos = switch(markDupes[1], left = i + tickBounds[1] - 0.05, right = i + tickBounds[2] + 0.05)
 	  x.dupes <- names(duplicated.mapped.loci(x))
+	  message(paste("DUPLICATED LOCI ON", lg[i]))
 	  for(j in 1:length(x.dupes)) {
 	    ypos <- x.temp[[pos.name]][x.temp$query == x.dupes[j]]
 		points(rep(xpos, length(ypos)), ypos, col = j)
-        } # close for
+        if(sum(x.temp$query == x.dupes[j]) > 0) message(paste("   ", x.dupes[j], "--", sum(x.temp$query == x.dupes[j]), "copies [", paste(x.temp[[pos.name]][x.temp$query == x.dupes[j]], collapse = ', '), "]"))
+		} # close for
 	  } # close if
 	if(markOverlaps) {
 	  # browser()
@@ -40,14 +42,15 @@ LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA
 	if(totals) {
 	  total.queries <- length(unique(x.temp$query))
 	  total.targets <- length(unique(x.temp$target))
-	  text(i, max(lg.ranges) + c(20,15,10), c(total.queries, total.targets), cex = 0.7)
+	  total.positions <- length(unique(x.temp[[pos.name]]))
+	  text(i, max(lg.ranges) + c(20,15,10), c(total.queries, total.targets, total.positions), cex = 0.7)
 	  } # close if
     } # close i
 	if(totals) {
-	  text(x = (length(lg) + 0.2), y = (max(lg.ranges) + c(20,15)), as.character(c(length(unique(x$query)), length(unique(x$target)))), cex = 0.7, pos = 4)
-	  text(0.8, max(lg.ranges) + c(20,15,10), c('RAD loci', 'Contigs'), cex = 0.7, pos = 2)
-	  print(length(unique(x$query)))
-	  print(length(unique(x$target)))
+	  text(x = (length(lg) + 0.2), y = (max(lg.ranges) + c(20,15,10)), as.character(c(length(unique(x$query)), length(unique(x$target)), length(unique(x[[pos.name]])))), cex = 0.7, pos = 4)
+	  text(0.8, max(lg.ranges) + c(20,15,10), c('RAD loci', 'Contigs', 'Map positions'), cex = 0.7, pos = 2)
+	  message(paste("Total queries =", length(unique(x$query))))
+	  message(paste("Total targets =", length(unique(x$target))))
 	  }
   } # done
   
