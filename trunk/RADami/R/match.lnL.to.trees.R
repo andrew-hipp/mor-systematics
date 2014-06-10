@@ -19,7 +19,8 @@ match.lnL.to.trees <- function(directory = 'getwd()',
 	if(class(error.out) == 'try-error') message(paste('assigning names to locus', i, 'failed'))
     else out.mat[i, ] <- lnL.list[[i]][as.character(treeIndex[i,])]
 	}
-  out.mat <- out.mat[-c(which(apply(out.mat, 1, function(x) any(is.na(x))))), ]
+  dropem <- which(apply(out.mat, 1, function(x) any(is.na(x))))
+  if(length(dropem) > 0) out.mat <- out.mat[-c(dropem), ]
   if(class(full.lnL) != 'try-error') attr(out.mat, 'full.lnL') <- full.lnL
   class(out.mat) <- 'partitionedRAD'
   return(out.mat)
