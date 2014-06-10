@@ -1,0 +1,30 @@
+Executing a partitioned RAD analysis
+2014-06-06
+
+First, prune to the ingroup taxa of relevance to your question. Then, generate a treeset using NNI:
+
+scop.tre.c85d2 <- read.tree('../R1.pyRAD/analysis_raxml/RAxML_bestTree.c85d2m4p3')
+scop.tre.c85d5 <- read.tree('../R1.pyRAD/analysis_raxml/RAxML_bestTree.c85d5m4p3')
+scop.tre.c90d5 <- read.tree('../R1.pyRAD/analysis_raxml/RAxML_bestTree.c90d5m4p3')
+
+scop.tre.c85d2$tip.label <- paste('>', scop.tre.c85d2$tip.label, sep = '')
+scop.tre.c85d5$tip.label <- paste('>', scop.tre.c85d5$tip.label, sep = '')
+scop.tre.c90d5$tip.label <- paste('>', scop.tre.c90d5$tip.label, sep = '')
+
+scop.tre.c85d2 <- drop.tip(scop.tre.c85d2, '>stramin')
+scop.tre.c85d5 <- drop.tip(scop.tre.c85d5, '>stramin')
+scop.tre.c90d5 <- drop.tip(scop.tre.c90d5, '>stramin')
+
+scop.nni.c85d2 <- genTrees(scop.tre.c85d2, maxmoves=3, N = 200, filebase = 'scop.nni.c85d2', perms = c(length(nni(scop.tre.c85d2)), 150, 150))
+scop.nni.c85d5 <- genTrees(scop.tre.c85d5, maxmoves=3, N = 200, filebase = 'scop.nni.c85d5', perms = c(length(nni(scop.tre.c85d5)), 150, 150))
+scop.nni.c90d5 <- genTrees(scop.tre.c90d5, maxmoves=3, N = 200, filebase = 'scop.nni.c90d5', perms = c(length(nni(scop.tre.c90d5)), 150, 150))
+
+then, generate datasets for each of your 
+
+scop.rad.c85d2 <- read.pyRAD('../R1.pyRAD/analysis_pyrad/_c85d2/outfiles/c85d2m4p3.loci')
+scop.rad.c85d5 <- read.pyRAD('../R1.pyRAD/analysis_pyrad/_c85d5/outfiles/c85d5m4p3.loci')
+scop.rad.c90d5 <- read.pyRAD('../R1.pyRAD/analysis_pyrad/_c90d5/outfiles/c90d5m4p3.loci')
+
+gen.RAD.loci.datasets(scop.rad.c85d2, scop.nni.c85d2, fileBase = 'c85d2', cores = 10, taxa = scop.nni.c85d2[[1]]$tip.label)
+gen.RAD.loci.datasets(scop.rad.c85d5, scop.nni.c85d5, fileBase = 'c85d5', cores = 10, taxa = scop.nni.c85d2[[1]]$tip.label)
+gen.RAD.loci.datasets(scop.rad.c90d5, scop.nni.c90d5, fileBase = 'c90d5', cores = 10, taxa = scop.nni.c85d2[[1]]$tip.label)
