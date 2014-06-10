@@ -31,6 +31,7 @@ function(x, N = 200, filebase = 'trial', method = c('nni', 'random'), maxmoves =
       }	# end i
 	} # end if	  
   else if(method[1] == 'random') treeset = c(x, rtreePhylo(x, N, ...))
+  treeset <- treeset[!sapply(treeset, is.null)]
   class(treeset) <- 'multiPhylo'
   if(software[1] == 'raxml') {
 	message('writing raxml')
