@@ -1,4 +1,4 @@
-LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA, lg.name = 'LG', pos.name = 'consensus', lg = NA, tickBounds = c(-0.1, 0.1), label = TRUE, tick.cex = 0.4, markDupes = c('left', 'right', 'n'), markOverlaps = TRUE, totals = TRUE, ...) {
+LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA, lg.name = 'LG', pos.name = 'consensus', lg = NA, tickBounds = c(-0.1, 0.1), label = TRUE, tick.cex = 0.4, text.cex = 0.5, markDupes = c('left', 'right', 'n'), markOverlaps = TRUE, totals = TRUE, ...) {
 ## plots the linkage group locations of loci, given a b6 output of loci blasted to mapped markers, and map positions of the markers
 ## doesn't really belong in pyRAD, but it's the most convenient spot for it to live right now
 ## ARGUMENTS:
@@ -43,12 +43,12 @@ LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA
 	  total.queries <- length(unique(x.temp$query))
 	  total.targets <- length(unique(x.temp$target))
 	  total.positions <- length(unique(x.temp[[pos.name]]))
-	  text(i, max(lg.ranges) + c(20,15,10), c(total.queries, total.targets, total.positions), cex = 0.7)
+	  text(i, max(lg.ranges) + c(20,15,10), c(total.queries, total.targets, total.positions), cex = text.cex)
 	  } # close if
     } # close i
 	if(totals) {
-	  text(x = (length(lg) + 0.2), y = (max(lg.ranges) + c(20,15,10)), as.character(c(length(unique(x$query)), length(unique(x$target)), length(unique(x[[pos.name]])))), cex = 0.7, pos = 4)
-	  text(0.8, max(lg.ranges) + c(20,15,10), c('RAD loci', 'Contigs', 'Map positions'), cex = 0.7, pos = 2)
+	  text(x = (length(lg) + 0.2), y = (max(lg.ranges) + c(20,15,10)), as.character(c(length(unique(x$query)), length(unique(x$target)), length(unique(x[[pos.name]])))), cex = text.cex, pos = 4)
+	  text(0.8, max(lg.ranges) + c(20,15,10), c('RAD loci', 'Contigs', 'Map positions'), cex = text.cex, pos = 2)
 	  message(paste("Total queries =", length(unique(x$query))))
 	  message(paste("Total targets =", length(unique(x$target))))
 	  }
