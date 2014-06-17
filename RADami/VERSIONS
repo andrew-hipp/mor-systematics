@@ -17,6 +17,7 @@ New features:
 
 Bug fixes:
 - subset.pyRAD.loci worked inconsistently when it was exporting SNP dataset and only one SNP was discovered; fixed
+- match.lnL.to.trees previously failed to return a matrix if none of the matrix had bad (NA) columns; fixed
 
 Other notes:
 - There is an indexing problem in hierfstat's getal function that we are getting around by sorting our group numbers in genotypes [NOT DOCUMENTED; need to notify hierfstat developers]
