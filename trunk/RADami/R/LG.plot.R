@@ -1,4 +1,9 @@
-LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA, lg.name = 'LG', pos.name = 'consensus', lg = NA, tickBounds = c(-0.1, 0.1), label = TRUE, tick.cex = 0.4, text.cex = 0.5, markDupes = c('left', 'right', 'n'), markOverlaps = TRUE, totals = TRUE, ...) {
+LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA, 
+                    lg.name = 'LG', pos.name = 'consensus', lg = NA, 
+					tickBounds = c(-0.1, 0.1), label = TRUE, tick.cex = 0.4, text.cex = 0.5, 
+					markDupes = c('left', 'right', 'n'), markOverlaps = TRUE, totals = TRUE, 
+					return.mat = FALSE,
+					...) {
 ## plots the linkage group locations of loci, given a b6 output of loci blasted to mapped markers, and map positions of the markers
 ## doesn't really belong in pyRAD, but it's the most convenient spot for it to live right now
 ## ARGUMENTS:
@@ -52,6 +57,7 @@ LG.plot <- function(lociBlast, markerPositions, max.evalue = NA, min.alignL = NA
 	  message(paste("Total queries =", length(unique(x$query))))
 	  message(paste("Total targets =", length(unique(x$target))))
 	  }
+	if(return.mat) return(x)
   } # done
   
 duplicated.mapped.loci <- function(x, incomparables = FALSE, ...){
