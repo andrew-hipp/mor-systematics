@@ -19,5 +19,6 @@ clean.all.names <- function(directory = './SEQS/', pattern = '.fas', ...) {
 	write.csv(out.table, paste(newdir, '/', i, '.nameTable.csv', sep = ''))
 	write.dna(all.dat[[i]], paste(newdir, '/', i, '.renamed.fas', sep = ''), format = 'fasta')
 	}
+  return(all.dat)
   }
-  
+
