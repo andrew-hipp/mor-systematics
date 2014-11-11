@@ -11,7 +11,7 @@ post.process.cariceae <- function(base.dir, out.dir = 'tree.files', tree.patt = 
   }
   
 make.all.cariceae.dna <- function(base.dir = getwd(), 
-                                  rax.string = '~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-PTHREADS-AVX -f a -x 12345 -p 12345 -m GTRCAT -# 100 -T 16', 
+                                  rax.string = '~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-PTHREADS-AVX -f a -x 12345 -p 12345 -m GTRCAT -# 100 -T 8', 
 								  file.header = '#!/bin/sh',
 								  path.prefix = '~/Dropbox/NSF-CAREX-1255901-core-files/PRIMARY.DATA/SEQUENCE.DATA/MORTON/Analyses/',
 								  analysis.file.suffix = '.sh',
