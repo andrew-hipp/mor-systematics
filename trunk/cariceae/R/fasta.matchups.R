@@ -7,7 +7,8 @@ match.dna <- function(dna.list = dna.renamed, seq.tables = DNA[c('MOR', 'SHUREN'
 ## taxon.table = an SP2 taxonomic table
 ## specimen.table = a table linking DNA to specimens
 ## ... = arguments passed on to subset.checklist
-  
+## value: a table of sequencing progress to date
+
   rows <- sort(unique(taxon.table[subset.checklist(taxon.table, ...), 'Term.name']))
   if(length(dna.list.names) != length(dna.list)) dna.list.names = paste('dna.dataset', seq(length(dna.list)), sep = '.')
   cols <- c(dna.list.names, 'sequenced', 'who.has.it')
@@ -31,20 +32,22 @@ match.dna <- function(dna.list = dna.renamed, seq.tables = DNA[c('MOR', 'SHUREN'
   out
   }
 
-get.details.from.DNA <- function(x, seq.tables, specimen.table, spm.patt = 'Specimen', extract.patt = 'TUBE', give = 'taxon', clip.subspp = TRUE) {
-## returns for a character vector x the taxa corresponding to the extraction codes
+get.details.from.DNA <- function(x, seq.tables, specimen.table, spm.patt = 'Specimen', extract.patt = 'TUBE', give = c('both', 'taxon', 'specimen'), clip.subspp = TRUE) {
+## returns for a character vector x the taxa, specimens, or both (as a table) corresponding to the extraction codes
   if(class(seq.tables) == 'list') seq.tables <- do.call(rbind, seq.tables)
   spm.col <- grep(spm.patt, names(seq.tables))
   ext.col <- grep(extract.patt, names(seq.tables))
   if(any(duplicated(seq.tables[[spm.col]]))) warning('There is a duplicate specimen number in the tables provided; at least one specimen is reached by two extractions')
   if(any(duplicated(seq.tables[[ext.col]]))) warning('There is a duplicate extraction code in the tables provided')
   x.spm <- seq.tables[match(tidyName(x), tidyName(seq.tables[[ext.col]])), spm.col]
-  if(give == 'taxon') {
+  if(give[1] %in% c('both','taxon')) {
     x.taxon <- specimen.table[x.spm, "TAXA.Current_determination"]
     if(clip.subspp) x.taxon <- sapply(x.taxon, function(x) paste(strsplit(x, " ")[[1]][1:2], collapse = ' '), USE.NAMES = FALSE)
-    return(x.taxon)
 	}
   if(give == 'specimen') return(x.spm)
+  if(give == 'taxon') return(x.taxon)
+  out <- cbind(spm = x.xpm, taxon = x.taxon)
+  return(out)
   }
 
 get.parent <- function(x, spm = gcg) spm$Term.name[spm$GUID == spm$Parent.GUID[spm$Term.name == x]][1]
