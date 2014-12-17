@@ -18,7 +18,8 @@ function(x, loci = colnames(x$radSummary$inds.mat), taxa = row.names(x$radSummar
   else inds.vector <- x$tips %in% taxa
   counter = 0
   start.time <- Sys.time()
-  if(cores == 1) {
+  if(cores == -1) {
+  # note that this is added because I would like to get rid of the redundancy; no reason to code two different ways
   out <- list(
     DNA = structure(vector('list', length(loci)), names = loci),
     variable = structure(logical(length(loci)), names = loci),
@@ -48,6 +49,7 @@ function(x, loci = colnames(x$radSummary$inds.mat), taxa = row.names(x$radSummar
 	    } # close if
 	  } # close i
 	} # close cores = 1 branch
+  ## delete down to here once I figure out whether the single branch works for both cores and multicores
   else {
     do.it.dna <- function(i) {
 	  seq.index <- x$locus.index == i & inds.vector
@@ -55,9 +57,11 @@ function(x, loci = colnames(x$radSummary$inds.mat), taxa = row.names(x$radSummar
 	  names(dna.temp) <- x$tips[seq.index]
 	  return(dna.temp)
 	  } # close do.it.dna
-	out <- list(DNA = mclapply(loci, do.it.dna, mc.cores = cores))
+	if(cores != 1) out <- list(DNA = mclapply(loci, do.it.dna, mc.cores = cores))
+	else out <- list(DNA = lapply(loci, do.it.dna))
 	names(out$DNA) <- loci
-	out$snpLocs <- mclapply(out$DNA, function(i) which(apply(consensusMatrix(i)[-c(excludedNucs), ], 2, function(x) sum(x >= nucThresh) > 1)), mc.cores = cores)
+	if(cores != 1) out$snpLocs <- mclapply(out$DNA, function(i) which(apply(consensusMatrix(i)[-c(excludedNucs), ], 2, function(x) sum(x >= nucThresh) > 1)), mc.cores = cores)
+	else out$snpLocs <- lapply(out$DNA, function(i) which(apply(consensusMatrix(i)[-c(excludedNucs), ], 2, function(x) sum(x >= nucThresh) > 1)))
 	if(snpsOnly) {
 	  do.it.snps <- function(i) {
 	    tempDNA <- as.matrix(as.matrix(out$DNA[[i]])[, out$snpLocs[[i]]])
@@ -65,7 +69,8 @@ function(x, loci = colnames(x$radSummary$inds.mat), taxa = row.names(x$radSummar
 		if(class(snps.out) == 'try-error') message(paste('failed on locus', i))
 		return(snps.out)
 	    } # close do.it.snps
-	  out$DNA <- mclapply(loci, do.it.snps, mc.cores = cores)
+	  if(cores != 1) out$DNA <- mclapply(loci, do.it.snps, mc.cores = cores)
+	  else out$DNA <- lapply(loci, do.it.snps)
 	  names(out$DNA) <- loci
 	  out$DNA <- out$DNA[sapply(out$DNA, class) != 'try-error']
 	  } # close if snpsOnly
