@@ -10,7 +10,7 @@ genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quer
 ##    loci = loci to include
 ##    useSnps = whether to use first or all SNPs per RAD locus (not yet implemented)
 ##    concat = whether to concatenate loci or leave separated as in DAT; not currently implemented
-
+##  current not tightly integrated with hierfstat; AH to work on this
   if(!'subset.pyRAD.loci' %in% class(dat)) stop('Currently, this function is written to require DNAStringSet output from subset.pyRAD.loci,\n
                                                  with only SNPs exported')
   if(taxa[1] != 'all') {
