@@ -1,6 +1,8 @@
 subset.pyRAD.loci <-
-function(x, loci, taxa, format = 'DNAStringSet', reportInterval = 500, 
-         nucVarType = c("verystrict", "strict", "relaxed"), use.tidyName = FALSE,
+function(x, loci = colnames(x$radSummary$inds.mat), taxa = row.names(x$radSummary$inds.mat), 
+         format = 'DNAStringSet', reportInterval = 500, 
+         nucVarType = c("verystrict", "strict", "relaxed"), 
+		 use.tidyName = FALSE,
          snpsOnly = FALSE, cores = 1, ...) {
 ## Arguments:
 ##  x = pyRAD.loci object
