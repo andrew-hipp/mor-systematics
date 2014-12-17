@@ -2,7 +2,7 @@ group.pyRAD.loci <- function(dat, groups, mins = 10, loci = dimnames(dat$radSumm
 # arguments:
 #  dat is a pyRAD.loci object
 #  groups is a list of individuals (can be named) in the groups
-#  
+#  mins is the minimum number of individuals required per group to report on a locus
 # value: a matrix with the number of individuals in each group for each locus
 
   if(use.tidyName) {
