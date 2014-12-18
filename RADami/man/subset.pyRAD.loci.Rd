@@ -7,7 +7,7 @@
 \usage{
 \method{subset}{pyRAD.loci}(x, loci = colnames(x$radSummary$inds.mat), 
                             taxa = row.names(x$radSummary$inds.mat), 
-							format = "DNAStringSet", reportInterval = 500,
+							format = "DNAStringSet", reportInterval = 500, mins = 1,
 							nucVarType = c("verystrict", "strict", "relaxed"), 
 							use.tidyName = FALSE,
 							snpsOnly = FALSE, cores = 1, ...)
@@ -19,6 +19,7 @@
   \item{format}{format for DNA matrix; at this point, only \code{DNAStringSet}
 				is supported}
   \item{reportInterval}{interval (number of loci) for reporting progress}
+  \item{mins} {minimum number of individuals required to return locus data}
   \item{nucVarType}{nucleotide variability to consider in screening for polymorphism:
 					'relaxed' for all nucleotides, including ambiguities
 					other than 'N', and counting all variable sites; 'strict' 
