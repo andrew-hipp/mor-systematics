@@ -5,13 +5,17 @@
              \code{DNAStringSet} format) from a \code{pyRAD.loci} object, 
 			 subsetting by loci and taxa provided as arguments}
 \usage{
-\method{subset}{pyRAD.loci}(x, loci, taxa, format = "DNAStringSet", reportInterval = 500,
-       nucVarType = c("verystrict", "strict", "relaxed"), ...)
+\method{subset}{pyRAD.loci}(x, loci = colnames(x$radSummary$inds.mat), 
+                            taxa = row.names(x$radSummary$inds.mat), 
+							format = "DNAStringSet", reportInterval = 500,
+							nucVarType = c("verystrict", "strict", "relaxed"), 
+							use.tidyName = FALSE,
+							snpsOnly = FALSE, cores = 1, ...)
 }
 \arguments{
   \item{x}{an object of class \code{pyRAD.loci}}
-  \item{loci}{a character vector of loci to include}
-  \item{taxa}{a character vector of taxa to include}
+  \item{loci}{a character vector of loci to include; defaults to all loci}
+  \item{taxa}{a character vector of taxa to include; defaults to all taxa}
   \item{format}{format for DNA matrix; at this point, only \code{DNAStringSet}
 				is supported}
   \item{reportInterval}{interval (number of loci) for reporting progress}
@@ -21,6 +25,11 @@
 					for only A,C,G,T, still counting all variable sites; and
 					'verystrict' for only A,C,G,T, countin only parsimony-
 					informative sites.}
+  \item{use.tidyName} {choose whether or not to use \code{tidyName} when matching
+                       names}
+  \item{snpsOnly} {choose whether you only want to get SNPs back, or whole locus sequences}
+  \item{cores} {how many processing cores to use; if \code{cores = 1}, \code{lapply} is used
+                throughout instead of \code{mclapply}  
   \item{\dots}{not currently used, but left for compatibility with generic
 			   \code{subset}}
 }
