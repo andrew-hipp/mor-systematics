@@ -60,8 +60,8 @@ function(x, loci = colnames(x$radSummary$inds.mat), taxa = row.names(x$radSummar
 	if(cores != 1) out <- list(DNA = mclapply(loci, do.it.dna, mc.cores = cores))
 	else out <- list(DNA = lapply(loci, do.it.dna))
 	names(out$DNA) <- loci
-	if(cores != 1) out$snpLocs <- mclapply(out$DNA, function(i) which(apply(consensusMatrix(i)[-c(excludedNucs), ], 2, function(x) sum(x >= nucThresh) > 1)), mc.cores = cores)
-	else out$snpLocs <- lapply(out$DNA, function(i) which(apply(consensusMatrix(i)[-c(excludedNucs), ], 2, function(x) sum(x >= nucThresh) > 1)))
+	if(cores != 1) out$snpLocs <- mclapply(out$DNA, function(i) try(which(apply(consensusMatrix(i)[-c(excludedNucs), ], 2, function(x) sum(x >= nucThresh) > 1))), mc.cores = cores)
+	else out$snpLocs <- lapply(out$DNA, function(i) try(which(apply(consensusMatrix(i)[-c(excludedNucs), ], 2, function(x) sum(x >= nucThresh) > 1))))
 	if(snpsOnly) {
 	  do.it.snps <- function(i) {
 	    tempDNA <- as.matrix(as.matrix(out$DNA[[i]])[, out$snpLocs[[i]]])
