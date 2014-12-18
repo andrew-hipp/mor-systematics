@@ -4,7 +4,7 @@ filter.by <- function(dat, taxa, threshold = 'all', use.tidyName = FALSE, ...) {
   if(!class(dat) %in% c('summary.pyRAD.loci', 'pyRAD.loci')) stop("This function only works with summary.pyRAD.loci datatypes")
   if(class(dat) == 'pyRAD.loci') dat <- dat$radSummary
   if(use.tidyName) {
-    row.names(dat) <- tidyName(row.names(dat), ...)
+    row.names(dat$inds.mat) <- tidyName(row.names(dat$inds.mat), ...)
 	taxa <- tidyName(taxa, ...)
 	}
   dat.mat <- dat$inds.mat[taxa, ] # this is the case if you pass in a summary.pyRAD.loci object
