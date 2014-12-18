@@ -2,7 +2,7 @@ filter.by <- function(dat, taxa, threshold = 'all', use.tidyName = FALSE, ...) {
   ## returns just loci for which the requested taxa are present at some threshold
   ## default to returning 'all'
   if(!class(dat) %in% c('summary.pyRAD.loci', 'pyRAD.loci')) stop("This function only works with summary.pyRAD.loci datatypes")
-  if(class(dat) == 'pyRAD.loci') dat <- dat$radSummary$inds.mat
+  if(class(dat) == 'pyRAD.loci') dat <- dat$radSummary
   if(use.tidyName) {
     row.names(dat) <- tidyName(row.names(dat), ...)
 	taxa <- tidyName(taxa, ...)
