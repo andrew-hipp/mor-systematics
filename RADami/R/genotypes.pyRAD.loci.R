@@ -1,7 +1,7 @@
-genotypes.pyRAD.loci <- function(dat, groups = list(lobatae = inds.lobatae, quercus = inds.quercus),
-                                 loci = 'all', taxa = 'all', useSnps = c('first', 'all'), concat = c(FALSE, TRUE), 
+genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all', 
+	                             useSnps = c('first', 'all'), concat = c(FALSE, TRUE), 
 								 use.tidyName = TRUE, na.rm = c('columns', 'rows', 'none'), maxAlleles = 2, 
-								 tidyVals = c('-', '.','>', '_', ' ', 'oak'), sortByGroups = TRUE, cores = 8) {
+								 tidyVals = c('-', '.','>', '_', ' '), sortByGroups = TRUE, cores = 1) {
 ##  Makes a dataframe of SNP calls from a pyRAD.loci object for export to hierfstat
 ##  arguments:
 ##    dat = currently requires a subset.pyRAD.loci object
