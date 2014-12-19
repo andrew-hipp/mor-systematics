@@ -32,7 +32,7 @@ genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all',
 	# if(counter == xx) browser()
         y.mat <- as.matrix(y)
         y.mat.uns <- apply(y.mat, 2, function(x) length(unique(x)) > 1)
-        y.mat <- y.mat[, y.mat.uns]
+        y.mat <- matrix(y.mat[, y.mat.uns], nrow = dim(y.mat)[1], dimnames = list(row.names(y.mat), NULL))
         if(dim(y.mat)[2] == 0) return('failed')	
         trans.dna <- t(apply(as.matrix(y), 1, function(x) IUPAC_CODE_MAP[x]))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
