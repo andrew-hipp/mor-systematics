@@ -1,8 +1,8 @@
 genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all', 
 	                             useSnps = c('first', 'all'), concat = c(FALSE, TRUE), 
-								 use.tidyName = TRUE, na.rm = c('columns', 'rows', 'none'), maxAlleles = 2, 
+								 use.tidyName = TRUE, na.rm = c('none', 'columns', 'rows'), maxAlleles = 2, 
 								 tidyVals = c('-', '.','>', '_', ' '), sortByGroups = TRUE, 
-								 variable.only = FALSE,
+								 variable.only = FALSE, make.dummy.column = TRUE,
 								 cores = 1) {
 ##  Makes a dataframe of SNP calls from a pyRAD.loci object for export to hierfstat
 ##  arguments:
@@ -53,6 +53,7 @@ genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all',
 	else dna.out <- as.data.frame(cbind(groupMembership = groupMembership, t(apply(trans.dna,1,as.integer))))
 	row.names(dna.out) <- row.names(trans.dna) # necessary?
 	if(sortByGroups) dna.out <- dna.out[order(dna.out$groupMembership), ]
+	if(make.dummy.column & dim(dna.out)[2] == 2) dna.out$dummy.locus <- rep(11, dim(dna.out)[2])
 	return(dna.out)
 	}
   
