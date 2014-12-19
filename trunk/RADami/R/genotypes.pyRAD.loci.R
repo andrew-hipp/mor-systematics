@@ -14,8 +14,9 @@ genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all',
   if(!'subset.pyRAD.loci' %in% class(dat)) stop('Currently, this function is written to require DNAStringSet output from subset.pyRAD.loci,\n
                                                  with only SNPs exported')
   if(taxa[1] != 'all') {
-    dat$DNA <- lapply(dat$DNA, function(x) x[names(x) %in% taxa])
-	dat$DNA <- dat$DNA[sapply(dat$DNA, length) > 0]
+    if(cores > 1) dat$DNA <- mclapply(dat$DNA, function(x) x[names(x) %in% taxa], mc.cores = cores)
+    else dat$DNA <- lapply(dat$DNA, function(x) x[names(x) %in% taxa])	
+    dat$DNA <- dat$DNA[sapply(dat$DNA, length) > 0]
 	}
   if(loci[1] != 'all') dat$DNA <- dat$DNA[loci]
   out <- structure(vector('list', length(dat$DNA)), names = names(dat$DNA))
