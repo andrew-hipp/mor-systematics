@@ -29,16 +29,13 @@ genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all',
   
 ## 3. Translate SNPs to genotypes
   do.this <- function(y) {
-	# assign('counter', counter + 1, envir = .GlobalEnv)
-	# message(paste('Doing data', counter))
-	# if(counter == xx) browser()
-        y.mat <- as.matrix(y)
-        if(variable.only) {
-		  y.mat.uns <- apply(y.mat, 2, function(x) length(unique(x)) > 1)
-          y.mat <- matrix(y.mat[, y.mat.uns], nrow = dim(y.mat)[1], dimnames = list(row.names(y.mat), NULL))
-		  }
-        if(dim(y.mat)[2] == 0) return('failed')	
-        trans.dna <- t(apply(y.mat, 1, function(x) IUPAC_CODE_MAP[x]))
+	y.mat <- as.matrix(y)
+    if(variable.only) {
+	  y.mat.uns <- apply(y.mat, 2, function(x) length(unique(x)) > 1)
+      y.mat <- matrix(y.mat[, y.mat.uns], nrow = dim(y.mat)[1], dimnames = list(row.names(y.mat), NULL))
+	  }
+    if(dim(y.mat)[2] == 0) return('failed')	
+    trans.dna <- t(apply(y.mat, 1, function(x) IUPAC_CODE_MAP[x]))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('C', '2', x)))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('G', '3', x)))
@@ -56,10 +53,6 @@ genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all',
 	if(make.dummy.column & dim(dna.out)[2] == 2) dna.out$dummy.locus <- rep(11, dim(dna.out)[2])
 	return(dna.out)
 	}
-  
-  # assign("counter", 0, envir = .GlobalEnv)
-  
-  #  out <- lapply(dat$DNA, do.this)
   out <- mclapply(dat$DNA, do.this, mc.cores = cores)
   out <- out[sapply(out, class) %in% c('data.frame', 'matrix')] # gets rid of anything that isn't a matrix or a data.frame
   out <- out[!apply(t(sapply(out, dim)), 1, function(x) sum(x == 0) > 0)] # gets rid of all the matrices in which some dimension == 0
