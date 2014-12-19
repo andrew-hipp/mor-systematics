@@ -1,7 +1,9 @@
 genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all', 
 	                             useSnps = c('first', 'all'), concat = c(FALSE, TRUE), 
 								 use.tidyName = TRUE, na.rm = c('columns', 'rows', 'none'), maxAlleles = 2, 
-								 tidyVals = c('-', '.','>', '_', ' '), sortByGroups = TRUE, cores = 1) {
+								 tidyVals = c('-', '.','>', '_', ' '), sortByGroups = TRUE, 
+								 variable.only = FALSE,
+								 cores = 1) {
 ##  Makes a dataframe of SNP calls from a pyRAD.loci object for export to hierfstat
 ##  arguments:
 ##    dat = currently requires a subset.pyRAD.loci object
@@ -31,8 +33,10 @@ genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all',
 	# message(paste('Doing data', counter))
 	# if(counter == xx) browser()
         y.mat <- as.matrix(y)
-        y.mat.uns <- apply(y.mat, 2, function(x) length(unique(x)) > 1)
-        y.mat <- matrix(y.mat[, y.mat.uns], nrow = dim(y.mat)[1], dimnames = list(row.names(y.mat), NULL))
+        if(variable.only) {
+		  y.mat.uns <- apply(y.mat, 2, function(x) length(unique(x)) > 1)
+          y.mat <- matrix(y.mat[, y.mat.uns], nrow = dim(y.mat)[1], dimnames = list(row.names(y.mat), NULL))
+		  }
         if(dim(y.mat)[2] == 0) return('failed')	
         trans.dna <- t(apply(y.mat, 1, function(x) IUPAC_CODE_MAP[x]))
 	trans.dna <- t(apply(trans.dna, 1, function(x) gsub('A', '1', x)))
