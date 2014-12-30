@@ -53,7 +53,7 @@ genotypes.pyRAD.loci <- function(dat, groups, loci = 'all', taxa = 'all',
 	if(make.dummy.column & dim(dna.out)[2] == 2) dna.out$dummy.locus <- rep(11, dim(dna.out)[2])
 	return(dna.out)
 	}
-  out <- mclapply(dat$DNA, do.this, mc.cores = cores)
+  out <- mclapply(dat$DNA, function(x) try(do.this(x), silent = TRUE), mc.cores = cores)
   out <- out[sapply(out, class) %in% c('data.frame', 'matrix')] # gets rid of anything that isn't a matrix or a data.frame
   out <- out[!apply(t(sapply(out, dim)), 1, function(x) sum(x == 0) > 0)] # gets rid of all the matrices in which some dimension == 0
   attr(out, 'groupMembership') <- t(sapply(out, function(w) sapply(1:2, function(x) sum(w$groupMembership == x))))
