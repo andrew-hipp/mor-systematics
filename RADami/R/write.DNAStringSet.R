@@ -1,6 +1,6 @@
 write.DNAStringSet <-
-function(x, format= c('phylip', 'fasta'), padding = 30, filename = 'DNAStringSetOut.phy', fastaPrefix = '') {
-  # writes a sequence matrix to phylip format
+function(x, format= c('phylip', 'fasta'), padding = 30, filename = 'DNAStringSetOut.phy', fastaPrefix = '>') {
+  # writes a sequence matrix to phylip or fasta format
   x.width <- width(x)[1]
   x <- as.character(x)
   if(format[1] == 'phylip') {
