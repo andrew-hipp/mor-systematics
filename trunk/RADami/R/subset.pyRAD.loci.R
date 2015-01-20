@@ -40,6 +40,9 @@ function(x, loci = colnames(x$radSummary$inds.mat), taxa = row.names(x$radSummar
     names(out$DNA) <- loci
     out$DNA <- out$DNA[sapply(out$DNA, class) != 'try-error']
     } # close if snpsOnly
+  the.haves <-  which(sapply(out$DNA, function(x) max(width(x)) > 0))
+  print(the.haves)
+  out$DNA <- out$DNA[the.haves]
   out$ntaxa <- sapply(out$DNA, length)
   out$variable <- sapply(out$snpLocs, function(i) length(i) > 0)
   class(out) <- 'subset.pyRAD.loci'
