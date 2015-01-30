@@ -19,9 +19,9 @@ function(taxa, radMat) {
 }
 
 do.all.nodes <-
-function(tr, rads) {
+function(tr, rads, analysis) {
   to.do <- unique(tr$edge[, 1])
-  out <- t(sapply(to.do, function(x) compare.loci(node.tips(tr, x), rads)))
+  out <- t(sapply(to.do, function(x) compare.loci(node.tips(tr, x, analysis), rads)))
   row.names(out) <- to.do
   out 
 }
@@ -34,8 +34,8 @@ function(tr, node, getOut = c('desc.og', 'desc'), add.og = '>AC_h') {
   return(out)
 }
 
-do.a.rad.comparison.tree <- function(tr, rads, cex.scalar = 2, ...) {
-  nodes.comparison <- do.all.nodes(tr, rads)
+do.a.rad.comparison.tree <- function(tr, rads, cex.scalar = 2, analysis = 'desc.og', ...) {
+  nodes.comparison <- do.all.nodes(tr, rads, analysis)
   plot(tr)
   nodelabels(pie = nodes.comparison[,'prop'], node = as.numeric(row.names(nodes.comparison)), cex = cex.scalar * nodes.comparison[, 'abs']/max(nodes.comparison[, 'abs']), piecol = c('black', 'white'), ...)
   return(nodes.comparison)
