@@ -1,4 +1,4 @@
-v1.0-4, 2014-03-18 through xxx
+v1.0-4, 2014-03-18 through [2015-02-23]
 New features:
 - multicore support in:
 	* consensus.pyRAD
