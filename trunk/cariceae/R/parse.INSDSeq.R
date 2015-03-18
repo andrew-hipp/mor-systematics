@@ -13,7 +13,7 @@
 		##Still has issues parsing to the voucher level- use spliting _metadata_genbank_tables.r function to parse out this info.)
 
 
-parse.INSDSeq = function(xml_file, file_length, do = NA, cores = 1) {  ##filelength = # of specimens in export
+parse.INSDSeq = function(xml_file, do = NA, cores = 1) {  ##filelength = # of specimens in export
   if(cores>1) warning("Multicore is only supported on mac and linux for right now")
   require(ape)
   require(XML)
