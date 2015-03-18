@@ -24,7 +24,7 @@ parse.INSDSeq = function(xml_file, file_length, cores = 1) {  ##filelength = # o
 			   ' otherseq_IDS','seq_source','organism','taxonomy','references','feature_table',
 			   'qualifiers1','generegion','Full_sequence') ## not needed currently, but might be useful for making the code more flexible
   get.a.row <- function(dat) {
-    out <- c(NCBI_accession = xmlValue(dat[['INSDSeq_locus']])
+    out <- c(NCBI_accession = xmlValue(dat[['INSDSeq_locus']]),
              seq_length = xmlValue(dat[["INSDSeq_length"]]),
              strandedness = xmlValue(dat[["INSDSeq_strandedness"]]),
              moltype = xmlValue(dat[["INSDSeq_moltype"]]),
