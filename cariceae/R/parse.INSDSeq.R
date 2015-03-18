@@ -47,10 +47,10 @@ parse.INSDSeq = function(xml_file, file_length, do = NA, cores = 1) {  ##filelen
 	         )
     return(out)
 	}
-  if(!is.na(do)) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
-  else xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet))
+  if(!is.na(do[1])) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
+  else xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet, mc.cores = cores))
   # write.table(table, file = 'Metadata_tablev2.txt', sep = "|")  
-  return(table)
+  return(xmlMat)
 }
 
 
