@@ -46,8 +46,8 @@ parse.INSDSeq = function(xml_file, do = NA, cores = 1) {  ##filelength = # of sp
              qualifiers1 = xmlValue(dat[["INSDSeq_feature-table"]][[1]][['INSDFeature_quals']]),  #part of feature tables
              generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][[5]][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
              Full_sequence = xmlValue(dat[["INSDSeq_sequence"]])
-	         ) # close c
-		    ) # close try
+	         ), # close c
+		    silent = T) # close try
     if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 18))
 	return(out)
 	}
