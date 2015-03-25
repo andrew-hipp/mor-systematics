@@ -25,7 +25,8 @@ parse.INSDSeq = function(xml_file, do = NA, cores = 1) {  ##filelength = # of sp
 			   ' otherseq_IDS','seq_source','organism','taxonomy','references','feature_table',
 			   'qualifiers1','generegion','Full_sequence') ## not needed currently, but might be useful for making the code more flexible
   get.a.row <- function(dat) {
-    out <- c(NCBI_accession = xmlValue(dat[['INSDSeq_locus']]),
+    out <- try(
+	         c(NCBI_accession = xmlValue(dat[['INSDSeq_locus']]),
              seq_length = xmlValue(dat[["INSDSeq_length"]]),
              strandedness = xmlValue(dat[["INSDSeq_strandedness"]]),
              moltype = xmlValue(dat[["INSDSeq_moltype"]]),
@@ -45,8 +46,13 @@ parse.INSDSeq = function(xml_file, do = NA, cores = 1) {  ##filelength = # of sp
              qualifiers1 = xmlValue(dat[["INSDSeq_feature-table"]][[1]][['INSDFeature_quals']]),  #part of feature tables
              generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][[5]][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
              Full_sequence = xmlValue(dat[["INSDSeq_sequence"]])
-	         )
-    return(out)
+	         ) # close c
+		    ) # close try
+    if(class(out) == 'try-error') {
+	  message('failed on', xmlValue(dat[['INSDSeq_locus']])) 
+	  out = rep(0, 20)
+	  }
+	return(out)
 	}
   if(!is.na(do[1])) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
   else xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet, mc.cores = cores))
