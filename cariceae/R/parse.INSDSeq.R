@@ -44,7 +44,7 @@ parse.INSDSeq = function(xml_file, do = NA, cores = 1) {  ##filelength = # of sp
              references = xmlValue(dat[["INSDSeq_references"]]),
              feature_table = xmlValue(dat[["INSDSeq_feature-table"]]),
              qualifiers1 = xmlValue(dat[["INSDSeq_feature-table"]][[1]][['INSDFeature_quals']]),  #part of feature tables
-             generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][[5]][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
+             generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][['INSDFeature_quals']][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
              Full_sequence = xmlValue(dat[["INSDSeq_sequence"]])
 	         ), # close c
 		    silent = T) # close try
