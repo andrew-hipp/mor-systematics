@@ -14,7 +14,7 @@
 		##Still has issues parsing to the voucher level- use spliting _metadata_genbank_tables.r function to parse out this info.)
 
 
-parse.INSDSeq = function(xml_file, do = NA, cores = 1) {  ##filelength = # of specimens in export
+parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1) {  ##filelength = # of specimens in export
   if(cores>1) warning("Multicore is only supported on mac and linux for right now")
   require(ape)
   require(XML)
@@ -45,7 +45,7 @@ parse.INSDSeq = function(xml_file, do = NA, cores = 1) {  ##filelength = # of sp
              feature_table = xmlValue(dat[["INSDSeq_feature-table"]]),
              qualifiers1 = xmlValue(dat[["INSDSeq_feature-table"]][[1]][['INSDFeature_quals']]),  #part of feature tables
              generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][['INSDFeature_quals']][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
-             Full_sequence = xmlValue(dat[["INSDSeq_sequence"]])
+             Full_sequence = ifelse(includeSeqs, xmlValue(dat[["INSDSeq_sequence"]]), '')
 	         ), # close c
 		    silent = T) # close try
     if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 18))
