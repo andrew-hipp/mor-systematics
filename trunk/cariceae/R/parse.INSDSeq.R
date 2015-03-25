@@ -2,11 +2,12 @@
 ### To Parse XML files downloaded from Geneious search of Genbank in order to get additional info such as voucher info, etc
 ### 2013-02: Marlene Hahn, as part of Carex project.
 ### 2015-03-18: Hipp and Hahn, updating to use multicores
+### 2015-03-24: Hipp update to use only named references and pull out more needed elements
 
 ###Step 1: Save file as XML in Geneious; make sure you know how many files were downloaded 
 ###because you will need to enter that # in function below (usually part of filename in Geneious export)
 	### libary(XML)
-	### xml_file <-  xmlTreeParse(file.choose())
+	### xml_file <- xmlTreeParse(file.choose())
  
  ###Issues see if I can get the program to parse out more detailed information including gene region and voucher info.
 		### problem- voucher is in qualifiers in feature_table node, but not at a consistant node.
@@ -41,7 +42,7 @@ parse.INSDSeq = function(xml_file, do = NA, cores = 1) {  ##filelength = # of sp
              taxonomy = xmlValue(dat[["INSDSeq_taxonomy"]]),
              references = xmlValue(dat[["INSDSeq_references"]]),
              feature_table = xmlValue(dat[["INSDSeq_feature-table"]]),
-             qualifiers1 = xmlValue(dat[["INSDSeq_feature-table"]][[1]][[5]]),  #part of feature tables
+             qualifiers1 = xmlValue(dat[["INSDSeq_feature-table"]][[1]][['INSDFeature_quals']]),  #part of feature tables
              generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][[5]][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
              Full_sequence = xmlValue(dat[["INSDSeq_sequence"]])
 	         )
