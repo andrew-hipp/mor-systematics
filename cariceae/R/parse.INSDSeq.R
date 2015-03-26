@@ -25,7 +25,7 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1,
   columns <- c('NCBI_accession', 'seq_length','strandedness','moltype','topology','division',
                'update_date','create_date','definition','primary_accession','accession_version',
 			   ' otherseq_IDS','seq_source','organism','taxonomy','references','feature_table',
-			   'qualifiers1','generegion','Full_sequence') ## not needed currently, but might be useful for making the code more flexible
+			   'qualifiers1','generegion','Full_sequence', 'authors') ## not needed currently, but might be useful for making the code more flexible
   get.a.row <- function(dat) {
     featuresL <- length(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']])
 	featuresOut <- character(featuresL)
@@ -55,10 +55,11 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1,
              feature_table = xmlValue(dat[["INSDSeq_feature-table"]]),
              qualifiers1 = xmlValue(dat[["INSDSeq_feature-table"]][[1]][['INSDFeature_quals']]),  #part of feature tables
              generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][['INSDFeature_quals']][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
-             Full_sequence = ifelse(includeSeqs, xmlValue(dat[["INSDSeq_sequence"]]), '')
+             Full_sequence = ifelse(includeSeqs, xmlValue(dat[["INSDSeq_sequence"]]), ''),
+			 authors = xmlValues(dat[['INSDSeq_references']][[1]][['INSDReference_authors']])
 	         ), # close c
 		    silent = T) # close try
-    if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 18))
+    if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 19))
 	out <- c(out, featuresOutV)
 	return(out)
 	}
