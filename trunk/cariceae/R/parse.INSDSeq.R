@@ -2,7 +2,8 @@
 ### To Parse XML files downloaded from Geneious search of Genbank in order to get additional info such as voucher info, etc
 ### 2013-02: Marlene Hahn, as part of Carex project.
 ### 2015-03-18: Hipp and Hahn, updating to use multicores
-### 2015-03-24: Hipp update to use only named references and pull out more needed elements
+### 2015-03-24: use only named references and pull out more needed elements
+### 2015-03-25: get the desired voucher features directly from the xml
 
 ###Step 1: Save file as XML in Geneious; make sure you know how many files were downloaded 
 ###because you will need to enter that # in function below (usually part of filename in Geneious export)
@@ -14,8 +15,9 @@
 		##Still has issues parsing to the voucher level- use spliting _metadata_genbank_tables.r function to parse out this info.)
 
 
-parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1) {  ##filelength = # of specimens in export
-  if(cores>1) warning("Multicore is only supported on mac and linux for right now")
+parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, 
+                         qualsToUse = c('specimen_voucher', 'DNAisolate', 'pop_variant', 'collection_date', 'lat_lon', 'note', 'collected_by')) { 
+  if(cores > 1 & Sys.info()['sysname'] == 'Windows') warning("Multicore is only supported on mac and linux for right now")
   require(ape)
   require(XML)
   require(parallel)
@@ -25,7 +27,14 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1) {  ##fil
 			   ' otherseq_IDS','seq_source','organism','taxonomy','references','feature_table',
 			   'qualifiers1','generegion','Full_sequence') ## not needed currently, but might be useful for making the code more flexible
   get.a.row <- function(dat) {
-    out <- try(
+    featuresL <- length(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']])
+	featuresOut <- character(featuresL)
+	for(i in seq(featuresL)) {
+	  featuresOut[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[2]])
+	  names(featuresOut) <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[1]])
+	  }
+	featuresOut <- structure(featuresOut[qualsToUse], names = qualsToUse)
+	out <- try(
 	         c(NCBI_accession = xmlValue(dat[['INSDSeq_locus']]),
              seq_length = xmlValue(dat[["INSDSeq_length"]]),
              strandedness = xmlValue(dat[["INSDSeq_strandedness"]]),
@@ -49,6 +58,7 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1) {  ##fil
 	         ), # close c
 		    silent = T) # close try
     if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 18))
+	out <- c(out, featuresOut)
 	return(out)
 	}
   if(!is.na(do[1])) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
