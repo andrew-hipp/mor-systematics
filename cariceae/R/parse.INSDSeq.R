@@ -33,7 +33,8 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1,
 	  featuresOut[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[2]])
 	  names(featuresOut) <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[1]])
 	  }
-	featuresOut <- structure(featuresOut[qualsToUse], names = qualsToUse)
+	featuresOutV <- featuresOut[qualsToUse]
+	names(featuresOutV) <- qualsToUse
 	out <- try(
 	         c(NCBI_accession = xmlValue(dat[['INSDSeq_locus']]),
              seq_length = xmlValue(dat[["INSDSeq_length"]]),
