@@ -21,6 +21,8 @@ parse.specimen <- function(ncbiDat) {
   use.collected.by <- which(apply(cbind(ncbiDat[, 'collected_by'], ac), 1, function(x) nchar(x[1]) > nchar(x[2])))
   ac[use.collected.by] <- ncbiDat[use.collected.by, 'collected_by']
   
+  ## if there are no good collectors, use authors
+  
   ## get last name of primary collectors: Seems to be easiest just to take first word > 1 character long, but some editing is needed
   
   ac.splitted <- strsplit(ac, "[. ,]")
