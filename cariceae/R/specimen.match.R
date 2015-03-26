@@ -44,7 +44,6 @@ parse.specimen <- function(obj) {
   cn[sn] <- 's.n.'
 
   ## for collection, assume either a "(" or all caps followed by ":"; exclude any with "s." in them
-  browser()
   colonDelimits <- grep(":", obj)
   coll[-colonDelimits] <- sapply(obj.split[-colonDelimits], function(x) {
                                    out <- gsub("(", "", gsub(")", "", grep("(", x, fixed = T, value = T), fixed = T), fixed = T)
