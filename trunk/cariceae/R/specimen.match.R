@@ -2,29 +2,32 @@
 ## export specimen-linked datasets
 ## A Hipp, 2013-02-05
 ## version 2: 2013-06-12
+## v3, 2015-03-26: gets rid of tidyName, makes this work directly on the entire parsed table from parse.INSDSeq
 
-## handy functions
-nospace <- function(x) gsub(" ", "", x)
-tidyNames <- function(x) gsub("[# -.,]", "_", x)
-
-clean.specimen <- function(x) {
-## cleans specimen names for known genbank oddities
-   x <- gsub('                     /specimen_voucher=', '', gsub('\"', '', x, perl = T), fixed = T)
-   x
-   }
- 
-parse.specimen <- function(obj) {
+parse.specimen <- function(ncbiDat) {
 ## try to parse out the pieces of the specimen field
+## xmlDat is exported from parse.INSDSeq
   require(gdata)
   fields <- c('All collectors', 'Primary collector last name', 'Collector number', 'Collection', 'Unedited text')
+  obj <- ncbiDat[, 'specimen_voucher']
   ac <- pcln <- cn <- coll <- character(length(obj))
   obj.split <- strsplit(obj, " ")
   
-  ## get collectors
+  ## parse out collectors
   ac <- gsub("s.n.", "", trim(sapply(strsplit(obj, '[0123456789]'), function(x) x[1])), fixed = T)
   ac[grep(":", ac)] <- sapply(strsplit(ac[grep(":", ac)], ":"), function(x) x[2])
   
-  ## would it make sense to take the pcln as the longest element in ac, after strspliting by " "? no... second collectors...
+  ## swap in "collected_by" field when that is relevant
+  use.collected.by <- which(apply(cbind(ncbiDat[, 'collected_by'], ac), 1, function(x) nchar(x[1]) > nchar(x[2])))
+  ac[use.collected.by] <- ncbiDat[use.collected.by, 'collected_by']
+  
+  ## get last name of primary collectors: Seems to be easiest just to take first word > 1 character long, but some editing is needed
+  
+  ac.splitted <- strsplit(ac, "[. ,]")
+  for(i in which(!is.na(ac))) {
+    ac.temp <- ac.splitted[[i]][nchar(ac.splitted[[i]]) > 1]
+	pcln[i] <- ac.temp[1]
+	}
   
   ## for collector number, assume that > 1/2 of characters are numbers
   countInstances <- function(x, pattern = as.character(0:9), proportion = TRUE) {
