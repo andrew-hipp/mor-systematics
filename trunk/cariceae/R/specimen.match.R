@@ -40,7 +40,7 @@ parse.specimen <- function(obj) {
 	cn[i] <- obj.split[[i]][which(temp == max(temp))][1]
 	}
   ## make anything with "s.n." into a collector number of "s.n."
-  sn <- unique(c(grep('s.n.', as.character(cariceae$Specimen_voucher), fixed = T), grep('s. n.', as.character(cariceae$Specimen_voucher), fixed = T)))
+  sn <- unique(c(grep('s.n.', as.character(obj), fixed = T), grep('s. n.', as.character(obj), fixed = T)))
   cn[sn] <- 's.n.'
 
   ## for collection, assume either a "(" or all caps followed by ":"; exclude any with "s." in them
