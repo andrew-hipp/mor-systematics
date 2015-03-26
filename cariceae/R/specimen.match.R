@@ -35,7 +35,7 @@ parse.specimen <- function(obj) {
     return(out)
   }
   for(i in 1:length(obj)) {
- 	if(obj[i] == "") next
+ 	if(obj[i] == "" | is.na(obj[i])) next
 	temp <- sapply(obj.split[[i]], countInstances)
 	cn[i] <- obj.split[[i]][which(temp == max(temp))][1]
 	}
