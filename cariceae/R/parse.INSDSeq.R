@@ -59,7 +59,7 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1,
 	         ), # close c
 		    silent = T) # close try
     if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 18))
-	out <- c(out, featuresOut)
+	out <- c(out, featuresOutV)
 	return(out)
 	}
   if(!is.na(do[1])) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
