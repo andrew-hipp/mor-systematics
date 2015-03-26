@@ -31,7 +31,7 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1,
 	featuresOut <- character(featuresL)
 	for(i in seq(featuresL)) {
 	  featuresOut[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[2]])
-	  names(featuresOut) <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[1]])
+	  names(featuresOut)[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[1]])
 	  }
 	featuresOutV <- featuresOut[qualsToUse]
 	names(featuresOutV) <- qualsToUse
