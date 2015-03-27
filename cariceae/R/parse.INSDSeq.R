@@ -33,6 +33,7 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1,
 	  featuresOut[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[2]])
 	  names(featuresOut)[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[1]])
 	  }
+	readableFeatures = paste(names(featuresOut), featuresOut, collapse = '|', sep = "_:_")
 	featuresOutV <- featuresOut[qualsToUse]
 	names(featuresOutV) <- qualsToUse
 	out <- try(
@@ -53,10 +54,10 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1,
              taxonomy = xmlValue(dat[["INSDSeq_taxonomy"]]),
              references = xmlValue(dat[["INSDSeq_references"]]),
              feature_table = xmlValue(dat[["INSDSeq_feature-table"]]),
-             qualifiers1 = xmlValue(dat[["INSDSeq_feature-table"]][[1]][['INSDFeature_quals']]),  #part of feature tables
+             qualifiers1 = readableFeatures,  #part of feature tables, flattened out for readability
              generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][['INSDFeature_quals']][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
              Full_sequence = ifelse(includeSeqs, xmlValue(dat[["INSDSeq_sequence"]]), ''),
-			 authors = xmlValues(dat[['INSDSeq_references']][[1]][['INSDReference_authors']])
+			 authors = xmlValue(dat[['INSDSeq_references']][[1]][['INSDReference_authors']])
 	         ), # close c
 		    silent = T) # close try
     if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 19))
