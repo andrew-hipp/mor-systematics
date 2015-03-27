@@ -22,6 +22,8 @@ parse.specimen <- function(ncbiDat) {
   ac[use.collected.by] <- ncbiDat[use.collected.by, 'collected_by']
   
   ## if there are no good collectors, use authors
+  use.authors <- which(is.na(ac))
+  ac[use.authors] <- paste('AUTHOR', ncbiDat[use.authors, 'authors'], sep = ":")
   
   ## get last name of primary collectors: Seems to be easiest just to take first word > 1 character long, but some editing is needed
   

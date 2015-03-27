@@ -15,7 +15,7 @@
 		##Still has issues parsing to the voucher level- use spliting _metadata_genbank_tables.r function to parse out this info.)
 
 
-parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, 
+parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, parse.specimens = T,
                          qualsToUse = c('specimen_voucher', 'DNAisolate', 'pop_variant', 'collection_date', 'lat_lon', 'note', 'collected_by')) { 
   if(cores > 1 & Sys.info()['sysname'] == 'Windows') warning("Multicore is only supported on mac and linux for right now")
   require(ape)
@@ -66,6 +66,7 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1,
 	}
   if(!is.na(do[1])) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
   else xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet, mc.cores = cores))
+  if(parse.specimens) xmlMat <- cbind(xmlMat, specimen.match(xmlMat))
   return(xmlMat)
 }
 
