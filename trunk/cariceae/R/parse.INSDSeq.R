@@ -66,7 +66,7 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, parse.sp
 	}
   if(!is.na(do[1])) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
   else xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet, mc.cores = cores))
-  if(parse.specimens) xmlMat <- cbind(xmlMat, specimen.match(xmlMat))
+  if(parse.specimens) xmlMat <- cbind(xmlMat, parse.specimen(xmlMat))
   return(xmlMat)
 }
 
