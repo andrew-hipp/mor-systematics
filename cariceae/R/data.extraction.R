@@ -11,12 +11,15 @@ post.process.cariceae <- function(base.dir, out.dir = 'tree.files', tree.patt = 
   }
   
 make.all.cariceae.dna <- function(base.dir = getwd(), 
-                                  rax.string = '~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-PTHREADS-AVX -f a -x 12345 -p 12345 -m GTRCAT -# 100 -T 8', 
+                                  rax.threads = 8,
+						          path.prefix = '~/Dropbox/NSF-CAREX-1255901-core-files/PRIMARY.DATA/SEQUENCE.DATA/MORTON/Analyses/',
 								  file.header = '#!/bin/sh',
-								  path.prefix = '~/Dropbox/NSF-CAREX-1255901-core-files/PRIMARY.DATA/SEQUENCE.DATA/MORTON/Analyses/',
 								  analysis.file.suffix = '.sh',
 								  og = 'Carex_siderosticta_Carex_MOR_2594',
+								  rax.path = '~/code/raxml/standard-RAxML-8.0.2/raxmlHPC-PTHREADS-AVX',
+								  rax.call = '-f a -x 12345 -p 12345 -m GTRCAT -# 100',
 								  ...) {
+  rax.string <- paste(rax.path, rax.call, '-T', rax.threads)
   dat <- read.cariceae.data(NULL, NULL, NULL) # right now, just gets all data iteratively
   phy.files.string <- directories.string <- outfiles.string <- character(0)
   for(i in c(dat$sequence.owners, 'all.data.pooled')) {
@@ -64,6 +67,7 @@ read.cariceae.data <- function(read.dat.obj = NULL, fasta = NULL, metadata = NUL
                                source.labs = 'ALL_SEQUENCES', additional = NULL,
 							   select.by = c('pattern', 'grep', 'identity'),
 							   source.col = 'CONTRIBUTOR', append.source = TRUE, tail.to = 3, patt = 1:3) {
+## as written originally built
   if(!is.null(read.dat.obj)) {
     fasta <- read.dat.obj$seqs
 	metadata <- read.dat.obj$dat
