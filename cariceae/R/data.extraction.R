@@ -63,7 +63,7 @@ make.all.cariceae.dna <- function(base.dir = getwd(),
   return(0)
   }
 
-read.cariceae.data <- function(read.dat.obj = NULL, fasta = NULL, metadata = NULL, 
+read.cariceae.data <- function(read.dat.obj = NULL,
                                source.labs = 'ALL_SEQUENCES', additional = NULL,
 							   select.by = c('pattern', 'grep', 'identity'),
 							   source.col = 'CONTRIBUTOR', append.source = TRUE, tail.to = 3, patt = 1:3,
@@ -73,17 +73,28 @@ read.cariceae.data <- function(read.dat.obj = NULL, fasta = NULL, metadata = NUL
 ##             * only the DNA code is used to pull sequences from the fasta files
 ##             * the label is written on the fly based on a formula
   if(!is.null(read.dat.obj)) {
-    fasta <- read.dat.obj$seqs
-	metadata <- read.dat.obj$dat
-	}
-  if(is.null(fasta)) {
-    fasta.file.names <- choose.files(caption = 'Select fasta files', multi= T)
-	fasta = lapply(fasta.file.names, read.dna, format= 'fasta')
-	names(fasta) <- sapply(strsplit(fasta.file.names, '\\', fixed = T), function(x) return(tail(x,1)))
-	}
-  if(is.null(metadata)) {
-    metadata <- read.delim(choose.files(caption = 'Select extractions metadata', multi = F), as.is = TRUE)
-	}
+    dat.fasta <- read.dat.obj$dat.dna
+	dat.specimens <- read.dat.obj$dat.specimens
+	dat.extractions <- read.dat.obj$dat.extractions
+	} # you can feed a read.cariceae.data object in to start the process
+  else {
+    ## get fasta data
+	fasta.file.names <- choose.files(caption = 'Select fasta files', multi= T)
+	dat.fasta <- lapply(fasta.file.names, read.dna, format= 'fasta')
+	names(dat.fasta) <- sapply(strsplit(fasta.file.names, '\\', fixed = T), function(x) return(tail(x,1)))
+	
+	## get specimens data
+    dat.specimens <- read.delim(choose.files(caption = 'Select specimens metadata table', multi = F), as.is = TRUE)
+	
+	## get extractions data
+	dat.extractions <- lapply(choose.files(caption = "Select one or more extractions metadata tables", multi = TRUE), read.delim, as.is = TRUE)
+	dat.extractions <- do.call(rbind, dat.extractions) ## may need to check columns for naming
+	} # end else, the reading function if a read.dat.obj was not brought in
+	
+	
+	#### STOPPED HERE
+	
+	
   metadata$seqName <- paste(metadata$TAXON, metadata$DNA_TUBE_LABELS, sep = '_')
   sequence.owners <- c('ALL_SEQUENCES', as.character(sort(unique(metadata[[source.col]]))))
   sequence.owners <- sequence.owners[sequence.owners != ''] # get rid of blanks
@@ -108,5 +119,6 @@ read.cariceae.data <- function(read.dat.obj = NULL, fasta = NULL, metadata = NUL
 	  }
 	}
   out <- list(seqs = fasta, dat = metadata, sequence.owners = sequence.owners[-1])
+  class(out) <- "cariceae.data"
   out
   }
