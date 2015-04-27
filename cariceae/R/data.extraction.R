@@ -71,8 +71,11 @@ read.cariceae.data <- function(read.dat.obj = NULL, fasta = NULL, metadata = NUL
   if(is.null(fasta)) {
     fasta.file.names <- choose.files(caption = 'Select fasta files', multi= T)
 	fasta = lapply(fasta.file.names, read.dna, format= 'fasta')
-	names(fasta) <- sapply(strsplit(fasta.file.names, '\\', fixed = T), function(x) return(tail(x,1)))}
-  if(is.null(metadata)) metadata <- read.delim(choose.files(caption = 'Select extractions metadata', multi = F), as.is = TRUE)
+	names(fasta) <- sapply(strsplit(fasta.file.names, '\\', fixed = T), function(x) return(tail(x,1)))
+	}
+  if(is.null(metadata)) {
+    metadata <- read.delim(choose.files(caption = 'Select extractions metadata', multi = F), as.is = TRUE)
+	}
   metadata$seqName <- paste(metadata$TAXON, metadata$DNA_TUBE_LABELS, sep = '_')
   sequence.owners <- c('ALL_SEQUENCES', as.character(sort(unique(metadata[[source.col]]))))
   sequence.owners <- sequence.owners[sequence.owners != ''] # get rid of blanks
