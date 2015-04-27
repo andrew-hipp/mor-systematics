@@ -66,8 +66,12 @@ make.all.cariceae.dna <- function(base.dir = getwd(),
 read.cariceae.data <- function(read.dat.obj = NULL, fasta = NULL, metadata = NULL, 
                                source.labs = 'ALL_SEQUENCES', additional = NULL,
 							   select.by = c('pattern', 'grep', 'identity'),
-							   source.col = 'CONTRIBUTOR', append.source = TRUE, tail.to = 3, patt = 1:3) {
-## as written originally built
+							   source.col = 'CONTRIBUTOR', append.source = TRUE, tail.to = 3, patt = 1:3,
+							   ) {
+## 2015-04-27: Several fundamental changes:
+##             * this function now goes to a specimen table and a series of DNA tables to get data
+##             * only the DNA code is used to pull sequences from the fasta files
+##             * the label is written on the fly based on a formula
   if(!is.null(read.dat.obj)) {
     fasta <- read.dat.obj$seqs
 	metadata <- read.dat.obj$dat
