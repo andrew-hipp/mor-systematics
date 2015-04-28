@@ -112,6 +112,7 @@ read.carex.data <- function(read.dat.obj = NULL,
 	
 	## get extractions data
 	dat.extractions <- lapply(choose.files(caption = "Select one or more extractions metadata tables", multi = TRUE), read.delim, as.is = TRUE)
+	sapply(dat.extractions, function(x) print(names(x)))
 	dat.extractions <- do.call(rbind, dat.extractions) ## may need to check columns for naming
 	} # end else, the reading function if a read.dat.obj was not brought in
 		
