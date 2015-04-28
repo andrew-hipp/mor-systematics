@@ -64,16 +64,22 @@ make.all.cariceae.dna <- function(base.dir = getwd(),
   return(0)
   }
 
+dna.from.spm(
+  
 read.cariceae.data <- function(read.dat.obj = NULL,
                                additional = NULL,
-							   select.by = c('pattern', 'grep', 'identity'),
+							   select.by = c('pattern', 'grep'),
 							   source.labs = 'ALL_SEQUENCES', 
 							   col.owner = 'Ownership_of_Sequence', 
 							   col.taxon = 'TAXA-Current_determination',
 							   col.tubeNo = 'Original_Tube_No',
 							   col.spm = 'SPMCODE',
-							   append.source = TRUE, tail.to = 3, patt = 1:3,
-							   tip.label = c('TAXA-Current_determination', 'Ownership_of_Sequence', 'Original_Tube_No', 'Country', 'SPMCODE'),
+							   col.extraction = 'MOR_DNA_TUBE_NO_CODE',
+							   col.spmDNAindex = 'Specimen_ID_CODE',
+							   change.tip.labels = TRUE, tail.to = 3, patt = 1:3,
+							   tip.label = c('TAXA.Current_determination', 'Ownership_of_Sequence', 'Original_Tube_No', 'Country', 'SPMCODE'),
+							   tip.spaceSub = "_",
+							   tip.delim = "|"
 							   ) {
 ## 2015-04-27: Several fundamental changes:
 ##             * this function now goes to a specimen table and a series of DNA tables to get data
@@ -98,26 +104,25 @@ read.cariceae.data <- function(read.dat.obj = NULL,
 	dat.extractions <- do.call(rbind, dat.extractions) ## may need to check columns for naming
 	} # end else, the reading function if a read.dat.obj was not brought in
 		
-  metadata$seqName <- paste(metadata$TAXON, metadata$DNA_TUBE_LABELS, sep = '_')
-  sequence.owners <- c('ALL_SEQUENCES', as.character(sort(unique(metadata[[col.owner]]))))
+  dat.specimens$seqName <- apply(dat.specimens[tip.label], 1, function(x) paste(gsub(" ", tip.spaceSub, x), collapse = tip.delim))
+  sequence.owners <- c('ALL_SEQUENCES', sort(unique(toupper(dat.specimens[[col.owner]]))))
   sequence.owners <- sequence.owners[sequence.owners != ''] # get rid of blanks
   if(!source.labs %in% sequence.owners) source.labs <- select.list(sequence.owners, multi = TRUE, title = 'Select source lab(s)')
+  spms.to.use <- dat.specimens[which(dat.specimens[[col.owner]] %in% source.labs), col.spm]
   if(source.labs != 'ALL_SEQUENCES') {
-    # seqs.to.use <- unique(unlist(sapply(source.labs, grep, x = metadata$SOURCE.LAB..owner.of.DNA., value = TRUE)))
-	if(select.by[1] %in% c('grep', 'pattern')) seqs.to.use <- metadata$DNA_TUBE_LABELS[metadata[[col.owner]] %in% source.labs]
-    if(select.by[1] == 'identity') seqs.to.use <- metadata$seqName[metadata[[col.owner]] %in% source.labs]
-	if(!is.null(additional)) seqs.to.use <- unique(c(seqs.to.use, additional)) # does not currently check whether additional is in fasta files
+    seqs.to.use <- dat.extractions[which(dat.extractions[[col.spmDNAindex]] %in% spms.to.use), col.extraction]
+    if(!is.null(additional)) seqs.to.use <- unique(c(seqs.to.use, additional)) # does not currently check whether additional is in fasta files
 	for(i in names(fasta)) {
 	  ## fasta[[i]] <- fasta[[i]][tidyName(row.names(fasta[[i]])) %in% tidyName(seqs.to.use), ]
 	  fasta.tube.codes.extracted <- sapply(row.names(fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], tail.to)[patt], collapse = "_"))
-	  if(select.by[1] %in% c('grep', 'identity')) fasta[[i]] <- fasta[[i]][unique(unlist(sapply(tidyName(seqs.to.use), grep, x = tidyName(row.names(fasta[[i]]))))), ]
+	  if(select.by[1] == 'grep') fasta[[i]] <- fasta[[i]][unique(unlist(sapply(tidyName(seqs.to.use), grep, x = tidyName(row.names(fasta[[i]]))))), ]
       if(select.by[1] == 'pattern') fasta[[i]] <- fasta[[i]][tidyName(fasta.tube.codes.extracted) %in% tidyName(seqs.to.use) , ]
 	  } # close i	
 	metadata <- metadata[metadata[[col.owner]] %in% source.labs, ]
 	}
-  if(append.source) {
+  if(change.tip.labels) {
     for(i in names(fasta)) {
-      fasta.tube.codes.extracted <- sapply(row.names(fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], 3), collapse = "_"))
+      fasta.tube.codes.extracted <- sapply(row.names(fasta[[i]]), function(x) dna.from.spm(tail(strsplit(x, '_')[[1]], tail.to)[patt]), dat.specimen, dat.extraction)
 	  row.names(fasta[[i]]) <- paste(row.names(fasta[[i]]), metadata[[col.owner]][match(tidyName(fasta.tube.codes.extracted), tidyName(metadata$DNA_TUBE_LABELS))], sep = '_')
 	  }
 	}
