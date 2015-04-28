@@ -64,9 +64,20 @@ make.all.cariceae.dna <- function(base.dir = getwd(),
   return(0)
   }
 
-dna.from.spm(
+dna.to.spm <- function(x, dnaDat, 
+                         col.spm = 'SPMCODE',
+                         col.extraction = 'MOR_DNA_TUBE_NO_CODE',
+						 col.spmDNAindex = 'Specimen_ID_CODE',
+						 use.tidyName = TRUE, 
+						 ...) {
+## x is a vector of extraction codes
+  dnaRows <- match(tidyName(x, ...), tidyName(dnaDat[[col.extraction]], ...))
+  spmID <- dnaDat[dnaRows, col.spmDNAindex]
+  return(spmID)
+  }
   
-read.cariceae.data <- function(read.dat.obj = NULL,
+  
+read.carex.data <- function(read.dat.obj = NULL,
                                additional = NULL,
 							   select.by = c('pattern', 'grep'),
 							   source.labs = 'ALL_SEQUENCES', 
@@ -122,11 +133,11 @@ read.cariceae.data <- function(read.dat.obj = NULL,
 	}
   if(change.tip.labels) {
     for(i in names(fasta)) {
-      fasta.tube.codes.extracted <- sapply(row.names(fasta[[i]]), function(x) dna.from.spm(tail(strsplit(x, '_')[[1]], tail.to)[patt]), dat.specimen, dat.extraction)
-	  row.names(fasta[[i]]) <- paste(row.names(fasta[[i]]), metadata[[col.owner]][match(tidyName(fasta.tube.codes.extracted), tidyName(metadata$DNA_TUBE_LABELS))], sep = '_')
+      extracted.spm.codes <- dna.to.spm(sapply(row.names(fasta[[i]]), function(x) tail(strsplit(x, '_')[[1]], tail.to)[patt]), dat.extraction)
+	  row.names(fasta[[i]]) <- dat.extraction[match(extracted.spm.codes, dat.extraction[[col.spm]]), 'seqName']
 	  }
 	}
-  out <- list(seqs = fasta, dat = metadata, sequence.owners = sequence.owners[-1])
-  class(out) <- "cariceae.data"
+  out <- list(seqs = fasta, dat.specimens = dat.specimens, dat.extractions = dat.extractions, sequence.owners = sequence.owners[-1])
+  class(out) <- "carex.data"
   out
   }
