@@ -1,6 +1,7 @@
 ## tools for extracting datasets
 ## A Hipp, 2013-11-05
 ## 2014-04-09: added full dataset, added header for analysis file and path prefix for absolute paths, got rid of quotes around files
+## 2015-04-27: rewriting to use specimen and extraction databases
 
 require(ape)
 
@@ -67,6 +68,7 @@ read.cariceae.data <- function(read.dat.obj = NULL,
                                source.labs = 'ALL_SEQUENCES', additional = NULL,
 							   select.by = c('pattern', 'grep', 'identity'),
 							   source.col = 'CONTRIBUTOR', append.source = TRUE, tail.to = 3, patt = 1:3,
+							   tip.label = c('TAXA-Current_determination', 'Ownership_of_Sequence', 'Original_Tube_No', 'Country', 'SPMCODE'),
 							   ) {
 ## 2015-04-27: Several fundamental changes:
 ##             * this function now goes to a specimen table and a series of DNA tables to get data
