@@ -108,11 +108,11 @@ read.carex.data <- function(read.dat.obj = NULL,
 	names(dat.fasta) <- sapply(strsplit(fasta.file.names, '\\', fixed = T), function(x) return(tail(x,1)))
 	
 	## get specimens data
-    dat.specimens <- read.delim(choose.files(caption = 'Select specimens metadata table', multi = F), as.is = TRUE)
+    dat.specimens <- read.delim(choose.files(caption = 'Select a single specimens metadata table', multi = T), as.is = TRUE)
 	
 	## get extractions data
 	dat.extractions <- lapply(choose.files(caption = "Select one or more extractions metadata tables", multi = TRUE), read.delim, as.is = TRUE)
-	sapply(dat.extractions, function(x) print(names(x)))
+	# sapply(dat.extractions, function(x) print(names(x)))
 	dat.extractions <- do.call(rbind, dat.extractions) ## may need to check columns for naming
 	} # end else, the reading function if a read.dat.obj was not brought in
 		
@@ -124,21 +124,27 @@ read.carex.data <- function(read.dat.obj = NULL,
   if(source.labs != 'ALL_SEQUENCES') {
     seqs.to.use <- dat.extractions[which(dat.extractions[[col.spmDNAindex]] %in% spms.to.use), col.extraction]
     if(!is.null(additional)) seqs.to.use <- unique(c(seqs.to.use, additional)) # does not currently check whether additional is in fasta files
-	for(i in names(fasta)) {
-	  ## fasta[[i]] <- fasta[[i]][tidyName(row.names(fasta[[i]])) %in% tidyName(seqs.to.use), ]
-	  fasta.tube.codes.extracted <- sapply(row.names(fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], tail.to)[patt], collapse = "_"))
-	  if(select.by[1] == 'grep') fasta[[i]] <- fasta[[i]][unique(unlist(sapply(tidyName(seqs.to.use), grep, x = tidyName(row.names(fasta[[i]]))))), ]
-      if(select.by[1] == 'pattern') fasta[[i]] <- fasta[[i]][tidyName(fasta.tube.codes.extracted) %in% tidyName(seqs.to.use) , ]
+	for(i in names(dat.fasta)) {
+	  fasta.tube.codes.extracted <- sapply(row.names(dat.fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], tail.to)[patt], collapse = "_"))
+	  if(select.by[1] == 'grep') dat.fasta[[i]] <- dat.fasta[[i]][unique(unlist(sapply(tidyName(seqs.to.use), grep, x = tidyName(row.names(dat.fasta[[i]]))))), ]
+      if(select.by[1] == 'pattern') dat.fasta[[i]] <- dat.fasta[[i]][tidyName(fasta.tube.codes.extracted) %in% tidyName(seqs.to.use) , ]
 	  } # close i	
 	metadata <- metadata[metadata[[col.owner]] %in% source.labs, ]
 	}
   if(change.tip.labels) {
-    for(i in names(fasta)) {
-      extracted.spm.codes <- dna.to.spm(sapply(row.names(fasta[[i]]), function(x) tail(strsplit(x, '_')[[1]], tail.to)[patt]), dat.extraction)
-	  row.names(fasta[[i]]) <- dat.extraction[match(extracted.spm.codes, dat.extraction[[col.spm]]), 'seqName']
+    for(i in names(dat.fasta)) {
+      extracted.spm.codes <- dna.to.spm(sapply(row.names(dat.fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], tail.to)[patt], collapse = "_")), dat.extractions)
+	  new.row.names <- dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName']
+	  errorLog <- c('FASTA.LABEL.NO.SPECIMEN.MATCH', row.names(dat.fasta[[i]])[is.na(new.row.names)], '', '')
+	  new.row.names[is.na(new.row.names)] <- paste(row.names(dat.fasta[[i]])[is.na(new.row.names)], "FASTA.LABEL.NO.SPECIMEN.MATCH", sep = tip.delim) # for any failed names, adds in original name
+	  errorLog <- c(errorLog, 'FASTA.LABEL.NO.RECOGNIZED.TAXON', row.names(dat.fasta[[i]])[substr(new.row.names,1,1) == tip.delim])
+	  new.row.names[substr(new.row.names,1,1) == tip.delim] <- paste(row.names(dat.fasta[[i]])[substr(new.row.names,1,1) == tip.delim], ".FASTA.LABEL.NO.RECOGNIZED.TAXON", new.row.names[substr(new.row.names,1,1) == tip.delim], sep = "") # when there is no species, swap in fasta label
+	  write.csv(cbind(oldName = row.names(dat.fasta[[i]]), newName = new.row.names), paste('nameChanges.', i, '.csv', sep = ''))
+	  row.names(dat.fasta[[i]]) <- new.row.names
+	  writeLines(errorLog, con = paste('errorLog.', i,'.log', sep = ''))
 	  }
 	}
-  out <- list(seqs = fasta, dat.specimens = dat.specimens, dat.extractions = dat.extractions, sequence.owners = sequence.owners[-1])
+  out <- list(seqs = dat.fasta, dat.specimens = dat.specimens, dat.extractions = dat.extractions, sequence.owners = sequence.owners[-1])
   class(out) <- "carex.data"
   out
   }
