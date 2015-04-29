@@ -142,7 +142,8 @@ read.carex.data <- function(read.dat.obj = NULL,
 	  if(length(reject.rows) > 0) {
 	    dat.fasta[[i]] <- dat.fasta[[i]][-reject.rows, ]
 		extracted.spm.codes <- extracted.spm.codes[-reject.rows]
-	  }
+		} # end if length
+	  } # end if exclude
 	if(change.tip.labels) {
       new.row.names <- dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName']
 	  errorLog <- c(errorLog, 'FASTA.LABEL.NO.SPECIMEN.MATCH', row.names(dat.fasta[[i]])[is.na(new.row.names)], '', '')
