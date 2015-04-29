@@ -81,6 +81,7 @@ read.carex.data <- function(read.dat.obj = NULL,
                                additional = NULL,
 							   select.by = c('pattern', 'grep'),
 							   exclude.permissionNotGranted = TRUE,
+							   dna.out = c('phylip', 'fasta'),
 							   source.labs = 'ALL_SEQUENCES', 
 							   col.owner = 'Ownership_of_Sequence', 
 							   col.taxon = 'TAXA-Current_determination',
@@ -156,6 +157,12 @@ read.carex.data <- function(read.dat.obj = NULL,
 	  }
 	}
   out <- list(seqs = dat.fasta, dat.specimens = dat.specimens, dat.extractions = dat.extractions, sequence.owners = sequence.owners[-1])
+  if(!is.na(dna.out[1])) {
+    for(i in names(dat.fasta)) {
+	  if(dna.out[1] == 'fasta') write.dna(dat.fasta[[i]], paste(i, '.GCG.export.fas', sep = ''), format = 'fasta')
+	  if(dna.out[1] == 'phylip') write.dna(dat.fasta[[i]], paste(i, '.GCG.export.phy', sep = ''), format = 'sequential', nbcol = -1, colsep = '')
+	  } # close i
+	} # close if
   class(out) <- "carex.data"
   out
   }
