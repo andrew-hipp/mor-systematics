@@ -120,6 +120,8 @@ read.carex.data <- function(read.dat.obj = NULL,
 	} # end else, the reading function if a read.dat.obj was not brought in
 		
   dat.specimens$seqName <- apply(dat.specimens[tip.label], 1, function(x) paste(gsub(" ", tip.spaceSub, x), collapse = tip.delim))
+  
+  ## these lines just subset by ownership -- NOT UPDATED 2015.04.29
   sequence.owners <- c('ALL_SEQUENCES', sort(unique(toupper(dat.specimens[[col.owner]]))))
   sequence.owners <- sequence.owners[sequence.owners != ''] # get rid of blanks
   if(!source.labs %in% sequence.owners) source.labs <- select.list(sequence.owners, multi = TRUE, title = 'Select source lab(s)')
@@ -134,6 +136,7 @@ read.carex.data <- function(read.dat.obj = NULL,
 	  } # close i	
 	metadata <- metadata[metadata[[col.owner]] %in% source.labs, ]
 	}
+	
   for(i in names(dat.fasta)) {
     extracted.spm.codes <- dna.to.spm(sapply(row.names(dat.fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], tail.to)[patt], collapse = "_")), dat.extractions)
 	errorLog <- character(0)
@@ -162,6 +165,7 @@ read.carex.data <- function(read.dat.obj = NULL,
 	  if(dna.out[1] == 'fasta') write.dna(dat.fasta[[i]], paste(i, '.GCG.export.fas', sep = ''), format = 'fasta')
 	  if(dna.out[1] == 'phylip') write.dna(dat.fasta[[i]], paste(i, '.GCG.export.phy', sep = ''), format = 'sequential', nbcol = -1, colsep = '')
 	  } # close i
+	out.concat <- do.call(rbind.DNAbin, dat.fasta, 
 	} # close if
   class(out) <- "carex.data"
   out
