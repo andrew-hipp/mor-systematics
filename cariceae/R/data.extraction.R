@@ -138,8 +138,10 @@ read.carex.data <- function(read.dat.obj = NULL,
 	errorLog <- character(0)
 	if(exclude.permissionNotGranted) {
 	  reject.rows <- which(!dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), col.permission])
-	  errorLog <- c(errorLog, 'SPECIMENS FLAGGED AS NOT TO BE SHARED', paste(row.names(dat.fasta[[i]])[reject.rows], '[from fasta file] --', dat.specimens[reject.rows, 'seqName'], '[as relabelled]'), '', '')
-	  if(length(reject.rows) > 0) dat.fasta[[i]] <- dat.fasta[[i]][-c(reject.rows), ]
+	  errorLog <- c(errorLog, 'SPECIMENS FLAGGED AS NOT TO BE SHARED', paste(row.names(dat.fasta[[i]])[reject.rows], '[from fasta file] --', dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName'][reject.rows], '[as relabelled]'), '', '')
+	  if(length(reject.rows) > 0) {
+	    dat.fasta[[i]] <- dat.fasta[[i]][-reject.rows, ]
+		extracted.spm.codes <- extracted.spm.codes[-reject.rows]
 	  }
 	if(change.tip.labels) {
       new.row.names <- dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName']
