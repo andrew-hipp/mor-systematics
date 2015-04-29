@@ -80,11 +80,13 @@ dna.to.spm <- function(x, dnaDat,
 read.carex.data <- function(read.dat.obj = NULL,
                                additional = NULL,
 							   select.by = c('pattern', 'grep'),
+							   exclude.permissionNotGranted = TRUE,
 							   source.labs = 'ALL_SEQUENCES', 
 							   col.owner = 'Ownership_of_Sequence', 
 							   col.taxon = 'TAXA-Current_determination',
 							   col.tubeNo = 'Original_Tube_No',
 							   col.spm = 'SPMCODE',
+							   col.permission = 'PERMISSION_TO_USE',
 							   col.extraction = 'MOR_DNA_TUBE_NO_CODE',
 							   col.spmDNAindex = 'Specimen_ID_CODE',
 							   change.tip.labels = TRUE, tail.to = 3, patt = 1:3,
@@ -131,11 +133,17 @@ read.carex.data <- function(read.dat.obj = NULL,
 	  } # close i	
 	metadata <- metadata[metadata[[col.owner]] %in% source.labs, ]
 	}
-  if(change.tip.labels) {
-    for(i in names(dat.fasta)) {
-      extracted.spm.codes <- dna.to.spm(sapply(row.names(dat.fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], tail.to)[patt], collapse = "_")), dat.extractions)
-	  new.row.names <- dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName']
-	  errorLog <- c('FASTA.LABEL.NO.SPECIMEN.MATCH', row.names(dat.fasta[[i]])[is.na(new.row.names)], '', '')
+  for(i in names(dat.fasta)) {
+    extracted.spm.codes <- dna.to.spm(sapply(row.names(dat.fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], tail.to)[patt], collapse = "_")), dat.extractions)
+	errorLog <- character(0)
+	if(exclude.permissionNotGranted) {
+	  reject.rows <- which(!dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), col.permission])
+	  errorLog <- c(errorLog, 'SPECIMENS FLAGGED AS NOT TO BE SHARED', paste(row.names(dat.fasta[[i]])[reject.rows], '[from fasta file] --', dat.specimens[reject.rows, 'seqName'], '[as relabelled]'), '', '')
+	  if(length(reject.rows) > 0) dat.fasta[[i]] <- dat.fasta[[i]][-c(reject.rows), ]
+	  }
+	if(change.tip.labels) {
+      new.row.names <- dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName']
+	  errorLog <- c(errorLog, 'FASTA.LABEL.NO.SPECIMEN.MATCH', row.names(dat.fasta[[i]])[is.na(new.row.names)], '', '')
 	  new.row.names[is.na(new.row.names)] <- paste(row.names(dat.fasta[[i]])[is.na(new.row.names)], "FASTA.LABEL.NO.SPECIMEN.MATCH", sep = tip.delim) # for any failed names, adds in original name
 	  errorLog <- c(errorLog, 'FASTA.LABEL.NO.RECOGNIZED.TAXON', row.names(dat.fasta[[i]])[substr(new.row.names,1,1) == tip.delim])
 	  new.row.names[substr(new.row.names,1,1) == tip.delim] <- paste(row.names(dat.fasta[[i]])[substr(new.row.names,1,1) == tip.delim], ".FASTA.LABEL.NO.RECOGNIZED.TAXON", new.row.names[substr(new.row.names,1,1) == tip.delim], sep = "") # when there is no species, swap in fasta label
