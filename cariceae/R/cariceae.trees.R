@@ -19,8 +19,8 @@ summarize.gene.coverage <- function(datMat = cariceae.concat.4genes.summary, ext
   }
   
 ## tree traversal and counting
-label.elements <- function(tree, delim = '_', returnNum = 2, returnDelim = ' ', ...) {
-## finds spp at tips, assuming first two elements are the genus and sp epithet
+label.elements <- function(tree, delim = '|', returnNum = 1, returnDelim = ' ', ...) {
+## finds any label at the tips; default assumes pipe delimitation, and the element of interest is b/f the first pipe
   out <- sapply(tree$tip.label, function(x) paste(strsplit(x, delim, ...)[[1]][returnNum], collapse = returnDelim))
   out
   }
