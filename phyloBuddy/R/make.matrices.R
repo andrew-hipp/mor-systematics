@@ -97,14 +97,14 @@ make.gene.matrix <- function(metadata = cariceae.2013.02.28, loci = allRegions, 
 ## take vouchers and regions to make a matrix we can use
 ## Arguments:
 ##  metadata = parsed data from NCBI genbank
-##  loci = data cleaned up by Marlene Hahn; relevant columns are "verbatim" and "clean"; every genbank row should correspond with an entry in the verbatim column
-##  voucherMat = the cleaned up vouchers matrix from Kate Lueders
+##  loci = translation from verbatim gene regions (NCBI) to a cleaned up gene regions name; relevant columns are "verbatim" and "clean"; every genbank row should correspond with an entry in the verbatim column
+##  voucherMat = the cleaned up vouchers matrix from Kate Lueders; this was used in 2013, but not in 2015
 
 ## 1. make unique vouchers from collector and collector number and isolate number
   vouchers.ln.cn <- paste(nospace(voucherMat$Primary.collector.last.name), nospace(voucherMat$Collector.number), nospace(voucherMat$isolate_num))
   names(vouchers.ln.cn) <- voucherMat$NCBI_voucher
   if(!"cleanedGeneRegion" %in% names(metadata)) metadata$cleanedGeneRegion <- allRegions$clean[match(as.character(metadata$generegion), allRegions$verbatim)]
-  if(!"cleanedVoucher" %in% names(metadata)) metadata$cleanedVoucher <- as.character(vouchers.ln.cn[match(metadata$NCBI_accession, names(vouchers.ln.cn))])
+  if(!"cleanedVoucher" %in% names(metadata)) metadata$cleanedVoucher <- as.character(vouchers.ln.cn[match(metadata$NCBI_accession, names(vouchers.ln.cn))]) # not necessary if voucher metadata are not separated from the rest of the sequence metadata
 
   missingVouchers <- which(gsub(" ", "", metadata$cleanedVoucher, fixed = TRUE) == "")   
   uniqueLoci <- unique(sort(as.character(loci$clean)))
