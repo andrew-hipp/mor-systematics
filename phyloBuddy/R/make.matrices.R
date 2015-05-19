@@ -93,7 +93,7 @@ refine.fasta <- function(basedir = choose.dir()) {
   }
 
     	
-make.gene.matrix <- function(metadata = cariceae.2013.02.28, loci = allRegions, voucherMat = vouchers.2013.6.6, logerrors = TRUE) {
+make.gene.matrix <- function(metadata = ncbi.meta, loci = allRegions.2015, voucherMat = NA, voucherFormula = c("Primary.collector.last.name", "Collector.number", "isolate", "CollectionNumber", "Collection"), logerrors = TRUE) {
 ## take vouchers and regions to make a matrix we can use
 ## Arguments:
 ##  metadata = parsed data from NCBI genbank
@@ -101,8 +101,14 @@ make.gene.matrix <- function(metadata = cariceae.2013.02.28, loci = allRegions, 
 ##  voucherMat = the cleaned up vouchers matrix from Kate Lueders; this was used in 2013, but not in 2015
 
 ## 1. make unique vouchers from collector and collector number and isolate number
-  vouchers.ln.cn <- paste(nospace(voucherMat$Primary.collector.last.name), nospace(voucherMat$Collector.number), nospace(voucherMat$isolate_num))
-  names(vouchers.ln.cn) <- voucherMat$NCBI_voucher
+  if(!is.na(voucherMat[1])) {
+    vouchers.ln.cn <- paste(nospace(voucherMat$Primary.collector.last.name), nospace(voucherMat$Collector.number), nospace(voucherMat$isolate_num))
+	names(vouchers.ln.cn) <- voucherMat$NCBI_voucher
+	} # this was necessary in 2013 because I had split out the voucher columns for Kate to edit; no longer doing this in 2015
+  else {
+    vouchers.ln.cn <- apply(metadata[voucherFormula], 1, function(x) paste(tidyName(x[!is.na(x)]), collapse = ''))
+    names(vouchers.ln.cn) <- metadata$NCBI_accession # note that NCBI_accession is not actually the accession number used in NCBI! The preferred accession number is primary_accession
+	}
   if(!"cleanedGeneRegion" %in% names(metadata)) metadata$cleanedGeneRegion <- allRegions$clean[match(as.character(metadata$generegion), allRegions$verbatim)]
   if(!"cleanedVoucher" %in% names(metadata)) metadata$cleanedVoucher <- as.character(vouchers.ln.cn[match(metadata$NCBI_accession, names(vouchers.ln.cn))]) # not necessary if voucher metadata are not separated from the rest of the sequence metadata
 
@@ -124,7 +130,7 @@ make.gene.matrix <- function(metadata = cariceae.2013.02.28, loci = allRegions, 
   # browser()
   for (i in 1:dim(metadata)[1]) {
     if(!any(is.na(metadata[i, c('cleanedGeneRegion', 'cleanedVoucher')]))) {
-	  # message(paste('doing', i))
+	  message(paste('doing', i))
 	  out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']] <- ifelse(out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']] == '', 
 	                                                                                 as.character(metadata[i, 'NCBI_accession']),
 																					 paste(out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']], metadata[i, 'NCBI_accession'], sep = '|')

@@ -7,7 +7,7 @@
 
 ###Step 1: Save file as XML in Geneious; make sure you know how many files were downloaded 
 ###because you will need to enter that # in function below (usually part of filename in Geneious export)
-	### libary(XML)
+	### library(XML)
 	### xml_file <- xmlTreeParse(file.choose())
  
  ###Issues see if I can get the program to parse out more detailed information including gene region and voucher info.
