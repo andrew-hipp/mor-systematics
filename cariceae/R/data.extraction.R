@@ -111,7 +111,7 @@ read.carex.data <- function(read.dat.obj = NULL,
 	names(dat.fasta) <- sapply(strsplit(fasta.file.names, '\\', fixed = T), function(x) return(tail(x,1)))
 	
 	## get specimens data
-    dat.specimens <- read.delim(choose.files(caption = 'Select a single specimens metadata table', multi = T), as.is = TRUE)
+    dat.specimens <- read.delim(choose.files(caption = 'Select a single specimens metadata table', multi = FALSE), as.is = TRUE)
 	
 	## get extractions data
 	dat.extractions <- lapply(choose.files(caption = "Select one or more extractions metadata tables", multi = TRUE), read.delim, as.is = TRUE)
