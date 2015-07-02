@@ -159,14 +159,15 @@ read.carex.data <- function(read.dat.obj = NULL,
 	  writeLines(errorLog, con = paste('errorLog.', i,'.log', sep = ''))
 	  }
 	}
-  out <- list(seqs = dat.fasta, dat.specimens = dat.specimens, dat.extractions = dat.extractions, sequence.owners = sequence.owners[-1])
+  dat.fasta$concat.gappy <- do.call(cbind.DNAbin, args = c(dat.fasta, fill.with.gaps = TRUE))
+  dat.fasta$concat.noGaps <- do.call(cbind.DNAbin, args = c(dat.fasta, fill.with.gaps = FALSE))
   if(!is.na(dna.out[1])) {
     for(i in names(dat.fasta)) {
 	  if(dna.out[1] == 'fasta') write.dna(dat.fasta[[i]], paste(i, '.GCG.export.fas', sep = ''), format = 'fasta')
 	  if(dna.out[1] == 'phylip') write.dna(dat.fasta[[i]], paste(i, '.GCG.export.phy', sep = ''), format = 'sequential', nbcol = -1, colsep = '')
 	  } # close i
-	out.concat <- do.call(rbind.DNAbin, dat.fasta, 
 	} # close if
+  out <- list(seqs = dat.fasta, dat.specimens = dat.specimens, dat.extractions = dat.extractions, sequence.owners = sequence.owners[-1])
   class(out) <- "carex.data"
   out
   }
