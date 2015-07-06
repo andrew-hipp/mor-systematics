@@ -169,7 +169,7 @@ read.carex.data <- function(read.dat.obj = NULL,
 	  new.row.names[is.na(new.row.names)] <- paste(row.names(dat.fasta[[i]])[is.na(new.row.names)], "FASTA.LABEL.NO.SPECIMEN.MATCH", sep = tip.delim) # for any failed names, adds in original name
 	  errorLog <- c(errorLog, 'FASTA.LABEL.NO.RECOGNIZED.TAXON', row.names(dat.fasta[[i]])[substr(new.row.names,1,1) == tip.delim])
 	  new.row.names[substr(new.row.names,1,1) == tip.delim] <- paste(row.names(dat.fasta[[i]])[substr(new.row.names,1,1) == tip.delim], ".FASTA.LABEL.NO.RECOGNIZED.TAXON", new.row.names[substr(new.row.names,1,1) == tip.delim], sep = "") # when there is no species, swap in fasta label
-	  write.csv(cbind(oldName = row.names(dat.fasta[[i]]), newName = new.row.names), paste('nameChanges.', i, '.csv', sep = ''))
+	  write.csv(cbind(oldName = row.names(dat.fasta[[i]]), newName = new.row.names, specimenCode = extracted.spm.codes), paste('nameChanges.', i, '.csv', sep = ''))
 	  row.names(dat.fasta[[i]]) <- new.row.names
 	  writeLines(errorLog, con = paste('errorLog.', i,'.log', sep = ''))
 	  }
