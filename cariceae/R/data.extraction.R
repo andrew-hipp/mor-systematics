@@ -118,7 +118,7 @@ read.carex.data <- function(read.dat.obj = NULL,
 	## get specimens data
     spec.file.name <- choose.files(caption = 'Select a single specimens metadata table', multi = FALSE)
 	if(tail(strsplit(spec.file.name, '.', fixed = TRUE)[[1]], 1) %in% c('csv', 'CSV')) dat.specimens <- read.csv(spec.file.name, as.is = TRUE)
-	else dat.specimens <- read.delim(spec.file.name, as.is = TRUE)
+	# else dat.specimens <- read.delim(spec.file.name, as.is = TRUE)
 	
 	## get extractions data
 	dat.extractions <- lapply(choose.files(caption = "Select one or more extractions metadata tables", multi = TRUE), read.delim, as.is = TRUE)
@@ -187,3 +187,10 @@ read.carex.data <- function(read.dat.obj = NULL,
   out
   }
   
+exclude.taxa <- function(path = 'edits', pattern = 'csv', column = 'exclude', excludeChars = c('x', 'X'), inverse = FALSE) {
+  exclude.mats <- lapply(dir(path, full = T, patt = pattern), read.csv, as.is = T)
+  for(i in 1:length(exclude.mats)) if(!'specimenCode' %in% names(exclude.mats[[i]])) exclude.mats[[i]]$specimenCode <- sapply(exclude.mats[[i]]$newName, function(x) strsplit(x, "|", fixed = T)[[1]][5]) # only works if fifth element is the specimen code
+  if(inverse) exclude.vector <- unlist(lapply(exclude.mats, function(x) x$specimenCode[which(!x[[column]] %in% excludeChars)]))
+  else exclude.vector <- unlist(lapply(exclude.mats, function(x) x$specimenCode[which(x[[column]] %in% excludeChars)]))
+  return(exclude.vector)
+  }
