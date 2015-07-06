@@ -80,6 +80,7 @@ dna.to.spm <- function(x, dnaDat,
 read.carex.data <- function(read.dat.obj = NULL,
                                additional = NULL,
 							   select.by = c('pattern', 'grep'),
+							   spm.excludes = NA,
 							   exclude.permissionNotGranted = TRUE,
 							   dna.out = c('phylip', 'fasta'),
 							   source.labs = 'ALL_SEQUENCES', 
@@ -99,7 +100,10 @@ read.carex.data <- function(read.dat.obj = NULL,
 ##             * this function now goes to a specimen table and a series of DNA tables to get data
 ##             * only the DNA code is used to pull sequences from the fasta files
 ##             * the label is written on the fly based on a formula
-## 2015-07-06: updated to take CSV or TSV files
+## 2015-07-06: minor changes:
+##             * takes CSV or TSV specimen table (TSV was causing problems)
+##             * can now hand in a vector of specimens to exclude (spm.excludes)
+
   if(!is.null(read.dat.obj)) {
     dat.fasta <- read.dat.obj$dat.dna
 	dat.specimens <- read.dat.obj$dat.specimens
@@ -151,6 +155,14 @@ read.carex.data <- function(read.dat.obj = NULL,
 		extracted.spm.codes <- extracted.spm.codes[-reject.rows]
 		} # end if length
 	  } # end if exclude
+	if(!is.na(spm.excludes[1])) { # get rid of specimens we want to delete
+	  reject.rows <- which(extracted.spm.codes %in% spm.excludes)
+	  errorLog <- c(errorLog, 'SPECIMENS EXCLUDED BY LABEL', paste(row.names(dat.fasta[[i]])[reject.rows], '[from fasta file] --', dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName'][reject.rows], '[as relabelled]'), '', '')
+	  if(length(reject.rows) > 0) { ## if there actually is something to exclude...
+	    dat.fasta[[i]] <- dat.fasta[[i]][-reject.rows, ] ## .. exclude it in the fasta file ...
+	    extracted.spm.codes <- extracted.spm.codes[-reject.rows] ## ... then in the specimen codes.
+        }
+	  } # end if exclude		
 	if(change.tip.labels) {
       new.row.names <- dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName']
 	  errorLog <- c(errorLog, 'FASTA.LABEL.NO.SPECIMEN.MATCH', row.names(dat.fasta[[i]])[is.na(new.row.names)], '', '')
@@ -174,3 +186,4 @@ read.carex.data <- function(read.dat.obj = NULL,
   class(out) <- "carex.data"
   out
   }
+  
