@@ -99,6 +99,7 @@ read.carex.data <- function(read.dat.obj = NULL,
 ##             * this function now goes to a specimen table and a series of DNA tables to get data
 ##             * only the DNA code is used to pull sequences from the fasta files
 ##             * the label is written on the fly based on a formula
+## 2015-07-06: updated to take CSV or TSV files
   if(!is.null(read.dat.obj)) {
     dat.fasta <- read.dat.obj$dat.dna
 	dat.specimens <- read.dat.obj$dat.specimens
@@ -111,7 +112,9 @@ read.carex.data <- function(read.dat.obj = NULL,
 	names(dat.fasta) <- sapply(strsplit(fasta.file.names, '\\', fixed = T), function(x) return(tail(x,1)))
 	
 	## get specimens data
-    dat.specimens <- read.delim(choose.files(caption = 'Select a single specimens metadata table', multi = FALSE), as.is = TRUE)
+    spec.file.name <- choose.files(caption = 'Select a single specimens metadata table', multi = FALSE)
+	if(tail(strsplit(spec.file.name, '.', fixed = TRUE)[[1]], 1) %in% c('csv', 'CSV')) dat.specimens <- read.csv(spec.file.name, as.is = TRUE)
+	else dat.specimens <- read.delim(spec.file.name, as.is = TRUE)
 	
 	## get extractions data
 	dat.extractions <- lapply(choose.files(caption = "Select one or more extractions metadata tables", multi = TRUE), read.delim, as.is = TRUE)
@@ -141,7 +144,7 @@ read.carex.data <- function(read.dat.obj = NULL,
     extracted.spm.codes <- dna.to.spm(sapply(row.names(dat.fasta[[i]]), function(x) paste(tail(strsplit(x, '_')[[1]], tail.to)[patt], collapse = "_")), dat.extractions)
 	errorLog <- character(0)
 	if(exclude.permissionNotGranted) {
-	  reject.rows <- which(!dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), col.permission])
+	  reject.rows <- which(!as.logical(dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), col.permission]))
 	  errorLog <- c(errorLog, 'SPECIMENS FLAGGED AS NOT TO BE SHARED', paste(row.names(dat.fasta[[i]])[reject.rows], '[from fasta file] --', dat.specimens[match(extracted.spm.codes, dat.specimens[[col.spm]]), 'seqName'][reject.rows], '[as relabelled]'), '', '')
 	  if(length(reject.rows) > 0) {
 	    dat.fasta[[i]] <- dat.fasta[[i]][-reject.rows, ]
