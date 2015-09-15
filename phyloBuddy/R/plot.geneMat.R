@@ -1,4 +1,5 @@
-plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes = c(1,3), margins = c(0,1,0.5,0), geneColors = c('red', 'black'), sortByFreq = T, label.cex = 0.5, ...) {
+plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes = c(5,1,2), margins = c(0,1,0.5,0), geneColors = c('red', 'black'), minGenes = 10, sortByFreq = T, label.cex = 0.7, ...) {
+  require(ape)
   x <- t(x) # puts genes as rows, inds as columns
   x <- x[genes, ]
   if(sortByFreq) x <- x[names(sort(rowSums(x != ''), decreasing = T)), ]
@@ -6,8 +7,9 @@ plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes =
     tr <- read.tree(text = write.tree(tr))
 	inds <- tr$tip.label
 	x <- x[, inds]
-	layout(matrix(1:2, 2,1), heights = panes)
+	layout(matrix(1:3, 3,1), heights = panes)
 	} ## should add an option to subset by individuals
+  x <- x[apply(x, 1, function(y) sum(y != '')) >= minGenes, ]
   nInds <- dim(x)[2]
   nGenes <- dim(x)[1]
   col.genes <- rep(geneColors, nGenes/length(geneColors))
@@ -22,6 +24,10 @@ plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes =
       }
 	}
   if(!is.na(tr[1])) {
-    plot(tr, direction = 'upwards', show.tip.label = F, no.margin = F)
+    geneSums <- apply(x, 2, function(y) sum(y != ''))
+	plot(geneSums, type = 'p', pch = 19, axes = F, ylab = 'Genes sampled', cex.lab = 0.8)
+	abline(h = mean(geneSums), lty = 'dashed')
+	axis(2, at = seq(geneSums), labels = seq(geneSums), las = 2)
+	plot(tr, direction = 'upwards', show.tip.label = F, no.margin = F)
     }
   }
