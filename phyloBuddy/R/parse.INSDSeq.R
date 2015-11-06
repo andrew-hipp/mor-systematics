@@ -15,6 +15,7 @@
 		##Still has issues parsing to the voucher level- use spliting _metadata_genbank_tables.r function to parse out this info.)
 
 
+
 parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, parse.specimens = T,
                          qualsToUse = c('specimen_voucher', 'country', 'collection_date', 'lat_lon', 'note', 'collected_by', 'isolate', 'pop_variant')) { 
   if(cores > 1 & Sys.info()['sysname'] == 'Windows') warning("Multicore is only supported on mac and linux for right now")
@@ -26,47 +27,58 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, parse.sp
                'update_date','create_date','definition','primary_accession','accession_version',
 			   ' otherseq_IDS','seq_source','organism','taxonomy','references','feature_table',
 			   'qualifiers1','generegion','Full_sequence', 'authors') ## not needed currently, but might be useful for making the code more flexible
-  get.a.row <- function(dat) {
+  #open(file('fails.v5.txt', open = 'a'))
+  get.a.row <- function(recordNumber) {
+    #message(paste('doing record', recordNumber))
+    dat <- xml_file$doc$children$INSDSet[[recordNumber]]
     featuresL <- length(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']])
 	featuresOut <- character(featuresL)
 	for(i in seq(featuresL)) {
-	  featuresOut[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[2]])
+	  if(length(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]]) != 2) next
+          featuresOut[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[2]])
 	  names(featuresOut)[i] <- xmlValue(dat[['INSDSeq_feature-table']][[1]][['INSDFeature_quals']][[i]][[1]])
 	  }
 	readableFeatures = paste(names(featuresOut), featuresOut, collapse = '|', sep = "_:_")
 	featuresOutV <- featuresOut[qualsToUse]
 	names(featuresOutV) <- qualsToUse
-	out <- try(
-	         c(NCBI_accession = xmlValue(dat[['INSDSeq_locus']]),
-             seq_length = xmlValue(dat[["INSDSeq_length"]]),
-             strandedness = xmlValue(dat[["INSDSeq_strandedness"]]),
-             moltype = xmlValue(dat[["INSDSeq_moltype"]]),
-             topology  = xmlValue(dat[["INSDSeq_topology"]]),
-             division = xmlValue(dat[["INSDSeq_division"]]),
-             update_date = xmlValue(dat[["INSDSeq_update-date"]]),
-             create_date = xmlValue(dat[["INSDSeq_create-date"]]),
-             definition = xmlValue(dat[["INSDSeq_definition"]]),
-             primary_accession = xmlValue(dat[["INSDSeq_primary-accession"]]),
-             accession_version = xmlValue(dat[["INSDSeq_accession-version" ]]),
-             otherseq_IDS = xmlValue(dat[["INSDSeq_other-seqids" ]]),
-             seq_source = xmlValue(dat[["INSDSeq_source"]]),
-             organism = xmlValue(dat[["INSDSeq_organism"]]),
-             taxonomy = xmlValue(dat[["INSDSeq_taxonomy"]]),
-             references = xmlValue(dat[["INSDSeq_references"]]),
-             feature_table = xmlValue(dat[["INSDSeq_feature-table"]]),
+	out <- 
+	     c(NCBI_accession = try(xmlValue(dat[['INSDSeq_locus']]), silent = T),
+             seq_length = try(xmlValue(dat[["INSDSeq_length"]]), silent = T),
+             strandedness = try(xmlValue(dat[["INSDSeq_strandedness"]]), silent = T),
+             moltype = try(xmlValue(dat[["INSDSeq_moltype"]]), silent = T),
+             topology  = try(xmlValue(dat[["INSDSeq_topology"]]), silent = T),
+             division = try(xmlValue(dat[["INSDSeq_division"]]), silent = T),
+             update_date = try(xmlValue(dat[["INSDSeq_update-date"]]), silent = T),
+             create_date = try(xmlValue(dat[["INSDSeq_create-date"]]), silent = T),
+             definition = try(xmlValue(dat[["INSDSeq_definition"]]), silent = T),
+             primary_accession = try(xmlValue(dat[["INSDSeq_primary-accession"]]), silent = T),
+             accession_version = try(xmlValue(dat[["INSDSeq_accession-version" ]]), silent = T),
+             otherseq_IDS = try(xmlValue(dat[["INSDSeq_other-seqids" ]]), silent = T),
+             seq_source = try(xmlValue(dat[["INSDSeq_source"]]), silent = T),
+             organism = try(xmlValue(dat[["INSDSeq_organism"]]), silent = T),
+             taxonomy = try(xmlValue(dat[["INSDSeq_taxonomy"]]), silent = T),
+             references = try(xmlValue(dat[["INSDSeq_references"]]), silent = T),
+             feature_table = try(xmlValue(dat[["INSDSeq_feature-table"]]), silent = T),
              qualifiers1 = readableFeatures,  #part of feature tables, flattened out for readability
-             generegion = xmlValue(dat[["INSDSeq_feature-table"]][[2]][['INSDFeature_quals']][['INSDQualifier']][['INSDQualifier_value']]), ##within feature_table node
-             Full_sequence = ifelse(includeSeqs, xmlValue(dat[["INSDSeq_sequence"]]), ''),
-			 authors = xmlValue(dat[['INSDSeq_references']][[1]][['INSDReference_authors']])
-	         ), # close c
-		    silent = T) # close try
-    if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 19))
-	out <- c(out, featuresOutV)
-	return(out)
-	}
+             generegion = try(xmlValue(dat[["INSDSeq_feature-table"]][[2]][['INSDFeature_quals']][['INSDQualifier']][['INSDQualifier_value']]), silent = T), ##within feature_table node
+             Full_sequence = ifelse(includeSeqs, try(xmlValue(dat[["INSDSeq_sequence"]]), silent = T), ''),
+	     authors = try(xmlValue(dat[['INSDSeq_references']][[1]][['INSDReference_authors']]), silent = T)
+	     ) # close c
+    #if(class(out) == 'try-error') out <- c(xmlValue(dat[['INSDSeq_locus']]), 'failed', rep(0, 19))
+    #if(any(substr(out, 1, 5) == 'Error')) writeLines(xmlValue(dat[['INSDSeq_locus']]), con = file('fails.txt', open = 'a'))
+    out <- c(out, featuresOutV)
+    # write.csv(out, paste(xmlValue(dat[['INSDSeq_locus']]), 'csv', sep = '.'))
+    return(out)
+    }
   if(!is.na(do[1])) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
-  else xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet, mc.cores = cores))
+  # else xmlMat <- (mcmapply(get.a.row, xml_file$doc$children$INSDSet, mc.cores = cores))
+  # else xmlMat <- t(mclapply(xml_file$doc$children$INSDSet, get.a.row, mc.cores = cores)) # not simplyifying for sake of 
+  else xmlMat <- do.call(rbind, mclapply(seq(nRecords), get.a.row, mc.cores = cores))
+  #debug(get.a.row)
+  #xtemp <- lapply(seq(nRecords), get.a.row)
+  #xmlMat <- do.call(rbind, xtemp)
   if(parse.specimens) xmlMat <- cbind(xmlMat, parse.specimen(xmlMat))
+  #close(file('fails.v5.txt'))
   return(xmlMat)
 }
 
