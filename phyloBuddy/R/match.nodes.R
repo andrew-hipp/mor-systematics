@@ -17,7 +17,8 @@ require(phytools)
   return(out)
   }
 
-pdf('its.ets.bootComparison.2015-11-09.pdf', 5, 5)
-matplot(its.ets.matched$mat.boots[order(its.ets.matched$mat.boots[, 1], decreasing = T), ], type = 'l', lwd = c(2,0.5,0.5), lty = c('solid'), col = c('black', 'red', 'blue'), xlab = 'node (arbitrary)', ylab='Bootstrap')
-legend(x=0, y=20, legend=c('ITS + ETS (concatenated matrix)', 'ITS only', 'ETS only'), bty = 'n', lwd = c(2), lty = c('solid'), col = c('black', 'red', 'blue'), cex = 0.8)
-dev.off()
+## EXAMPLE
+# pdf('its.ets.bootComparison.2015-11-09.pdf', 5, 5)
+# matplot(its.ets.matched$mat.boots[order(its.ets.matched$mat.boots[, 1], decreasing = T), ], type = 'l', lwd = c(2,0.5,0.5), lty = c('solid'), col = c('black', 'red', 'blue'), xlab = 'node (arbitrary)', ylab='Bootstrap')
+# legend(x=0, y=20, legend=c('ITS + ETS (concatenated matrix)', 'ITS only', 'ETS only'), bty = 'n', lwd = c(2), lty = c('solid'), col = c('black', 'red', 'blue'), cex = 0.8)
+# dev.off()
