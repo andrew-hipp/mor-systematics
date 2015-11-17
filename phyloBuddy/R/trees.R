@@ -51,6 +51,7 @@ tips.expected <- function(tr, tips, value = FALSE, ...) {
   }
   
 summary.by.elements <- function(tr, ...) {
+## this is the taxonomic disparity function
   all.elements <- label.elements(tr, ...)
   unique.elements <- sort(unique(all.elements))
   out <- cbind(count = sapply(unique.elements, function(x) sum(all.elements == x)),
@@ -71,3 +72,34 @@ monophyletic.spp <- function(tree, ...) {
 								  ))
   return(out)
   }
+
+add.data.to.tips <- function(tr, datMat, delim = '[_|]', returnNum = 1:2, returnDelim = "_", addCols = c('GROUP'), addDelim = "|", ...) {
+## adds label to the end of the tips using a standard formula
+## returns the relabelled tree and a matrix indicating what tip got what section
+## arguments:
+##   tr = tree
+##   datMat = matrix with the data you want added as columns, row.names matching tips of the tree after scrubbing through label.elements
+  tips.to.match <- label.elements(tr, delim, returnNum, returnDelim, ...)
+  addVect <- datMat[match(tips.to.match, row.names(datMat)), addCols]
+  if(!is.null(dim(addVect))) addVect <- apply(addVect, 1, paste, collapse = addDelim)
+  oldNames <- tr$tip.label
+  tr$tip.label <- paste(oldNames, addVect, sep = addDelim)
+  out = list(tr.relabelled = tr, labelMat = cbind(oldLabel = oldNames, tipMatched = tips.to.match, newElement = addVect, newLabel = tr$tip.label))
+  return(out)
+}
+
+color.tips.by.element <- function(tr, element = 6, delim = "|", fixed = TRUE, whiteOut = 'NA', addLegend = T, colorIt = FALSE, byLabels = TRUE, tip.cex = 0.1, dot.pch = 1, blank.tips = T, ...) {
+  vectorToColorBy <- label.elements(tr, delim, returnNum = element, fixed = fixed)
+  #tr$tip.label <- vectorToColorBy
+  colors = colors()[as.factor(vectorToColorBy)]
+  colors[vectorToColorBy %in% whiteOut] <- 'white'
+  par(mar = c(5,10,4,2))
+  if(blank.tips) tr$tip.label <- sapply(tr$tip.label, function(x) "")
+  a = plot(tr, ...)
+  if(colorIt) tiplabels(col = colors, pch = dot.pch, cex = tip.cex)
+  if(byLabels) tiplabels(vectorToColorBy, cex = tip.cex, align.tip.label = T)
+  if(addLegend) legend(a$x.lim[1] - abs(diff(a$x.lim) / 4), a$y.lim[2], legend = unique(vectorToColorBy), pch = dot.pch, cex = 1, col = unique(colors), bty = 'n')
+  }
+
+
+
