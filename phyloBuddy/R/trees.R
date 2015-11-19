@@ -73,18 +73,21 @@ monophyletic.spp <- function(tree, ...) {
   return(out)
   }
 
-add.data.to.tips <- function(tr, datMat, delim = '[_|]', returnNum = 1:2, returnDelim = "_", addCols = c('GROUP'), addDelim = "|", ...) {
+add.data.to.tips <- function(tr, datMat, delim = '[_|]', returnNum = 1:2, returnDelim = "_", addCols = c('GROUP'), uniques = F, addDelim = "|", ...) {
 ## adds label to the end of the tips using a standard formula
 ## returns the relabelled tree and a matrix indicating what tip got what section
 ## arguments:
 ##   tr = tree
 ##   datMat = matrix with the data you want added as columns, row.names matching tips of the tree after scrubbing through label.elements
   tips.to.match <- label.elements(tr, delim, returnNum, returnDelim, ...)
+  if(uniques) tips.to.drop <- which(duplicated(tips.to.match))
   addVect <- datMat[match(tips.to.match, row.names(datMat)), addCols]
   if(!is.null(dim(addVect))) addVect <- apply(addVect, 1, paste, collapse = addDelim)
   oldNames <- tr$tip.label
-  tr$tip.label <- paste(oldNames, addVect, sep = addDelim)
-  out = list(tr.relabelled = tr, labelMat = cbind(oldLabel = oldNames, tipMatched = tips.to.match, newElement = addVect, newLabel = tr$tip.label))
+  newLabel <- paste(oldNames, addVect, sep = addDelim)
+  tr$tip.label <- newLabel
+  if(uniques) tr <- drop.tip(tr, tr$tip.label[tips.to.drop])
+  out = list(tr.relabelled = tr, labelMat = cbind(oldLabel = oldNames, tipMatched = tips.to.match, newElement = addVect, newLabel = newLabel, retained = !duplicated(tips.to.match)))
   return(out)
 }
 
@@ -101,5 +104,24 @@ color.tips.by.element <- function(tr, element = 6, delim = "|", fixed = TRUE, wh
   if(addLegend) legend(a$x.lim[1] - abs(diff(a$x.lim) / 4), a$y.lim[2], legend = unique(vectorToColorBy), pch = dot.pch, cex = 1, col = unique(colors), bty = 'n')
   }
 
+section.coloring <- function(tr, tipChar = '-', tip.cex = 0.1, tiplty = 0, pdfTitle = paste('trial.', paste(sample(letters,3), collapse = ''), '.pdf', sep = ''),  dist.cats = disparity.categories, whiteOut = 'NA', xy.multiplier = 1.2, offset.proportion = 0.1, ...) {
+## trying to get concentric rings of coloring
+  vectorToColorBy <- label.elements(tr, "|", returnNum = 6, fixed = T)
+  #tr$tip.label <- vectorToColorBy
+  colors <- colors()[as.factor(vectorToColorBy)]
+  colors[vectorToColorBy %in% whiteOut] <- 'white'
+  offset.levels <- dist.cats[vectorToColorBy]
+  offset.levels[is.na(offset.levels)] <- 0
+  tr$tip.label = rep(tipChar, length(tr$tip.label))
+  a = plot(tr, 'fan', tip.color = colors, align.tip.label = tiplty, plot = FALSE, ...)
+  offset.levels <- offset.levels * offset.proportion * abs(diff(a$x.lim))
+  if(!is.na(pdfTitle)) pdf(pdfTitle)
+  a = plot(tr, 'fan', tip.color = colors, align.tip.label = tiplty, x.lim = a$x.lim * xy.multiplier, y.lim = a$y.lim * xy.multiplier, label.offset = offset.levels, ...)
+  if(!is.na(pdfTitle)) dev.off()
+  return(a)
+}
 
-
+disparity.categories = tr.2015.11.16.relabelled.withSections.disparity[, 3]
+disparity.categories[disparity.categories < 200] <- 1
+disparity.categories[disparity.categories >= 200 & disparity.categories < 1500] <- 2 
+disparity.categories[disparity.categories > 1500] <- 3
