@@ -104,8 +104,9 @@ color.tips.by.element <- function(tr, element = 6, delim = "|", fixed = TRUE, wh
   if(addLegend) legend(a$x.lim[1] - abs(diff(a$x.lim) / 4), a$y.lim[2], legend = unique(vectorToColorBy), pch = dot.pch, cex = 1, col = unique(colors), bty = 'n')
   }
 
-section.coloring <- function(tr, tipChar = '-', tip.cex = 0.1, tiplty = 0, pdfTitle = paste('trial.', paste(sample(letters,3), collapse = ''), '.pdf', sep = ''),  dist.cats = disparity.categories, whiteOut = 'NA', xy.multiplier = 1.2, offset.proportion = 0.1, ...) {
+section.coloring <- function(tr, tipChar = '-', tip.cex = 0.1, tiplty = 0, pdfTitle = paste('trial.', paste(sample(letters,3), collapse = ''), '.pdf', sep = ''),  dist.cats = disparity.categories, whiteOut = 'NA', xy.multiplier = 1.2, offset.proportion = 0.1, writeLabels = 0.1, ...) {
 ## trying to get concentric rings of coloring
+  tr <- read.tree(text = write.tree(tr)) # orders labels in reading order
   vectorToColorBy <- label.elements(tr, "|", returnNum = 6, fixed = T)
   #tr$tip.label <- vectorToColorBy
   colors <- colors()[as.factor(vectorToColorBy)]
@@ -117,11 +118,15 @@ section.coloring <- function(tr, tipChar = '-', tip.cex = 0.1, tiplty = 0, pdfTi
   offset.levels <- offset.levels * offset.proportion * abs(diff(a$x.lim))
   if(!is.na(pdfTitle)) pdf(pdfTitle)
   a = plot(tr, 'fan', tip.color = colors, align.tip.label = tiplty, x.lim = a$x.lim * xy.multiplier, y.lim = a$y.lim * xy.multiplier, label.offset = offset.levels, ...)
+  if(writeLabels > 0) {
+    unique.sections <- unique(vectorToColorBy)
+    
+    }
   if(!is.na(pdfTitle)) dev.off()
   return(a)
 }
 
 disparity.categories = tr.2015.11.16.relabelled.withSections.disparity[, 3]
-disparity.categories[disparity.categories < 200] <- 1
-disparity.categories[disparity.categories >= 200 & disparity.categories < 1500] <- 2 
-disparity.categories[disparity.categories > 1500] <- 3
+disparity.categories.v2[disparity.categories.v2 < 300] <- 1
+disparity.categories.v2[disparity.categories.v2 >= 300 & disparity.categories.v2 < 1500] <- 2 
+disparity.categories.v2[disparity.categories.v2 > 1500] <- 3
