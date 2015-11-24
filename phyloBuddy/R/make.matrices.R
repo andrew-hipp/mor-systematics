@@ -54,14 +54,14 @@ make.fasta.files <- function(geneMatrix = geneMat.2013.06.17, seqDat = cariceae.
 	writeLines(paste(">", out.log$seqLabels, "\n", seqs, sep = ''), paste(outdir, '/', i, format(Sys.time(), ".%Y-%m-%d.fas"), sep = ''))
 	write.csv(out.log, paste(outdir, '/', i, '.logfile.', format(Sys.time(), "%Y-%m-%d.csv"), sep = ''))
   }
-  
+
   ## make batch file
   if(batchfile == 'muscle') {
     dir.create(paste(outdir, '/muscle', sep = ''))
 	# files <- dir(outdir, full = TRUE, patt = '.fas')
 	littleFiles <- dir(outdir, full = FALSE, patt = '.fas')
 	writeLines(paste('muscle3.8.31_i86win32 -in ', paste('../', littleFiles, sep = ''), ' -out ', paste(littleFiles, '.muscled.fas', sep = ''), sep = ''), paste(outdir, '/muscle/muscle.bat', sep = ''))
-	} 
+	}
   return('done!')
   }
 
@@ -92,38 +92,32 @@ refine.fasta <- function(basedir = choose.dir()) {
   return('done!')
   }
 
-    	
-make.gene.matrix <- function(metadata = ncbi.meta, loci = allRegions.2015, voucherMat = NA, voucherFormula = c("Primary.collector.last.name", "Collector.number", "isolate", "CollectionNumber", "Collection"), logerrors = TRUE) {
+make.unique.vouchers <- function(metadata, , voucherFormula = c("Primary.collector.last.name", "Collector.number", "isolate", "CollectionNumber", "Collection")) {
+      vouchers.ln.cn <- apply(metadata[voucherFormula], 1, function(x) paste(tidyName(x[!is.na(x)]), collapse = ''))
+      names(vouchers.ln.cn) <- metadata$NCBI_voucher # note that NCBI_accession is not actually the accession number used in NCBI! The preferred accession number is primary_accession
+      return(vouchers.ln.cn)
+      }
+
+
+make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersCol = 'newLabels', ncbiCol = 'NCBI_accession', logerrors = TRUE) {
 ## take vouchers and regions to make a matrix we can use
 ## Arguments:
 ##  metadata = parsed data from NCBI genbank
 ##  loci = translation from verbatim gene regions (NCBI) to a cleaned up gene regions name; relevant columns are "verbatim" and "clean"; every genbank row should correspond with an entry in the verbatim column
-##  voucherMat = the cleaned up vouchers matrix from Kate Lueders; this was used in 2013, but not in 2015
+##  spmCol = the name of the specimen label column, if it has been creaated; if not, voucherFormula is used to create it
 
-## 1. make unique vouchers from collector and collector number and isolate number
-  if(!is.na(voucherMat[1])) {
-    vouchers.ln.cn <- paste(nospace(voucherMat$Primary.collector.last.name), nospace(voucherMat$Collector.number), nospace(voucherMat$isolate_num))
-	names(vouchers.ln.cn) <- voucherMat$NCBI_voucher
-	} # this was necessary in 2013 because I had split out the voucher columns for Kate to edit; no longer doing this in 2015
-  else {
-    vouchers.ln.cn <- apply(metadata[voucherFormula], 1, function(x) paste(tidyName(x[!is.na(x)]), collapse = ''))
-    names(vouchers.ln.cn) <- metadata$NCBI_accession # note that NCBI_accession is not actually the accession number used in NCBI! The preferred accession number is primary_accession
-	}
-  if(!"cleanedGeneRegion" %in% names(metadata)) metadata$cleanedGeneRegion <- allRegions$clean[match(as.character(metadata$generegion), allRegions$verbatim)]
-  if(!"cleanedVoucher" %in% names(metadata)) metadata$cleanedVoucher <- as.character(vouchers.ln.cn[match(metadata$NCBI_accession, names(vouchers.ln.cn))]) # not necessary if voucher metadata are not separated from the rest of the sequence metadata
-
-  missingVouchers <- which(gsub(" ", "", metadata$cleanedVoucher, fixed = TRUE) == "")   
-  uniqueLoci <- unique(sort(as.character(loci$clean)))
-  uniqueVouchers <- unique(sort(as.character(vouchers.ln.cn)))
+  missingVouchers <- which(gsub(" ", "", metadata[[vouchersCol]], fixed = TRUE) == "")
+  uniqueLoci <- unique(sort(as.character(metadata[[locusCol]])))
+  uniqueVouchers <- unique(sort(as.character(metadata[[vouchersCol]])))
   out <- matrix('', nrow = length(uniqueVouchers), ncol = length(uniqueLoci), dimnames = list(uniqueVouchers, uniqueLoci))
 
-  
   # vector of organisms
-  orgs <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata$organism[metadata$NCBI_accession %in% names(vouchers.ln.cn)[vouchers.ln.cn == x]])), collapse = "|"))
-  
+  XXX THIS LINE IS WHERE I LEFT OFF!
+  orgs <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata$organism[metadata[[ncbiCol]] %in% names(vouchers.ln.cn)[vouchers.ln.cn == x]])), collapse = "|"))
+
   # vector of NCBI accessions
   ncbiAcc <- sapply(uniqueVouchers, function(x) paste(names(vouchers.ln.cn)[vouchers.ln.cn == x], collapse = "|"))
-  
+
   # populate the matrix
   meta.orig <- metadata
   metadata <- metadata[-missingVouchers,]
@@ -131,7 +125,7 @@ make.gene.matrix <- function(metadata = ncbi.meta, loci = allRegions.2015, vouch
   for (i in 1:dim(metadata)[1]) {
     if(!any(is.na(metadata[i, c('cleanedGeneRegion', 'cleanedVoucher')]))) {
 	  message(paste('doing', i))
-	  out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']] <- ifelse(out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']] == '', 
+	  out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']] <- ifelse(out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']] == '',
 	                                                                                 as.character(metadata[i, 'NCBI_accession']),
 																					 paste(out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']], metadata[i, 'NCBI_accession'], sep = '|')
 																					 )
@@ -142,21 +136,19 @@ make.gene.matrix <- function(metadata = ncbi.meta, loci = allRegions.2015, vouch
   numberOfAccessions <- sapply(strsplit(as.character(ncbiAcc), "|", fixed = T), length)
   # numberOfSequences <- apply(out, 1, sum)
   out <- cbind(orgs, ncbiAcc, numberOfOrgs, numberOfAccessions, as.data.frame(out))
-  
+
   if(logerrors) write.csv(metadata[missingVouchers, ], paste('missingVouchers.log.', paste(sample(letters,5), collapse = ''), '.csv', sep = ''))
 
-  return(out)
-  }
+  return  if(!is.na(voucherMat[1])) {
 
 gene.matrix.stats <- function(mat = geneMat.2013.06.13, outfile = paste('geneStats.', paste(sample(letters, 5), collapse = ''), '.txt', sep = '')) {
 ## describes the gene matrix
   loci <- dimnames(mat)[[2]][!dimnames(mat)[[2]] %in% c("orgs","ncbiAcc","numberOfOrgs","numberOfAccessions","numberOfSequences")]
   out <- file(outfile, open = 'a')
   writeLines(paste('Unique taxa:', length(unique(mat$orgs))), con = out)
-  writeLines(paste('Unique taxa, only one organism:', length(unique(mat$orgs[mat$numberOfOrgs == 1]))), con = out) 
+  writeLines(paste('Unique taxa, only one organism:', length(unique(mat$orgs[mat$numberOfOrgs == 1]))), con = out)
   writeLines('Unique taxa for each gene:\n----------------------', con = out)
   temp <- sapply(loci, function(x) length(unique(mat$orgs[mat[[x]] >0])))
-  writeLines(paste(loci[order(temp, decreasing = TRUE)], ": ", sort(temp, decreasing = TRUE), sep = ""), con = out) 
+  writeLines(paste(loci[order(temp, decreasing = TRUE)], ": ", sort(temp, decreasing = TRUE), sep = ""), con = out)
   close(out)
   }
- 
