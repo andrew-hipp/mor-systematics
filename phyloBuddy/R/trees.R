@@ -17,7 +17,7 @@ summarize.gene.coverage <- function(datMat = cariceae.concat.4genes.summary, ext
   for(i in 1:genes.no) points(which(datMat[1:inds.no, i] == 1), rep(i, sum(datMat[1:inds.no, i])), col = i, ...)
   return('done')
   }
-  
+
 ## tree traversal and counting
 label.elements <- function(tree, delim = '|', returnNum = 1, returnDelim = ' ', ...) {
 ## finds any label at the tips; default assumes pipe delimitation, and the element of interest is b/f the first pipe
@@ -47,9 +47,9 @@ tips.expected <- function(tr, tips, value = FALSE, ...) {
   tips.descendants <- Descendants(tr, tips.mrca, ...)[[1]]
   if (value) out <- tips.descendants
   else out <- length(tips.descendants)
-  out 
+  out
   }
-  
+
 summary.by.elements <- function(tr, ...) {
 ## this is the taxonomic disparity function
   all.elements <- label.elements(tr, ...)
@@ -60,25 +60,26 @@ summary.by.elements <- function(tr, ...) {
   out <- cbind(out, disparity = out[, 'expected'] - out[, 'count'])
   out
   }
-  
+
 monophyletic.spp <- function(tree, ...) {
   require(ape)
   all.spp <- label.elements(tree, ...)
   unique.spp <- sort(unique(all.spp))
-  out <- list(numSpp = length(unique.spp), 
-              spp.summary = cbind(count = sapply(unique.spp, function(x) sum(all.spp == x)), 
+  out <- list(numSpp = length(unique.spp),
+              spp.summary = cbind(count = sapply(unique.spp, function(x) sum(all.spp == x)),
 			                      monophyletic = sapply(unique.spp, function(x) is.monophyletic(tree, names(all.spp)[all.spp == x])),
 								  ci = sapply(unique.spp, function(x) tips.ci(tree, all.spp == x))
 								  ))
   return(out)
   }
 
-add.data.to.tips <- function(tr, datMat, delim = '[_|]', returnNum = 1:2, returnDelim = "_", addCols = c('GROUP'), uniques = F, addDelim = "|", ...) {
+add.data.to.tips <- function(tr, datMat, delim = '[_|]', returnNum = 1:2, returnDelim = "_", addCols = c('GROUP'), uniques = F, addDelim = "|", reorderTree = TRUE, ...) {
 ## adds label to the end of the tips using a standard formula
 ## returns the relabelled tree and a matrix indicating what tip got what section
 ## arguments:
 ##   tr = tree
 ##   datMat = matrix with the data you want added as columns, row.names matching tips of the tree after scrubbing through label.elements
+  if(reorderTree) tr <- read.tree(text = write.tree(tr))
   tips.to.match <- label.elements(tr, delim, returnNum, returnDelim, ...)
   if(uniques) tips.to.drop <- which(duplicated(tips.to.match))
   addVect <- datMat[match(tips.to.match, row.names(datMat)), addCols]
@@ -88,6 +89,7 @@ add.data.to.tips <- function(tr, datMat, delim = '[_|]', returnNum = 1:2, return
   tr$tip.label <- newLabel
   if(uniques) tr <- drop.tip(tr, tr$tip.label[tips.to.drop])
   out = list(tr.relabelled = tr, labelMat = cbind(oldLabel = oldNames, tipMatched = tips.to.match, newElement = addVect, newLabel = newLabel, retained = !duplicated(tips.to.match)))
+  row.names(out$labelMat) <- out$labelMat[, 'newLabel']
   return(out)
 }
 
@@ -104,7 +106,7 @@ color.tips.by.element <- function(tr, element = 6, delim = "|", fixed = TRUE, wh
   if(addLegend) legend(a$x.lim[1] - abs(diff(a$x.lim) / 4), a$y.lim[2], legend = unique(vectorToColorBy), pch = dot.pch, cex = 1, col = unique(colors), bty = 'n')
   }
 
-section.coloring <- function(tr, tipChar = '-', tip.cex = 0.1, tiplty = 0, pdfTitle = paste('trial.', paste(sample(letters,3), collapse = ''), '.pdf', sep = ''),  dist.cats = disparity.categories, whiteOut = 'NA', xy.multiplier = 1.2, offset.proportion = 0.1, writeLabels = 0.1, ...) {
+section.coloring <- function(tr, tipChar = '-', tip.cex = 0.1, tiplty = 0, pdfTitle = paste('trial.', paste(sample(letters,3), collapse = ''), '.pdf', sep = ''),  dist.cats = disparity.categories, whiteOut = 'NA', xy.multiplier = 1.5, offset.proportion = 0.03, writeLabels = 0.1, ...) {
 ## trying to get concentric rings of coloring
   tr <- read.tree(text = write.tree(tr)) # orders labels in reading order
   vectorToColorBy <- label.elements(tr, "|", returnNum = 6, fixed = T)
@@ -120,13 +122,13 @@ section.coloring <- function(tr, tipChar = '-', tip.cex = 0.1, tiplty = 0, pdfTi
   a = plot(tr, 'fan', tip.color = colors, align.tip.label = tiplty, x.lim = a$x.lim * xy.multiplier, y.lim = a$y.lim * xy.multiplier, label.offset = offset.levels, ...)
   if(writeLabels > 0) {
     unique.sections <- unique(vectorToColorBy)
-    
+
     }
   if(!is.na(pdfTitle)) dev.off()
   return(a)
 }
 
-disparity.categories = tr.2015.11.16.relabelled.withSections.disparity[, 3]
-disparity.categories.v2[disparity.categories.v2 < 300] <- 1
-disparity.categories.v2[disparity.categories.v2 >= 300 & disparity.categories.v2 < 1500] <- 2 
-disparity.categories.v2[disparity.categories.v2 > 1500] <- 3
+# disparity.categories = tr.2015.11.16.relabelled.withSections.disparity[, 3]
+# disparity.categories.v2[disparity.categories.v2 < 300] <- 1
+# disparity.categories.v2[disparity.categories.v2 >= 300 & disparity.categories.v2 < 1500] <- 2
+# disparity.categories.v2[disparity.categories.v2 > 1500] <- 3

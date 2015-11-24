@@ -5,11 +5,11 @@
 ### 2015-03-24: use only named references and pull out more needed elements
 ### 2015-03-25: get the desired voucher features directly from the xml
 
-###Step 1: Save file as XML in Geneious; make sure you know how many files were downloaded 
+###Step 1: Save file as XML in Geneious; make sure you know how many files were downloaded
 ###because you will need to enter that # in function below (usually part of filename in Geneious export)
 	### library(XML)
 	### xml_file <- xmlTreeParse(file.choose())
- 
+
  ###Issues see if I can get the program to parse out more detailed information including gene region and voucher info.
 		### problem- voucher is in qualifiers in feature_table node, but not at a consistant node.
 		##Still has issues parsing to the voucher level- use spliting _metadata_genbank_tables.r function to parse out this info.)
@@ -17,7 +17,7 @@
 
 
 parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, parse.specimens = T,
-                         qualsToUse = c('specimen_voucher', 'country', 'collection_date', 'lat_lon', 'note', 'collected_by', 'isolate', 'pop_variant')) { 
+                         qualsToUse = c('specimen_voucher', 'country', 'collection_date', 'lat_lon', 'note', 'collected_by', 'isolate', 'pop_variant')) {
   if(cores > 1 & Sys.info()['sysname'] == 'Windows') warning("Multicore is only supported on mac and linux for right now")
   require(ape)
   require(XML)
@@ -41,7 +41,7 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, parse.sp
 	readableFeatures = paste(names(featuresOut), featuresOut, collapse = '|', sep = "_:_")
 	featuresOutV <- featuresOut[qualsToUse]
 	names(featuresOutV) <- qualsToUse
-	out <- 
+	out <-
 	     c(NCBI_accession = try(xmlValue(dat[['INSDSeq_locus']]), silent = T),
              seq_length = try(xmlValue(dat[["INSDSeq_length"]]), silent = T),
              strandedness = try(xmlValue(dat[["INSDSeq_strandedness"]]), silent = T),
@@ -71,8 +71,8 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, parse.sp
     return(out)
     }
   if(!is.na(do[1])) xmlMat <- t(mcmapply(get.a.row, xml_file$doc$children$INSDSet[do]))
-  # else xmlMat <- (mcmapply(get.a.row, xml_file$doc$children$INSDSet, mc.cores = cores))
-  # else xmlMat <- t(mclapply(xml_file$doc$children$INSDSet, get.a.row, mc.cores = cores)) # not simplyifying for sake of 
+  # else xmlMat <- (mcmapply(get.a.row, xml_file$dfor individuals sequencedoc$children$INSDSet, mc.cores = cores))
+  # else xmlMat <- t(mclapply(xml_file$doc$children$INSDSet, get.a.row, mc.cores = cores)) # not simplyifying for sake of
   else xmlMat <- do.call(rbind, mclapply(seq(nRecords), get.a.row, mc.cores = cores))
   #debug(get.a.row)
   #xtemp <- lapply(seq(nRecords), get.a.row)
@@ -81,17 +81,3 @@ parse.INSDSeq = function(xml_file, do = NA, includeSeqs = F, cores = 1, parse.sp
   #close(file('fails.v5.txt'))
   return(xmlMat)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

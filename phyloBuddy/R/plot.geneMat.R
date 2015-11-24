@@ -1,5 +1,6 @@
-plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes = c(5,1,2), margins = c(0,1,0.5,0), geneColors = c('red', 'black'), minGenes = 10, sortByFreq = T, label.cex = 0.7, ...) {
+plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes = c(5,1,2), margins = c(0,1,0.5,0), geneColors = c('red', 'black'), minGenes = 10, sortByFreq = T, label.cex = 0.7, pdfTitle = format(Sys.time(), 'geneMat.plot.%Y.%m.%d.%H%M.pdf'), pdfW = 10, pdfH = 10, ...) {
   require(ape)
+  if(!is.na(pdfTitle)) pdf(pdfTitle, pdfW, pdfH)
   x <- t(x) # puts genes as rows, inds as columns
   x <- x[genes, ]
   if(sortByFreq) x <- x[names(sort(rowSums(x != ''), decreasing = T)), ]
@@ -17,7 +18,7 @@ plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes =
   plot(1, xlim = c(1, nInds), ylim = c(1, nGenes), type = 'n', xlab = '', ylab = '', axes = F)
   axis(2, at = seq(from = 1, to = nGenes-1, by = 2), labels = row.names(x)[seq(from = 1, to = nGenes-1, by = 2)], las = 2, cex.axis = label.cex, col.axis = col.genes[1])
   axis(2, at = seq(from = 2, to = nGenes, by = 2), labels = row.names(x)[seq(from = 2, to = nGenes, by = 2)], las = 2, cex.axis = label.cex, col.axis = col.genes[2])
-  
+
   for(i in seq(nGenes)) {
     for(j in seq(nInds)) {
       if(x[i, j] != "") points(j,i, col = col.genes[i], ...)
@@ -30,4 +31,6 @@ plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes =
 	axis(2, at = seq(geneSums), labels = seq(geneSums), las = 2)
 	plot(tr, direction = 'upwards', show.tip.label = F, no.margin = F)
     }
+  if(!is.na(pdfTitle)) dev.off()
+  invisible(0) # should return something more useful here
   }
