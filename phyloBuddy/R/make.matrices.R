@@ -112,10 +112,10 @@ make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersC
   out <- matrix('', nrow = length(uniqueVouchers), ncol = length(uniqueLoci), dimnames = list(uniqueVouchers, uniqueLoci))
 
   # vector of organisms
-  orgs <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata[[orgsCol]][metadata[[vouchersCol]] %in% x)), collapse = "|"))
+  orgs <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata[[orgsCol]][metadata[[vouchersCol]] %in% x])), collapse = "|"))
 
   # vector of NCBI accessions
-  ncbiAcc <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata[[ncbiCol]][metadata[[vouchersCol]] %in% x)), collapse = "|"))
+  ncbiAcc <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata[[ncbiCol]][metadata[[vouchersCol]] %in% x])), collapse = "|"))
 
   # populate the matrix
   meta.orig <- metadata
