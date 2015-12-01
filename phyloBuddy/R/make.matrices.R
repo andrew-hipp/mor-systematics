@@ -119,7 +119,7 @@ make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersC
 
   # populate the matrix
   meta.orig <- metadata
-  metadata <- metadata[-missingVouchers,]
+  if(length(missingVouchers) > 0 ) metadata <- metadata[-missingVouchers,]
   # browser()
   for (i in 1:dim(metadata)[1]) {
     if(!any(is.na(metadata[i, c('cleanedGeneRegion', 'cleanedVoucher')]))) {
@@ -137,7 +137,8 @@ make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersC
   out <- cbind(orgs, ncbiAcc, numberOfOrgs, numberOfAccessions, as.data.frame(out))
 
   if(logerrors) write.csv(metadata[missingVouchers, ], paste('missingVouchers.log.', paste(sample(letters,5), collapse = ''), '.csv', sep = ''))
-
+  
+  class(out) <- 'geneMat'
   return(out)
   }
 
