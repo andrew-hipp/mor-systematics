@@ -99,7 +99,7 @@ make.unique.vouchers <- function(metadata, , voucherFormula = c("Primary.collect
       }
 
 
-make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersCol = 'newLabels', ncbiCol = 'NCBI_accession', logerrors = TRUE) {
+make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersCol = 'newLabels', ncbiCol = 'NCBI_accession', orgsCol = 'organism', logerrors = TRUE) {
 ## take vouchers and regions to make a matrix we can use
 ## Arguments:
 ##  metadata = parsed data from NCBI genbank
@@ -112,11 +112,10 @@ make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersC
   out <- matrix('', nrow = length(uniqueVouchers), ncol = length(uniqueLoci), dimnames = list(uniqueVouchers, uniqueLoci))
 
   # vector of organisms
-  XXX THIS LINE IS WHERE I LEFT OFF!
-  orgs <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata$organism[metadata[[ncbiCol]] %in% names(vouchers.ln.cn)[vouchers.ln.cn == x]])), collapse = "|"))
+  orgs <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata[[orgsCol]][metadata[[vouchersCol]] %in% x)), collapse = "|"))
 
   # vector of NCBI accessions
-  ncbiAcc <- sapply(uniqueVouchers, function(x) paste(names(vouchers.ln.cn)[vouchers.ln.cn == x], collapse = "|"))
+  ncbiAcc <- sapply(uniqueVouchers, function(x) paste(as.character(unique(metadata[[ncbiCol]][metadata[[vouchersCol]] %in% x)), collapse = "|"))
 
   # populate the matrix
   meta.orig <- metadata
@@ -125,13 +124,13 @@ make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersC
   for (i in 1:dim(metadata)[1]) {
     if(!any(is.na(metadata[i, c('cleanedGeneRegion', 'cleanedVoucher')]))) {
 	  message(paste('doing', i))
-	  out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']] <- ifelse(out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']] == '',
-	                                                                                 as.character(metadata[i, 'NCBI_accession']),
-																					 paste(out[metadata[i, 'cleanedVoucher'], metadata[i, 'cleanedGeneRegion']], metadata[i, 'NCBI_accession'], sep = '|')
+	  out[metadata[i, vouchersCol], metadata[i, locusCol]] <- ifelse(out[metadata[i, vouchersCol], metadata[i, locusCol]] == '',
+	                                                                 as.character(metadata[i, ncbiCol]),
+																	 paste(out[metadata[i, vouchersCol], metadata[i, locusCol]], metadata[i, ncbiCol], sep = '|')
 																					 )
 	  }
 	else(message(paste("Row", i, "of your metadata table seems to have a problem")))
-	}
+	} # close i
   numberOfOrgs <- sapply(strsplit(as.character(orgs), "|", fixed = T), length)
   numberOfAccessions <- sapply(strsplit(as.character(ncbiAcc), "|", fixed = T), length)
   # numberOfSequences <- apply(out, 1, sum)
@@ -139,7 +138,8 @@ make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersC
 
   if(logerrors) write.csv(metadata[missingVouchers, ], paste('missingVouchers.log.', paste(sample(letters,5), collapse = ''), '.csv', sep = ''))
 
-  return  if(!is.na(voucherMat[1])) {
+  return(out)
+  }
 
 gene.matrix.stats <- function(mat = geneMat.2013.06.13, outfile = paste('geneStats.', paste(sample(letters, 5), collapse = ''), '.txt', sep = '')) {
 ## describes the gene matrix
