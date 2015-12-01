@@ -138,7 +138,7 @@ make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersC
 
   if(logerrors) write.csv(metadata[missingVouchers, ], paste('missingVouchers.log.', paste(sample(letters,5), collapse = ''), '.csv', sep = ''))
   
-  class(out) <- c('geneMat', 'matrix')
+  # class(out) <- c('geneMat', 'matrix')
   return(out)
   }
 
