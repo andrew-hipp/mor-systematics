@@ -8,7 +8,7 @@ plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes =
     tr <- read.tree(text = write.tree(tr))
 	if(any(!tr$tip.label %in% colnames(x))) {
 	  warning('not all tips in matrix; deleting unfound tips')
-	  tr <- drop.tip(tr, tr$tip.label[!which(tr$tip.label %in% colnames(x))])
+	  tr <- drop.tip(tr, tr$tip.label[which(!tr$tip.label %in% colnames(x))])
 	  }
 	inds <- tr$tip.label
 	x <- x[, inds]
