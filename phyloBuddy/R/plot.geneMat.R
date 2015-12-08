@@ -6,11 +6,11 @@ plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes =
   if(sortByFreq) x <- x[names(sort(rowSums(x != ''), decreasing = T)), ]
   if(!is.na(tr[1])) {
     tr <- read.tree(text = write.tree(tr))
-	inds <- tr$tip.label
-	if(any(!tr$inds %in% colnames(x))) {
+	if(any(!tr$tip.label %in% colnames(x))) {
 	  warning('not all tips in matrix; deleting unfound tips')
 	  tr <- drop.tip(tr, tr$tip.label[!which(tr$tip.label %in% colnames(x))])
 	  }
+	inds <- tr$tip.label
 	x <- x[, inds]
 	layout(matrix(1:3, 3,1), heights = panes)
 	} ## should add an option to subset by individuals
