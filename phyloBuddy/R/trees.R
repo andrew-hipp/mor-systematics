@@ -19,14 +19,6 @@ summarize.gene.coverage <- function(datMat = cariceae.concat.4genes.summary, ext
   }
 
 ## tree traversal and counting
-label.elements <- function(x, delim = '|', returnNum = 1, returnDelim = ' ', ...) {
-## finds any label at the tips; default assumes pipe delimitation, and the element of interest is b/f the first pipe
-  if('phylo' %in% class(x)) labelVector <- x$tip.label
-  else labelVector <- x
-  out <- sapply(labelVector, function(x) paste(strsplit(x, delim, ...)[[1]][returnNum], collapse = returnDelim))
-  out
-  }
-
 tip.select <- function(tr, ...) {
 ## this function returns the number of nodes that would need to be collapsed or traversed or something to make a set of tips monophyletic; these can be defined by species, sections, or any other attribute; could also return CI
 }
