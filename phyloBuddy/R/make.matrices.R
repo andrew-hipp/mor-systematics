@@ -99,7 +99,7 @@ make.unique.vouchers <- function(metadata, voucherFormula = c("Primary.collector
       }
 
 
-make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersCol = 'newLabels', ncbiCol = 'NCBI_accession', orgsCol = 'organism', logerrors = TRUE) {
+make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersCol = 'newLabels', ncbiCol = 'NCBI_accession', orgsCol = 'organism', logerrors = TRUE, verbose = FALSE) {
 ## take vouchers and regions to make a matrix we can use
 ## Arguments:
 ##  metadata = parsed data from NCBI genbank
@@ -123,7 +123,7 @@ make.gene.matrix <- function(metadata, locusCol = 'cleanedGeneRegion', vouchersC
   # browser()
   for (i in 1:dim(metadata)[1]) {
     if(!any(is.na(metadata[i, c('cleanedGeneRegion', 'cleanedVoucher')]))) {
-	  message(paste('doing', i))
+	  if(verbose) message(paste('doing', i))
 	  out[metadata[i, vouchersCol], metadata[i, locusCol]] <- ifelse(out[metadata[i, vouchersCol], metadata[i, locusCol]] == '',
 	                                                                 as.character(metadata[i, ncbiCol]),
 																	 paste(out[metadata[i, vouchersCol], metadata[i, locusCol]], metadata[i, ncbiCol], sep = '|')
