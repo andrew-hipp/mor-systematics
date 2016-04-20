@@ -3,9 +3,6 @@
 ## additions 2015-03-03 to deal with sections
 
 ## variables
-top12 <- c('ITS', 'ETS','trnLF','rbcL','matK','18S','trnK','rpoC1','rps16','psbA','atpF','rpoB')
-top5 <- c('ITS', 'ETS','trnLF','rbcL','matK')
-dregs <- c('trnK','rpoC1','rps16','psbA','atpF','rpoB')
 
 summarize.gene.coverage <- function(datMat = cariceae.concat.4genes.summary, extra.left = 2, ...) {
   genes.no = dim(datMat)[2]
@@ -17,11 +14,6 @@ summarize.gene.coverage <- function(datMat = cariceae.concat.4genes.summary, ext
   for(i in 1:genes.no) points(which(datMat[1:inds.no, i] == 1), rep(i, sum(datMat[1:inds.no, i])), col = i, ...)
   return('done')
   }
-
-## tree traversal and counting
-tip.select <- function(tr, ...) {
-## this function returns the number of nodes that would need to be collapsed or traversed or something to make a set of tips monophyletic; these can be defined by species, sections, or any other attribute; could also return CI
-}
 
 tips.ci <- function(tr, tipsBoolean, ...) {
 ## finds CI of any boolean tip vector
