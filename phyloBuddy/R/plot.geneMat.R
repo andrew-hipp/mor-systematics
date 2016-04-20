@@ -1,4 +1,4 @@
-plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes = c(5,1,2), margins = c(0,1,0.5,0), geneColors = c('red', 'black'), minGenes = 10, sortByFreq = T, label.cex = 0.7, pdfTitle = format(Sys.time(), 'geneMat.plot.%Y.%m.%d.%H%M.pdf'), pdfW = 10, pdfH = 10, ...) {
+plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes = c(5,1,2), margins = c(0,1,0.5,0), geneColors = c('red', 'black'), minGenes = 10, sortByFreq = T, label.cex = 0.7, pdfTitle = format(Sys.time(), 'geneMat.plot.%Y.%m.%d.%H%M.pdf'), pdfW = 10, pdfH = 10, remove.tips = TRUE, ...) {
   require(ape)
   if(!is.na(pdfTitle)) pdf(pdfTitle, pdfW, pdfH)
   x <- t(x) # puts genes as rows, inds as columns
@@ -33,6 +33,7 @@ plot.geneMat <- function(x, tr = NA, genes = colnames(x)[6:(dim(x)[2])], panes =
 	out.geneSums <- plot(geneSums, type = 'p', pch = 19, axes = F, ylab = 'Genes sampled', cex.lab = 0.8)
 	abline(h = mean(geneSums), lty = 'dashed')
 	axis(2, at = seq(geneSums), labels = seq(geneSums), las = 2)
+	if(remove.tips) tr$tip.label <- rep('', length(tr$tip.label))
 	out.tree <- plot(tr, direction = 'upwards', show.tip.label = F, no.margin = F)
     }
   if(!is.na(pdfTitle)) dev.off()
