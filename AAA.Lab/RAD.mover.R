@@ -18,3 +18,4 @@ dat.files <- grep('FGXCONTROL', dat.files, invert = T, value = T)
 
 dat.files.row <-
   sapply(dat.files, grep, x = dat.meta[[matchCol]])
+if(class(dat.files.row) != 'integer') stop('Check errors: dat.files.row')
