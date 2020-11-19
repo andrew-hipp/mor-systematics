@@ -8,10 +8,13 @@ dat.dir = '.'
 seqPatt = 'fastq.gz'
 stripPost = '_R1'
 fileDrops = 'FGXCONTROL'
-
+matchCol = 'Extraction_Tube_no'
 dat.meta <- read.csv(dat.metaFile)
 dat.files <- dir(dat.dir, patt = seqPatt)
 if(!is.null(stripPost)) {
   dat.files <- sapply(strsplit(dat.files, stripPost, fixed = T), '[', 1)
 }
 dat.files <- grep('FGXCONTROL', dat.files, invert = T, value = T)
+
+dat.files.row <-
+  sapply(dat.files, grep, x = dat.meta[[matchCol]])
