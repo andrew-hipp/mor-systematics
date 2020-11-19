@@ -32,5 +32,6 @@ dat.files.genus <-
 out <- paste(
   'mv ',
   dat.dir, dat.filesOrig, ' ',
-  out.path, outPrefix,
+  out.path, outPrefix, ' ',
+  '# ', dat.files.species,
   sep = '')
