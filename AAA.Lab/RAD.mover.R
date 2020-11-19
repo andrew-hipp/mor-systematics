@@ -5,7 +5,7 @@ dat.dir = '.'
 seqPatt = 'fastq.gz'
 stripPost = '_R1'
 
-dat.meta <- read.csv(datFile)
+dat.meta <- read.csv(dat.metaFile)
 dat.files <- dir(dat.dir, patt = seqPatt)
 if(!is.null(stripPost)) {
   dat.files <- sapply(strsplit(dat.files, stripPost, fixed = T), '[', 1)
