@@ -18,8 +18,10 @@ dat.filesOrig <- grep('FGXCONTROL', dat.filesOrig, invert = T, value = T)
 dat.files <- sapply(strsplit(dat.filesOrig, stripPost, fixed = T), '[', 1)
 
 dat.files.row <-
-  sapply(dat.files, grep, x = dat.meta[[matchCol]])
+  # sapply(dat.files, grep, x = dat.meta[[matchCol]])
+   match(dat.files, dat.meta[[matchCol]])
 if(class(dat.files.row) != 'integer') stop('Check errors: dat.files.row')
+if(any(is.na(dat.files.row))) stop('NA in dat.files.row')
 
 dat.files.species <- dat.meta$Species[dat.files.row] %>% as.character
 dat.files.genus <-
