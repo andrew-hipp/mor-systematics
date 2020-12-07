@@ -3,7 +3,7 @@
 
 library(magrittr)
 
-dat.metaFile = 'https://www.dropbox.com/s/81ppkw8xqycmxz7/RADSpecimensFloragenexLiveCopy_2020-11-16.csv?raw=1'
+dat.metaFile = 'https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.DATA/RADSpecimensFloragenexLiveCopy_2020-11-16.csv'
 dat.dir = './'
 seqPatt = 'fastq.gz'
 stripPost = '_R1'
