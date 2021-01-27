@@ -25,7 +25,7 @@ if(!exists('treesToDo')) {
 dat.meta <- read.csv(dat.metaFile)
 treesOut <- treesToDo
 for(i in 1:length(treesOut)) {
-  matchTips <- match(treesOut[[i]]$tip.label, dat.meta[[matchCol]])
+  matchTips <- match(toupper(treesOut[[i]]$tip.label), toupper(dat.meta[[matchCol]]))
   if(matchTips %>% is.na %>% any) warning(paste('Missing', sum(is.na(matchTips)), 'tips in metadata'))
   treesOut[[i]]$tip.label <-
     apply(dat.meta[matchTips, labelCols],
