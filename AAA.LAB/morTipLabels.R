@@ -2,6 +2,7 @@
 
 require(magrittr)
 require(ape)
+require(openxlsx)
 if(!exists('tidyName')) source('https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.LAB/tidyName.R')
 
 if(!exists('dat.acer')) dat.acer <-
