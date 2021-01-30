@@ -1,9 +1,24 @@
-function (coo, xlim, ylim, border = "#333333", col = NA, lwd = 1, 
-    lty = 1, points = FALSE, first.point = TRUE, cex.first.point = 0.5, 
-    centroid = TRUE, xy.axis = TRUE, pch = 1, cex = 0.5, main = NA, 
-    poly = TRUE, plot.new = TRUE, plot = TRUE, zoom = 1, ...) 
-{
+## taken from Momocs v 1.3.2, 2021-01-30
+# Vincent Bonhomme, Sandrine Picq, Cedric Gaucherel, Julien Claude (2014). Momocs: Outline Analysis
+# Using R. Journal of Statistical Software, 56(13), 1-24. URL http://www.jstatsoft.org/v56/i13/.
+
+
+cp2 <- function (coo,
+## added params, AH 2021-01-30
+    x = 0, y = 0, scaleTo = c(-1, 1),
+
+## original params follow
+    xlim, ylim, border = "#333333", col = NA, lwd = 1,
+    lty = 1, points = FALSE, first.point = TRUE, cex.first.point = 0.5,
+    centroid = TRUE, xy.axis = TRUE, pch = 1, cex = 0.5, main = NA,
+    poly = TRUE, plot.new = TRUE, plot = TRUE, zoom = 1, ...)
+    {
+    require(scales)
+    require(Momocs)
     coo <- coo_check(coo)
+    coo <- scales::rescale(coo, to = scaleTo)
+    coo[, 1] <- coo[, 1] + x
+    coo[, 2] <- coo[, 2] + y
     if (plot.new) {
         op <- par(mar = c(3, 3, 2, 1))
         on.exit(par(op))
@@ -21,11 +36,11 @@ function (coo, xlim, ylim, border = "#333333", col = NA, lwd = 1,
             if (missing(ylim)) {
                 ylim <- xlim
             }
-            plot(coo, type = "n", asp = 1, las = 1, cex.axis = 2/3, 
+            plot(coo, type = "n", asp = 1, las = 1, cex.axis = 2/3,
                 ann = FALSE, frame = FALSE, xlim = xlim, ylim = ylim)
         }
         else {
-            plot(coo, type = "n", asp = 1, las = 1, cex.axis = 2/3, 
+            plot(coo, type = "n", asp = 1, las = 1, cex.axis = 2/3,
                 ann = FALSE, frame = FALSE)
         }
         if (xy.axis) {
@@ -34,7 +49,7 @@ function (coo, xlim, ylim, border = "#333333", col = NA, lwd = 1,
     }
     if (plot) {
         if (!missing(poly)) {
-            if ((!poly) & missing(points)) 
+            if ((!poly) & missing(points))
                 points <- TRUE
         }
         if (poly) {
@@ -42,23 +57,23 @@ function (coo, xlim, ylim, border = "#333333", col = NA, lwd = 1,
             lines(coo, col = border, lwd = lwd, lty = lty)
         }
         if (missing(points)) {
-            if (nrow(coo) <= 60) 
+            if (nrow(coo) <= 60)
                 points <- TRUE
         }
         if (points) {
             points(coo, pch = pch, cex = cex, col = border)
         }
         if (first.point) {
-            angle <- atan2(coo[2, 2] - coo[1, 2], coo[2, 1] - 
+            angle <- atan2(coo[2, 2] - coo[1, 2], coo[2, 1] -
                 coo[1, 1]) * (180/pi) - 90
-            text(coo[1, 1], coo[1, 2], labels = "^", cex = cex.first.point, 
+            text(coo[1, 1], coo[1, 2], labels = "^", cex = cex.first.point,
                 srt = angle)
         }
         if (centroid) {
             cent <- coo_centpos(coo)
             points(cent[1], cent[2], pch = 3, col = border, cex = cex)
         }
-        if (!missing(main)) 
+        if (!missing(main))
             title(main = main)
     }
 }
