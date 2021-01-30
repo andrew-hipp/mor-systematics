@@ -16,7 +16,7 @@ cp2 <- function (coo,
     require(scales)
     require(Momocs)
     coo <- coo_check(coo)
-    coo <- scales::rescale(coo, to = c(-scaleTo/2, +scaleTo/2)
+    coo <- scales::rescale(coo, to = c(-scaleTo/2, +scaleTo/2))
     coo[, 1] <- coo[, 1] + x
     coo[, 2] <- coo[, 2] + y
     if (plot.new) {
