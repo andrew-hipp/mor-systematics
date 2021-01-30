@@ -5,18 +5,18 @@
 
 cp2 <- function (coo,
 ## added params, AH 2021-01-30
-    x = 0, y = 0, scaleTo = c(-1, 1),
+    x = 0, y = 0, scaleTo = 5,
 
 ## original params follow
-    xlim, ylim, border = "#333333", col = NA, lwd = 1,
+    xlim, ylim, border = "#333333", col = 'gray', lwd = 1,
     lty = 1, points = FALSE, first.point = TRUE, cex.first.point = 0.5,
-    centroid = TRUE, xy.axis = TRUE, pch = 1, cex = 0.5, main = NA,
-    poly = TRUE, plot.new = TRUE, plot = TRUE, zoom = 1, ...)
+    centroid = FALSE, xy.axis = TRUE, pch = 1, cex = 0.5, main = NA,
+    poly = TRUE, plot.new = FALSE, plot = TRUE, zoom = 1, ...)
     {
     require(scales)
     require(Momocs)
     coo <- coo_check(coo)
-    coo <- scales::rescale(coo, to = scaleTo)
+    coo <- scales::rescale(coo, to = c(-scaleTo/2, +scaleTo/2)
     coo[, 1] <- coo[, 1] + x
     coo[, 2] <- coo[, 2] + y
     if (plot.new) {
