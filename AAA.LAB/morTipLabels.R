@@ -28,6 +28,7 @@ morTipLabels <- function(
     delim = '|',
     ladder = TRUE,
     outfile = NA,
+    version = 1,
     pdfTree = TRUE,
     tip.cex = 0.6,
     nodeLabels = TRUE,
@@ -65,9 +66,9 @@ morTipLabels <- function(
   } # close i
   if(!is.na(outfile)) {
     for(i in 1:length(treesOut)) {
-      write.tree(treesOut[[i]], paste(outfile, i, 'tre', sep = '.'))
+      write.tree(treesOut[[i]], paste(outfile, '.', i, '_v', version, '.tre', sep = ''))
       if(pdfTree) {
-        pdf(paste(outfile, i, 'pdf', sep = '.'), pdfW, pdfH)
+        pdf(paste(outfile, '.', i, '_v', version, '.pdf', sep = ''), pdfW, pdfH)
         plot(treesOut[[i]], cex = tip.cex, show.node.label = nodeLabels)
         dev.off()
       }
