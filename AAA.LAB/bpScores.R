@@ -30,7 +30,7 @@ bpSums <- function(seqSums, classes = list(
   indet = c("n", "-", "?")
 ), width = TRUE, props = TRUE, roundTo = 4
 ) {
-  if(dim(seqSums)[2] != classes %>% unlist %>% length) seq(seqSums) <- t(seqSums)
+  if(dim(seqSums)[2] != classes %>% unlist %>% length) seqSums <- t(seqSums)
   if(dim(seqSums)[2] != classes %>% unlist %>% length) stop('array dims wrong')
   out <- matrix(NA, dim(seqSums)[1], length(seqSums),
                 dimnames = list(row.names(seqSums), names(classes)))
