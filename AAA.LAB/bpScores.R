@@ -13,6 +13,7 @@ bpScores <- function(
   seqSum <- sapply(seqs, function(x) {
     temp <- x %>% unlist %>% table %>% '['(sortBy)
     names(temp) <- sortBy
+    temp
     })
   seqSum
 }
