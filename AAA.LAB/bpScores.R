@@ -28,14 +28,13 @@ bpSums <- function(seqSums, classes = list(
   nucs = c("a", "c", "g", "t"),
   ambs = c("u", "r", "y", "m", "k", "s", "w", "b", "d", "h", "v"),
   indet = c("n", "-", "?")
-), width = TRUE, props = TRUE, roundTo = 4
+), props = TRUE, roundTo = 4
 ) {
   if(dim(seqSums)[2] != classes %>% unlist %>% length) seqSums <- t(seqSums)
   if(dim(seqSums)[2] != classes %>% unlist %>% length) stop('array dims wrong')
   out <- matrix(NA, dim(seqSums)[1], length(classes),
                 dimnames = list(row.names(seqSums), names(classes)))
   for(i in names(classes)) out[, i] <- apply(seqSums[, classes[[i]]], 1, sum)
-  if(width) out <- cbind(out, width = apply(seqSums, 1, sum))
   if(props) out[, names(classes)] <-
     apply(out[, names(classes)], 1, function(x) round(x / sum(x), roundTo)) %>%
       t
