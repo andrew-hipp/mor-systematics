@@ -25,7 +25,6 @@ bpScores <- function(
   seqSums
 }
 
-## example
 bpSums <- function(seqSums, classes = list(
   nucs = c("a", "c", "g", "t"),
   ambs = c("u", "r", "y", "m", "k", "s", "w", "b", "d", "h", "v"),
