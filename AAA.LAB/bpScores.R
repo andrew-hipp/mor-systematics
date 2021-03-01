@@ -1,4 +1,6 @@
 ## bp table for a set of sequences
+## tailored to Quercus hybseq, 2021-03-01, ahipp@mortonarb.org
+
 require(magrittr)
 require(seqinr)
 require(parallel)
