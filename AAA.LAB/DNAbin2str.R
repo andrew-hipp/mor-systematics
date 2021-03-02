@@ -42,6 +42,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                                               ), # close switch
                                             mc.cores = ncores
                                           ) # close mclapply
+                                          y2[sapply(y2, length) == 0] <- '99'
                                           y2 <- unlist(y2)
                                           y2 <- matrix(y2, dim(y)[1], dim(y)[2],
                                             dimnames = dimnames(y))
