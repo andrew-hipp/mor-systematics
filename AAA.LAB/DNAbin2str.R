@@ -80,8 +80,8 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                   )
     popMat <- popMat[match(names(sort(table(pops))), popMat[, 2]), ]
     x <- cbind(popNum, x)
+    # popTable <- table(as.character(pops))
   }
-  popTable <- table(as.character(pops))
   if(!is.na(shortenNames)) row.names(x) <- sapply(strsplit(row.names(x), "|", fixed = T), function(x) x[1]) %>%
                                       substr(start = 1, stop = shortenNames) %>%
                                       make.unique(sep = "_")
