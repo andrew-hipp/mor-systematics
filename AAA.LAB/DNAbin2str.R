@@ -22,7 +22,9 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
     x <- list(x)
     warning("Only one DNAbin object passed in")
   } # close if(class)
-  if(snpsToIntegers) x <- lapply(x, function(y) {
+  if(snpsToIntegers) {
+    message('doing snpsToIntegers')
+    x <- lapply(x, function(y) {
     y <- as.character(y) %>% toupper
     y <- apply(y, 1:2, function(z) switch(z,  A='00',
                                               C='11',
@@ -42,6 +44,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                                         y
                                       } # close function
                                     ) # close lapply
+                                  } # close if
   if(!snpSol) {
     if(length(x) > 1) {x <- do.call('cbind', list(x, fill.with.gaps = TRUE))
       } else x <- x[[1]]
@@ -49,6 +52,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
     print('subsetting SNPs is not implemented yet')
     # once it is, x becomes a matrix in this point after concatenated subsetted SNPs
   }
+  message('replacing missing data')
   x <- apply(x, 1:2, function(y) ifelse(y=='NULL', '99', as.character(y)))
   if(!is.na(freqThresh)) {
     maxFreqs <- apply(x, 2, function(y) {
@@ -66,6 +70,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
   x <- apply(x, 1:2, function(y) ifelse(y == '9', '-9', y))
 
   if(grabPops) {
+    message('doing grabPops')
     pops <- sapply(strsplit(row.names(x), popDelim, fixed = T),
                   '[', popElement)
     pops <- as.factor(pops)
