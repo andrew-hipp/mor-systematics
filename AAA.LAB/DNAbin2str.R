@@ -15,11 +15,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                         grabPops = FALSE, shortenNames = 5,
                         popDelim = '|', popElement = 1,
                         loci.sep = '\t', verbose = TRUE,
-<<<<<<< HEAD
                         defaultK = 1, ncores = 1,
-=======
-                        ncores = 1
->>>>>>> parallelApplies
                         ...) {
   require(ape)
   require(magrittr)
