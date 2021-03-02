@@ -9,16 +9,18 @@ bpScores <- function(
                       files, seqNames = NA, format = 'fasta',
                       sortBy = c(amb(), '-', '?'),
                       ncores = 1, simplify = TRUE,
-                      seqsAsRows = TRUE
+                      seqsAsRows = TRUE,
+                      addMatrixStats = TRUE
                     )
 {
   if(format != 'fasta') stop('only fasta supported now')
   seqs <- lapply(files, read.fasta)
   if(!identical(seqNames, NA)) names(seqs) <- seqNames
-  seqSums <- mclapply(seqs, function(x) {
+  seqSums <- mclapply(seqs, function(x, stats = addMatrixStats) {
     temp <- x %>% unlist %>% table %>% '['(sortBy)
     names(temp) <- sortBy
     temp[is.na(temp)] <- 0
+    if(stats) temp <- c(temp, width = length(x[[1]]), nSeq = length(x))
     temp
   }, mc.cores = ncores)
   if(simplify) seqSums <- simplify2array(seqSums)
@@ -27,10 +29,10 @@ bpScores <- function(
 }
 
 bpSums <- function(seqSums, classes = list(
-  nucs = c("a", "c", "g", "t"),
-  ambs = c("u", "r", "y", "m", "k", "s", "w", "b", "d", "h", "v"),
-  indet = c("n", "-", "?")
-), props = TRUE, roundTo = 4
+    nucs = c("a", "c", "g", "t"),
+    ambs = c("u", "r", "y", "m", "k", "s", "w", "b", "d", "h", "v"),
+    indet = c("n", "-", "?")),
+  props = TRUE, roundTo = 4, addMatrixStats = TRUE
 ) {
   if(dim(seqSums)[2] != classes %>% unlist %>% length) seqSums <- t(seqSums)
   if(dim(seqSums)[2] != classes %>% unlist %>% length) stop('array dims wrong')
@@ -42,5 +44,6 @@ bpSums <- function(seqSums, classes = list(
   if(props) out[, names(classes)] <-
     apply(out[, names(classes)], 1, function(x) round(x / sum(x), roundTo)) %>%
       t
+  if(addMatrixStats) out <- cbind(out, seqSums[, c('width', 'nSeq')])
   out
 }
