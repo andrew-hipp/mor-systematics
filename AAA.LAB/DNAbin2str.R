@@ -25,26 +25,26 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
   if(snpsToIntegers) {
     message('doing snpsToIntegers')
     x <- lapply(x, function(y) {
-    y <- as.character(y) %>% toupper
-    y <- apply(y, 1:2, function(z) switch(z,  A='00',
-                                              C='11',
-                                              G='22',
-                                              T='33',
-                                              M = "01",
-                                              R = "02",
-                                              W = "03",
-                                              S = "12",
-                                              Y = "13",
-                                              K = "23",
-                                              'NA' = '99',
-                                              'NULL' = '99'
-                                            ) # close switch
-                                        ) # close apply
-                                        #y <- apply(y, 1:2, as.character)
-                                        y
-                                      } # close function
-                                    ) # close lapply
-                                  } # close if
+      y <- as.character(y) %>% toupper
+      y <- apply(y, 1:2, function(z) switch(z,  A='00',
+                                                C='11',
+                                                G='22',
+                                                T='33',
+                                                M = "01",
+                                                R = "02",
+                                                W = "03",
+                                                S = "12",
+                                                Y = "13",
+                                                K = "23",
+                                                'NA' = '99',
+                                                'NULL' = '99'
+                                              ) # close switch
+                                          ) # close apply
+                                          #y <- apply(y, 1:2, as.character)
+                                          return(y)
+                                        } # close function
+                                      ) # close lapply
+                                    } # close if
   if(!snpSol) {
     if(length(x) > 1) {x <- do.call('cbind', list(x, fill.with.gaps = TRUE))
       } else x <- x[[1]]
