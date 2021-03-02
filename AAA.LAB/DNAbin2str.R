@@ -27,7 +27,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
     message('doing snpsToIntegers')
     x <- lapply(x, function(y) {
       y <- as.character(y) %>% toupper
-      y <- apply(y, 1:2, function(z) switch(z,  A='00',
+      y2 <- mclapply(y, function(z) switch(z,  A='00',
                                                 C='11',
                                                 G='22',
                                                 T='33',
@@ -39,12 +39,15 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                                                 K = "23",
                                                 'NA' = '99',
                                                 'NULL' = '99'
-                                              ) # close switch
-                                          ) # close apply
-                                          #y <- apply(y, 1:2, as.character)
-                                          return(y)
+                                              ), # close switch
+                                            mc.cores = ncores
+                                          ) # close mclapply
+                                          y2 <- unlist(y2)
+                                          y2 <- matrix(y2, dim(y)[1], dim(y)[2],
+                                            dimnames = dimnames(y))
+                                          return(y2)
                                         } # close function
-                                      ) # close lapply
+                                      ) # close mclapply
                                     } # close if
   if(!snpSol) {
     if(length(x) > 1) {x <- do.call('cbind', list(x, fill.with.gaps = TRUE))
