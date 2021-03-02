@@ -34,8 +34,11 @@ bpSums <- function(seqSums, classes = list(
     indet = c("n", "-", "?")),
   props = TRUE, roundTo = 4, addMatrixStats = TRUE
 ) {
-  if(dim(seqSums)[2] != classes %>% unlist %>% length) seqSums <- t(seqSums)
-  if(dim(seqSums)[2] != classes %>% unlist %>% length) stop('array dims wrong')
+  testL <- ifelse(addMatrixStats,
+                  2 + classes %>% unlist %>% length,
+                  classes %>% unlist %>% length)
+  if(dim(seqSums)[2] != testL) seqSums <- t(seqSums)
+  if(dim(seqSums)[2] != testL) stop('array dims wrong')
   if(dim(seqSums)[1] == dim(seqSums)[2])
     warning('square array: make sure it is oriented correctly')
   out <- matrix(NA, dim(seqSums)[1], length(classes),
