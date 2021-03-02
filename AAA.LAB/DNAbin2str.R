@@ -15,6 +15,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                         grabPops = FALSE, shortenNames = 5,
                         popDelim = '|', popElement = 1,
                         loci.sep = '\t', verbose = TRUE,
+                        defaultK = 1,
                         ...) {
   require(ape)
   require(magrittr)
@@ -97,13 +98,13 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
   structCommand <- paste('structure -i ', paste(file, 'str', sep = '.'),
                           ' -L ', out['L'],
                           ' -N ', out['N'],
-                          ' -K ', dim(popMat)[1],
+                          ' -K ', ifelse(exists('popMat'), dim(popMat)[1], defaultK),
                           ' -o ', file, sep = '')
   writeLines(structCommand, paste('strRun', file, 'sh', sep = '.'))
   distructCommand <- paste('./distruct',
-                           '-M',  dim(popMat)[1],
+                           '-M', ifelse(exists('popMat'), dim(popMat)[1], defaultK),
                            '-N', out['N'],
-                           '-K', dim(popMat)[1],
+                           '-K', ifelse(exists('popMat'), dim(popMat)[1], defaultK),
                            '-b', paste(file, 'pop_labels', sep = '.'),
                            '-c quercus.perm',
                            '-p', paste(file, 'f.popq', sep = '_'),
