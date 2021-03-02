@@ -12,9 +12,9 @@
 DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                         snpSol = FALSE, snpToPick = 1,
                         snpsToIntegers = TRUE,
-                        grabPops = TRUE, shortenNames = 5,
+                        grabPops = FALSE, shortenNames = 5,
                         popDelim = '|', popElement = 1,
-                        loci.sep = '\t', verbose = TRUE,
+                        loci.sep = '\t', verbose = TRUE
                         ...) {
   require(ape)
   require(magrittr)
