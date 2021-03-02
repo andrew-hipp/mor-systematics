@@ -4,6 +4,7 @@
 require(magrittr)
 require(seqinr)
 require(parallel)
+
 bpScores <- function(
                       files, seqNames = NA, format = 'fasta',
                       sortBy = c(amb(), '-', '?'),
@@ -33,6 +34,8 @@ bpSums <- function(seqSums, classes = list(
 ) {
   if(dim(seqSums)[2] != classes %>% unlist %>% length) seqSums <- t(seqSums)
   if(dim(seqSums)[2] != classes %>% unlist %>% length) stop('array dims wrong')
+  if(dim(seqSums)[1] == dim(seqSums)[2])
+    warning('square array: make sure it is oriented correctly')
   out <- matrix(NA, dim(seqSums)[1], length(classes),
                 dimnames = list(row.names(seqSums), names(classes)))
   for(i in names(classes)) out[, i] <- apply(seqSums[, classes[[i]]], 1, sum)
