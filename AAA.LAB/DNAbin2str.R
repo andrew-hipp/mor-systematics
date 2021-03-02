@@ -15,7 +15,11 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                         grabPops = FALSE, shortenNames = 5,
                         popDelim = '|', popElement = 1,
                         loci.sep = '\t', verbose = TRUE,
+<<<<<<< HEAD
                         defaultK = 1, ncores = 1,
+=======
+                        ncores = 1
+>>>>>>> parallelApplies
                         ...) {
   require(ape)
   require(magrittr)
@@ -56,9 +60,17 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
     print('subsetting SNPs is not implemented yet')
     # once it is, x becomes a matrix in this point after concatenated subsetted SNPs
   }
+
+## AT THIS POINT, x is a matrix, no longer a list ##
+
   message('replacing missing data')
-  x <- apply(x, 1:2, function(y) ifelse(y=='NULL', '99', as.character(y)))
+  x2 <- mclapply(x, function(y) ifelse(y=='NULL', '99', as.character(y)),
+                mc.cores = ncores)
+  x2 <- unlist(x2)
+  x <- matrix(x2, dim(x)[1], dim(x)[2], dimnames = dimnames(x))
+
   if(!is.na(freqThresh)) {
+    message('doing freqThresh')
     maxFreqs <- apply(x, 2, function(y) {
       a <- table(paste(y, collapse = '') %>% strsplit(split = ''))
       a <- a[names(a) != '9']
@@ -71,7 +83,8 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
 } # close if(freqThresh)
   out <- c(N = dim(x)[1], L = dim(x)[2]) # dimensions of locus matrix
   x <- apply(x, 1, function(y) unlist(strsplit(y,''))) %>% t
-  x <- apply(x, 1:2, function(y) ifelse(y == '9', '-9', y))
+  # x <- apply(x, 1:2, function(y) ifelse(y == '9', '-9', y))
+  x[x == '9'] <- '-9'
 
   if(grabPops) {
     message('doing grabPops')
