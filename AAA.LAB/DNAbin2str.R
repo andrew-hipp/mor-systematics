@@ -61,10 +61,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
 ## AT THIS POINT, x is a matrix, no longer a list ##
 
   message('replacing missing data')
-  x2 <- mclapply(x, function(y) ifelse(y=='NULL', '99', as.character(y)),
-                mc.cores = ncores)
-  x2 <- unlist(x2)
-  x <- matrix(x2, dim(x)[1], dim(x)[2], dimnames = dimnames(x))
+  x[X =='NULL'] <- '99'
 
   if(!is.na(freqThresh)) {
     message('doing freqThresh')
