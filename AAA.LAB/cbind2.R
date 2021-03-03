@@ -1,6 +1,9 @@
 cbind2 <- function (x, fill = NA)
 {
-    rows <- unlist(lapply(x, row.names))
+    rows <-
+    unique(
+      unlist(
+        lapply(x, row.names)))
     columns <- sum(sapply(x, function(y) dim(y)[2]))
     out <- matrix(fill, length(rows), columns, dimnames = list(rows,
         NULL))
