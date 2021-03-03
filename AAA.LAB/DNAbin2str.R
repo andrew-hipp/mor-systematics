@@ -25,7 +25,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
   } # close if(class)
   if(snpsToIntegers) {
     message('doing snpsToIntegers')
-    x <- mclapply(x, function(y) {try(
+    x <- mclapply(x, function(y) try({
       y <- as.character(y) %>% toupper
       y2 <- apply(y, 1:2, function(z) switch(z,  A='00',
                                                 C='11',
@@ -46,7 +46,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                                           y2 <- matrix(y2, dim(y)[1], dim(y)[2],
                                             dimnames = dimnames(y))
                                           return(y2)
-                                        ) }, mc.cores = ncores
+                                        }) , mc.cores = ncores
                                       ) # close mclapply
                                     } # close if
   if(!snpSol) {
