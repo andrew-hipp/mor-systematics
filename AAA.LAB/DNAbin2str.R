@@ -61,7 +61,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
 ## AT THIS POINT, x is a matrix, no longer a list ##
 
   message('replacing missing data')
-  x[X =='NULL'] <- '99'
+  x[x =='NULL'] <- '99'
 
   if(!is.na(freqThresh)) {
     message('doing freqThresh')
