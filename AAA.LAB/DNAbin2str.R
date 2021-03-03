@@ -92,9 +92,14 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
     x <- cbind(popNum, x)
     # popTable <- table(as.character(pops))
   }
-  if(!is.na(shortenNames)) row.names(x) <- sapply(strsplit(row.names(x), "|", fixed = T), function(x) x[1]) %>%
+  if(!is.na(shortenNames)) {
+    origNames <- row.names(x)
+    row.names(x) <- sapply(strsplit(row.names(x), "|", fixed = T), function(x) x[1]) %>%
                                       substr(start = 1, stop = shortenNames) %>%
                                       make.unique(sep = "_")
+    namesTable <- cbind(orig = origNames, new = row.names(x))
+    write.csv(namesTable, paste(file, '.namesTranslation.csv', sep = ''))
+  }
   write.table(x, file = paste(file, 'str', sep = '.'),
               sep = loci.sep, quote = FALSE, col.names = FALSE,
               ...)
