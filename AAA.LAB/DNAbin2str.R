@@ -51,7 +51,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                                       ) # close mclapply
                                     } # close if
   if(!snpSol) {
-    if(length(x) > 1) {x <- do.call('cbind', list(x, fill.with.gaps = TRUE))
+    if(length(x) > 1) {x <- do.call('cbind', c(x, fill.with.gaps = TRUE))
       } else x <- x[[1]]
   } else {
     print('subsetting SNPs is not implemented yet')
