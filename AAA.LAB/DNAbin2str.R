@@ -121,7 +121,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                           ' -N ', out['N'],
                           ' -K ', ifelse(exists('popMat'), dim(popMat)[1], defaultK),
                           ' -o ', file, sep = '')
-  writeLines(structCommand, paste('strRun', file, 'sh', sep = '.'))
+  writeLines(structCommand, paste(file, 'strRun', 'sh', sep = '.'))
   distructCommand <- paste('./distruct',
                            '-M', ifelse(exists('popMat'), dim(popMat)[1], defaultK),
                            '-N', out['N'],
@@ -132,7 +132,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                            '-i', paste(file, 'f.indvq', sep = '_'),
                            '-o', paste(file, 'ps', sep = '.'),
                            '-d drawparams')
-  writeLines(distructCommand, paste('distruct', file, 'sh', sep = '.'))
+  writeLines(distructCommand, paste(file, 'distruct', 'sh', sep = '.'))
   if(verbose) {
     message('Number of loci:', out['L'], '\n',
             'Number of individuals:', out['N'], '\n',
