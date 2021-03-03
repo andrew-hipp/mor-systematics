@@ -54,9 +54,10 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
     if(length(x) > 1) {
       if(any(sapply(x, class) == 'try-error')) {
         whichDo <- which(sapply(x, class) != 'try-error')
-        message('these matrices failed:')
-        message(which(sapply(x, class) == 'try-error'))
-      }
+        failLog <- c('these matrices failed:', '---------',
+        row.names(x)[which(sapply(x, class) == 'try-error'))]
+        writeLines(whichDo, paste(file, '.failed.log.txt', sep = ''))
+      } else(whichDo) == seq(length(x))
       x <- cbind2(x[whichDo], fill = '99')
       } else x <- x[[1]]
   } else {
