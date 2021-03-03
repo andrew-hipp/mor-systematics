@@ -27,7 +27,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
     message('doing snpsToIntegers')
     x <- mclapply(x, function(y) {
       y <- as.character(y) %>% toupper
-      y2 <- apply(y, 1:2, function(z) switch(z,  A='00',
+      y2 <- apply(y, 1:2, try(function(z) switch(z,  A='00',
                                                 C='11',
                                                 G='22',
                                                 T='33',
@@ -40,6 +40,7 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                                                 'NA' = '99',
                                                 'NULL' = '99'
                                               ) # close switch
+                                            ) # close try
                                           ) # close apply
                                           y2[sapply(y2, length) == 0] <- '99'
                                           y2 <- unlist(y2)
@@ -50,7 +51,13 @@ DNAbin2str <- function(x, file='structure.out', freqThresh = 0.95,
                                       ) # close mclapply
                                     } # close if
   if(!snpSol) {
-    if(length(x) > 1) {x <- cbind2(x, fill = '99')
+    if(length(x) > 1) {
+      if(any(sapply(x, class) == 'try-error')) {
+        whichDo <- which(sapply(x, class) != 'try-error')
+        message('these matrices failed:')
+        message(which(sapply(x, class) == 'try-error'))
+      }
+      x <- cbind2(x[whichDo], fill = '99')
       } else x <- x[[1]]
   } else {
     print('subsetting SNPs is not implemented yet')
