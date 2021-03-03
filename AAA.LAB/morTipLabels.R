@@ -27,6 +27,7 @@ morTipLabels <- function(
     outgroupGrep = TRUE,
     delim = '|',
     ladder = TRUE,
+    isNameVect = FALSE,
     outfile = NA,
     version = 1,
     pdfTree = TRUE,
@@ -34,10 +35,15 @@ morTipLabels <- function(
     nodeLabels = TRUE,
     pdfW = 10, pdfH = 20)
     {
-  if('phylo' %in% class(treesToDo)) treesToDo <- list(treesToDo)
-  if(length(intersect(class(treesToDo), c('phylo', 'list'))) < 1) {
-    stop('treesToDo should be either a phylo object or a list of phylo objects')
-    } # close if
+  if(isNameVect) {
+    treesToDo <- list(tip.label = treesToDo)
+    treesToDo <- list(treesToDo)
+  } else {
+    if('phylo' %in% class(treesToDo)) treesToDo <- list(treesToDo)
+    if(length(intersect(class(treesToDo), c('phylo', 'list'))) < 1) {
+      stop('treesToDo should be either a phylo object or a list of phylo objects')
+      } # close if
+    } # close else
 
   if(grepCols)
     labelCols <- sapply(labelCols, function(x) grep(x, names(dat.meta), value = T)[1])
@@ -53,18 +59,20 @@ morTipLabels <- function(
             paste, collapse = delim
           )
     rm(matchTips)
-    if(ladder) treesOut[[i]] <- ladderize(treesOut[[i]])
-    if(outgroupGrep & !is.na(outgroup[1])) {
-      outgroup = grep(outgroup, treesOut[[1]]$tip.label, value = T) %>%
-        as.character
-    } # close outgroup
-    if(!is.na(outgroup[1])) {
-      treesOut[[i]] <- try(root(treesOut[[i]], outgroup))
-      message('Rooting by this outgroup:')
-      message(outgroup)}
+    if(!isNameVect) {
+      if(ladder) treesOut[[i]] <- ladderize(treesOut[[i]])
+      if(outgroupGrep & !is.na(outgroup[1])) {
+        outgroup = grep(outgroup, treesOut[[1]]$tip.label, value = T) %>%
+          as.character
+        } # close outgroup
+        if(!is.na(outgroup[1])) {
+          treesOut[[i]] <- try(root(treesOut[[i]], outgroup))
+          message('Rooting by this outgroup:')
+          message(outgroup)}
+        }
 
   } # close i
-  if(!is.na(outfile)) {
+  if(!is.na(outfile) & !isNameVect) {
     for(i in 1:length(treesOut)) {
       write.tree(treesOut[[i]], paste(outfile, '.', i, '_v', version, '.tre', sep = ''))
       if(pdfTree) {
