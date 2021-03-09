@@ -1,8 +1,8 @@
-plot.strObj <- function(x, extras = NA, addSpBar = FALSE, ...){
+plot.strObj <- function(x, extras = NULL, addSpBar = FALSE, ...){
 # extras is a data frame, one item per row of plot.strObj
   require(ggplot2)
   require(data.table)
-  if(!is.na(extras[1])) {
+  if(!identical(NULL, extras)) {
     x <- cbind(x, extras)
   }
   xm <- melt(x)
@@ -16,7 +16,7 @@ plot.strObj <- function(x, extras = NA, addSpBar = FALSE, ...){
   if(addSpBar) {
     out <- out +
       geom_bar(
-        mapping = aes(x = Species, y = 1.1, fill = Species),
+        mapping = aes(x = Species, y = 1.1, colour = Species),
         stat = "identity", width = 1
       ) # close geom_bar
   } # close addPopBar
