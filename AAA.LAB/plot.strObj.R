@@ -16,7 +16,7 @@ plot.strObj <- function(x, extras = NULL, addSpBar = FALSE, ...){
   if(addSpBar) {
     out <- out +
       geom_bar(
-        mapping = aes(x = Species, y = 1.1, colour = Species),
+        mapping = aes(x = Species, y = 1.1, linetype = Species),
         stat = "identity", width = 1
       ) # close geom_bar
   } # close addPopBar
