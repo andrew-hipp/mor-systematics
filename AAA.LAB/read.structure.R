@@ -9,6 +9,6 @@ read.structure <- function(x) {
   names(a)[[2]] <- 'sample'
   a[c(1,3,4)] <- NULL
   names(a)[2:dim(a)[2]] <- paste('cluster',1:(dim(a)[2] - 1), sep = '')
-  class(a) <- 'strObj'
+  class(a) <- c('strObj', 'data.frame')
   return(a)
 }
