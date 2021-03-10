@@ -20,6 +20,7 @@ plot.strObj <- function(x, species = NULL,
   out <- out + theme(axis.text.x = element_text(size=5, angle = 90, hjust = 1,colour="black"))
   # if(spFacet) out <- out + facet_grid(~Species)
   if(addSpBar) {
+    warning('addSpBar currently not working properly')
     out <- out +
       geom_segment(
         data = x,
