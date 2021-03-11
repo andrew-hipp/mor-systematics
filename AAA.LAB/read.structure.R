@@ -13,7 +13,8 @@ read.structure <- function(x, fileType = c('structure', 'faststructure'),
   }
   if(fileType == 'faststructure') {
     a <- read.table(x)
-    if(!identical(sampleNames, NULL)) a <- cbind(sampleNames, a)
+    if(!identical(sampleNames, NULL)) a <- cbind(sample = sampleNames, a)
+    # a <- data.frame(a)
   }
   names(a)[2:dim(a)[2]] <- paste('cluster',1:(dim(a)[2] - 1), sep = '')
   class(a) <- c('strObj', 'data.frame')
