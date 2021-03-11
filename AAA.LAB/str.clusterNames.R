@@ -5,8 +5,9 @@
 
 str.rename <- function(x, nameList) {
   for(clustCol in 2:length(x)) {
-    temp = sapply(spList, function(x) sum(fsIn[[1]][x, 2]))
+    temp = sapply(spList, function(x) mean(fsIn[[1]][x, clustCol]))
     names(x)[clustCol] <- names(nameList)[which(temp == max(temp))]
   }
+  names(x) <- make.unique(names(x))
   return(x)
 }
