@@ -29,8 +29,11 @@ plot.strObj <- function(x, species = NULL,
   if(identical(colorVect, NULL)) {
     out <- out + scale_fill_brewer(palette="Spectral")
   } else out <- out + scale_fill_manual(values = colorVect)
-  if(add.x.lab) out <- out + theme(axis.text.x = element_text(size=5, angle = 90, hjust = 1,colour="black"))
-  # if(spFacet) out <- out + facet_grid(~Species)
+  if(add.x.lab) {
+    out <- out + theme(axis.text.x = element_text(size=5, angle = 90, hjust = 1,colour="black"))
+  } else out <- out + theme(axis.text.x=element_blank(),
+                            axis.ticks.x=element_blank()
+                          )
   if(addSpBar) {
     warning('addSpBar currently not working properly')
     out <- out +
