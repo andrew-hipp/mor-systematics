@@ -1,5 +1,7 @@
 plot.strObj <- function(x, species = NULL,
-                        clusterNames = NULL, addSpBar = FALSE, ...){
+                        clusterNames = NULL,
+                        addSpBar = FALSE,
+                        colorVect = NULL, ...){
 # species is a vector, one item per row of plot.strObj
 # clusterNames is an optional named vector of form c(cluster1 = 'xx', ...)
   require(ggplot2)
@@ -16,7 +18,9 @@ plot.strObj <- function(x, species = NULL,
   out <- ggplot(xm, aes(x=Sample,y=Probability,fill=Cluster))
   out <- out + geom_bar(stat="identity", position="stack")
   out <- out + theme_classic()
-  out <- out + scale_fill_brewer(palette="Spectral")
+  if(identical(colorVect, NULL)) {
+    out <- out + scale_fill_brewer(palette="Spectral")
+  } else out <- out + scale_fill_manual(values = colorVect)
   out <- out + theme(axis.text.x = element_text(size=5, angle = 90, hjust = 1,colour="black"))
   # if(spFacet) out <- out + facet_grid(~Species)
   if(addSpBar) {
