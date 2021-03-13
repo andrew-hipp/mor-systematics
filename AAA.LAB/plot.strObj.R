@@ -2,7 +2,6 @@ plot.strObj <- function(x, species = NULL,
                         clusterNames = NULL,
                         addSpBar = FALSE,
                         colorVect = NULL,
-                        species = NULL,
                         add.x.lab = FALSE,
                         ...){
 # species is a vector, one item per row of plot.strObj
