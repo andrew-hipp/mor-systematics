@@ -1,4 +1,16 @@
 ## to test Q. regarding polarity of contrasts
+library(magrittr)
+
+nNodes = 50
+nPerms = 1000
+multiplier = runif(50, 0, 200)
+
+div <- matrix(abs(rnorm(n = nNodes*2)), nNodes, byrow = T, dimnames = list(NULL, c('x', 'y'))) * multiplier
+div <- apply(div, 1, sort) %>% t %>% data.frame(names = c('x', 'y'))
+names(div) <- c('x', 'y')
+rates <- matrix(abs(rnorm(n = nNodes*2)), nNodes, byrow = T, dimnames = list(NULL, c('x', 'y'))) * multiplier
+rates <- apply(rates, 1, sort) %>% t %>% data.frame
+names(rates) <- c('x', 'y')
 
 makeRat = function (x = div, y = rates)
 {
@@ -18,3 +30,17 @@ makeRat = function (x = div, y = rates)
     names(out) <- c('x','y')
     out
     }
+
+empRat.lm <- function(plotIt = TRUE) {
+  temp <- makeRat()
+  out <- lm(y ~ x + 0, temp)
+  if(plotIt) plot(y ~ x, temp, pch = 19)
+  abline(out)
+  out
+}
+
+message('
+  to simulate drawing the same nodes over and over,
+  randomly selecting direction, run this:
+
+  summary(empRat.lm)')
