@@ -2,7 +2,7 @@
 library(magrittr)
 
 nNodes = 50
-nPerms = 1000
+nPerms = 1000 ## not actually used yet... JP? shall we simulate the Type I?
 multiplier = runif(50, 0, 200)
 
 div <- matrix(abs(rnorm(n = nNodes*2)), nNodes, byrow = T, dimnames = list(NULL, c('x', 'y'))) * multiplier
