@@ -43,4 +43,4 @@ message('
   to simulate drawing the same nodes over and over,
   randomly selecting direction, run this:
 
-  summary(empRat.lm)')
+  summary(empRat.lm())')
