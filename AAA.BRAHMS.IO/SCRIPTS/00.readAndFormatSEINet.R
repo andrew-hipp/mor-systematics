@@ -1,12 +1,12 @@
 ## read data exported from SEINet and format for import into BRAHMS to update georeferencing fields.
-##Hipp 2020-02-11,   MH reviewed, commented and updated 2021-03-29 
+##Hipp 2020-02-11,   MH reviewed, commented and updated 2021-03-29
 ##
 ##This will create an output file that can be imported into BRAHMS 8 by MATCH-TRANSFER using Collection Events GUID from BRAHMS as the match and transfering georeferenced fields.
 ##Note this code requires a file that contains the Collection Events table GUID and the matching barcode which can be exported from the Specimen Table of BRAHMS8. (or you will manually need to do a VLOOKUP)
 #######This is not the SEINET GUID nor the SPecimen Table GUID, and thus is currently (20210329) not information that is in SEINET
 ########################################################################
 
-library(open-xlsx)
+library(openxlsx)
 library(magrittr)
 
 doAll <- FALSE  ## if doAll is false it will only pull georeference fields to import, if doAll is TRUE it will grab all the fields listed in fields.noImport and put them into a table.
@@ -14,8 +14,8 @@ readData <- TRUE   ## if TRUE will look for new data field to read. (I believe b
 Collect_GUID <- TRUE ##MH ADDED ....if TRUE, you've made a new export from the specimen table containing the collection events table GUID and barcode matchup. This will be used in the match-transfer to get it back into BRAHMS8. If False, it uses the previously exported file for this. Note that this is probably ok, except for records that might have been newly data entered.
 
 if(readData) {
-  dat <- read.xlsx(dir('../DATA.FROM.SEINET', patt = 'xlsx', full = T), 1)
-  dat <- dat[order(dat$Timestamp), ]
+  dat <- read.csv(dir('../DATA.FROM.SEINET', patt = 'csv', full = T), as.is = T)
+  dat <- dat[order(dat$EditId), ]
 }
 
 ###MH added. Read in new CollectionEvents to barcode matchup file exported from Specimen table of BRAHMS8. Note this isn't tested yet or implemented.
@@ -89,18 +89,18 @@ for(i in seq(dim(dat)[1])) {
   if(!is.na(dt$OldValue)) {
     if(identical(dt$Editor, out.lastChange[dt$CatalogNumber, dt$FieldName])) {
       out[dt$CatalogNumber, dt$FieldName] <- dt$NewValue
-      out.lastChange[dt$CatalogNumber, dt$FieldName] <-								
-        paste(dt$NewValue, dt$Editor, convertToDate(dt$Timestamp), sep = '|')   			
-    } else out.skipped <- rbind(out.skipped, dt)												
+      out.lastChange[dt$CatalogNumber, dt$FieldName] <-
+        paste(dt$NewValue, dt$Editor, convertToDate(dt$Timestamp), sep = '|')
+    } else out.skipped <- rbind(out.skipped, dt)
   }
 }
 
 stamp <- paste(ifelse(doAll, 'allFields', 'fewFields'),
                format(Sys.time(), '%Y-%m-%d_%H.%M.%S'),
                sep = '_')
-			   
-			   
-##20200329---CODE ABOVE IS NOT WORKING, as sometimes our volunteers have edited their georeference and out table has the first edit not the final edit in the final out table also not true for last edit.			   
+
+
+##20200329---CODE ABOVE IS NOT WORKING, as sometimes our volunteers have edited their georeference and out table has the first edit not the final edit in the final out table also not true for last edit.
 
 ### NEW MH CODE HERE Need to remove row (records) from out where there is no lat and long accepted.
 out.import <- as.data.frame(out)
