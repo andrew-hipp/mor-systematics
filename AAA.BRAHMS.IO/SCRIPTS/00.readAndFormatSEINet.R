@@ -22,7 +22,7 @@ if(readData) {
   dat.orig <- dat
   if(length(editorCollapse) > 0) {
     for(i in seq(length(editorCollapse)))
-      dat$Editor[grep(editorCollapse[[i]]['from'])] <-
+      dat$Editor[grep(editorCollapse[[i]]['from'], dat$Editor)] <-
         editorCollapse[[i]]['to']
   }
 }
