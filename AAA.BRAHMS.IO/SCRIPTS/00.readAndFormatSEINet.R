@@ -13,12 +13,18 @@ doAll <- FALSE  ## if doAll is false it will only pull georeference fields to im
 readData <- TRUE   ## if TRUE will look for new data field to read. (I believe by the last date??) Will want this to be TRUE when downloading new SEINET file
 Collect_GUID <- TRUE ##MH ADDED ....if TRUE, you've made a new export from the specimen table containing the collection events table GUID and barcode matchup. This will be used in the match-transfer to get it back into BRAHMS8. If False, it uses the previously exported file for this. Note that this is probably ok, except for records that might have been newly data entered.
 editorExclude <- 'Goldberg'
+editorCollapse <- list(c(from = 'Bannon|Hipp', to = 'bannon-hipp'))
 
 if(readData) {
   dat <- read.csv(dir('../DATA.FROM.SEINET', patt = 'csv', full = T), as.is = T)
   dat <- dat[order(dat$EditId), ]
   dat$OldValue[dat$OldValue == ''] <- NA
   dat.orig <- dat
+  if(length(editorCollapse) > 0) {
+    for(i in seq(length(editorCollapse)))
+      dat$Editor[grep(editorCollapse[[i]]['from'])] <-
+        editorCollapse[[i]]['to']
+  }
 }
 
 ###MH added. Read in new CollectionEvents to barcode matchup file exported from Specimen table of BRAHMS8. Note this isn't tested yet or implemented.
