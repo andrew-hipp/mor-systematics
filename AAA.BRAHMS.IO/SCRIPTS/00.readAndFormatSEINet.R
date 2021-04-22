@@ -79,7 +79,7 @@ fields.all <- c(fields.import, fields.noImport)
 
 if(doAll) fields.use <- fields.all
 if(!doAll) fields.use <- fields.import
-dat <- dat.orig[which(dat.orig$FieldName %in% fields.use), ]
+dat <- dat[which(dat$FieldName %in% fields.use), ]
 barcodes <- dat$CatalogNumber %>% unique %>% sort
 
 out <- out.lastChange <-
