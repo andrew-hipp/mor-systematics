@@ -50,5 +50,6 @@ bpSums <- function(seqSums, classes = list(
     apply(out[, names(classes)], 1, function(x) round(x / sum(x), roundTo)) %>%
       t
   if(addMatrixStats) out <- cbind(out, seqSums[, c('width', 'nSeq')])
+  out <- data.frame(out)
   out
 }
