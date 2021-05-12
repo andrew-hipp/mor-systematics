@@ -14,8 +14,10 @@ bpScores <- function(
                     )
 {
   if(format != 'fasta') stop('only fasta supported now')
+  message(paste('reading', length(files), 'sequence files...')
   seqs <- lapply(files, read.fasta)
   if(!identical(seqNames, NA)) names(seqs) <- seqNames
+  message('doing seqSums...')
   seqSums <- mclapply(seqs, function(x, stats = addMatrixStats) {
     temp <- x %>% unlist %>% table %>% '['(sortBy)
     names(temp) <- sortBy
