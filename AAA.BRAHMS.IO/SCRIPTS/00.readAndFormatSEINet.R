@@ -98,7 +98,9 @@ for(i in seq(dim(dat)[1])) {
     out[dt$CatalogNumber, dt$FieldName] <- dt$NewValue
   }
   if(!is.na(dt$OldValue)) {
-    if(identical(dt$Editor, out.lastChange[dt$CatalogNumber, dt$FieldName])) {
+    lastEditor <-
+      strsplit(out.lastChange[dt$CatalogNumber, dt$FieldName], '|', fixed = T)[[1]][2]
+    if(identical(dt$Editor, lastEditor)) {
       out[dt$CatalogNumber, dt$FieldName] <- dt$NewValue
       out.lastChange[dt$CatalogNumber, dt$FieldName] <-
         paste(dt$NewValue, dt$Editor, convertToDate(dt$Timestamp), sep = '|')
