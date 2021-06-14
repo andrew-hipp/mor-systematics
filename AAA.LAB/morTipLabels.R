@@ -1,4 +1,9 @@
 ## rename RAD-seq trees after you run them
+## to do:
+##    - add Tables
+##      - Carex
+##      - Quercus
+##    - add option to accommodate mixed collections, labeled a la Marlene, with a hyphen
 
 require(magrittr)
 require(ape)
