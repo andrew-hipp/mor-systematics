@@ -56,7 +56,7 @@ morTipLabels <- function(
     pdfTree = TRUE,
     tip.cex = 0.6,
     nodeLabels = TRUE,
-    pdfW = 10, pdfH = 20)
+    pdfW = 20, pdfH = 20)
     {
   if(isNameVect) {
     treesToDo <- list(tip.label = treesToDo)
@@ -75,13 +75,13 @@ morTipLabels <- function(
     treesOut[[i]]$tip.label <-
       gsub(tipRemovals, '', treesOut[[i]]$tip.label)
     matchTips <- match(tidyName(treesOut[[i]]$tip.label), tidyName(dat.meta[[matchCol]]))
-    if(matchTips %>% is.na %>% any) warning(paste('Missing', sum(is.na(matchTips)), 'tips in metadata'))
-    treesOut[[i]]$tip.label <-
-      apply(dat.meta[matchTips, labelCols],
-            1,
-            paste, collapse = delim
-          )
-    rm(matchTips)
+    newTips <- apply(dat.meta[matchTips, labelCols], 1, paste, collapse = delim)
+    if(matchTips %>% is.na %>% any) {
+      warning(paste('Missing', sum(is.na(matchTips)), 'tips in metadata'))
+      newTips[is.na(matchTips)] <-
+        paste('MISSING_METADATA_', treesOut[[i]]$tip.label[is.na(matchTips)], sep = '')
+    } # close if matchTips
+    treesOut[[i]]$tip.label <- newTips
     if(!isNameVect) {
       if(ladder) treesOut[[i]] <- ladderize(treesOut[[i]])
       if(outgroupGrep & !is.na(outgroup[1])) {
@@ -92,9 +92,8 @@ morTipLabels <- function(
           treesOut[[i]] <- try(root(treesOut[[i]], outgroup))
           message('Rooting by this outgroup:')
           message(outgroup)}
-        }
-
-  } # close i
+        } # close isNameVect
+      } # close i
   if(!is.na(outfile) & !isNameVect) {
     for(i in 1:length(treesOut)) {
       write.tree(treesOut[[i]], paste(outfile, '.', i, '_v', version, '.tre', sep = ''))
