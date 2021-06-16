@@ -23,11 +23,14 @@ if(!exists('dat.malus')) dat.malus <-
   read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.Malus_Specimen_Database.xlsx') %>% try
 if(!exists('dat.quercus')) dat.quercus <-
   read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.Quercus_Specimen_Database_SNAPSHOT.xlsx') %>% try
+if(!exists('dat.carex')) dat.carex <-
+  read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.ArizonaCarex_Specimen_Database_RADSEQsubset.xlsx') %>% try
 if(!exists('dat.all'))
   dat.all <- do.call('rbind',
   list(
       setNames(dat.acer[grepIt(bindBy, names(dat.acer))], bindBy),
       setNames(dat.malus[grepIt(bindBy, names(dat.malus))], bindBy),
+      setNames(dat.carex[grepIt(bindBy, names(dat.carex))], bindBy),
       setNames(dat.quercus[grepIt(bindBy, names(dat.quercus))], bindBy),
       setNames(dat.tilia[grepIt(bindBy, names(dat.tilia))], bindBy)
     ) # close list
