@@ -9,24 +9,33 @@ require(magrittr)
 require(ape)
 require(openxlsx)
 if(!exists('tidyName')) source('https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.LAB/tidyName.R')
+if(!exists('grepIt')) source('https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.LAB/grepIt.R')
 
+bindBy <-
+  c("TAXA-Current_determination",
+    "State", "Country","Collector_no",
+    'RAD-SEQ-FLORAGENEX','SPMCODE')
 if(!exists('dat.acer')) dat.acer <-
   read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.ACER_Specimen_Database.xlsx') %>% try
 if(!exists('dat.tilia')) dat.tilia <-
   read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.Tilia_Specimen_Database.xlsx') %>% try
 if(!exists('dat.malus')) dat.malus <-
   read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.Malus_Specimen_Database.xlsx') %>% try
+if(!exists('dat.all'))
+  dat.all <- do.call('rbind',
+  list(
+      setNames(dat.acer[grepIt(bindBy, names(dat.acer))], bindBy),
+      setNames(dat.malus[grepIt(bindBy, names(dat.malus))], bindBy),
+      setNames(dat.tilia[grepIt(bindBy, names(dat.tilia))], bindBy)
+    ) # close list
+  ) # close do.call
 
 morTipLabels <- function(
     treesToDo,
-    dat.meta,
-    labelCols = c(
-      "TAXA-Current_determination",
-      "State", "Country","Collector_no",
-      'RAD-SEQ-FLORAGENEX',
-      'SPMCODE'),
+    dat.meta = dat.all,
+    labelCols = bindBy,
     matchCol = 'RAD-SEQ-FLORAGENEX',
-    grepCols = TRUE,
+    grepCols = FALSE,
     tipRemovals = '.fq.gzbarcodeStripped',
     outgroup = NA,
     outgroupGrep = TRUE,
