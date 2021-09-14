@@ -2,8 +2,9 @@
 ## assumes you start in the folder where the fastq are
 
 library(magrittr)
-
-dat.metaFile = 'https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.DATA/RADSpecimensFloragenexLiveCopy_2020-11-16.csv'
+library(openxlsx)
+dat.metaFile = 'T:/Systematics/DNA_DATABASES-LIVE/FLORAGENEX-PLATES/RADSpecimensFloragenexLiveCopy.xlsx'
+# dat.metaFile = 'https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.DATA/RADSpecimensFloragenexLiveCopy_2020-11-16.csv'
 dat.dir = './'
 seqPatt = 'fastq.gz'
 stripPost = '_R1'
@@ -12,7 +13,9 @@ matchCol = 'Extraction_Tube_no'
 outPath = '/mnt/LAB_DATA/RAD-data/'
 outPrefix = 'AAA.'
 
-dat.meta <- read.csv(dat.metaFile)
+if(substr(dat.metaFile, nchar(dat.metaFile)-2, nchar(dat.metaFile)) == 'csv') {
+  dat.meta <- read.csv(dat.metaFile)
+} else dat.meta <- read.xlsx(dat.metaFile)
 dat.filesOrig <- dir(dat.dir, patt = seqPatt)
 dat.filesOrig <- grep('FGXCONTROL', dat.filesOrig, invert = T, value = T)
 dat.files <- sapply(strsplit(dat.filesOrig, stripPost, fixed = T), '[', 1)
