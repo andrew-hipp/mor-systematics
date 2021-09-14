@@ -3,8 +3,8 @@
 
 library(magrittr)
 library(openxlsx)
-dat.metaFile = 'T:/Systematics/DNA_DATABASES-LIVE/FLORAGENEX-PLATES/RADSpecimensFloragenexLiveCopy.xlsx'
-# dat.metaFile = 'https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.DATA/RADSpecimensFloragenexLiveCopy_2020-11-16.csv'
+# dat.metaFile = 'T:/Systematics/DNA_DATABASES-LIVE/FLORAGENEX-PLATES/RADSpecimensFloragenexLiveCopy.xlsx'
+dat.metaFile = 'https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.DATA/RADSpecimensFloragenexLiveCopy.xlsx'
 dat.dir = './'
 seqPatt = 'fastq.gz'
 stripPost = '_R1'
