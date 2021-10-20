@@ -34,7 +34,7 @@ dat.files.genus <-
   toupper
 
 out <- paste(
-  'mv ',
+  'mv -vn', ## uses -vn to avoid overwriting to verbalize changes
   dat.dir, dat.filesOrig, ' ',
   outPath, outPrefix, dat.files.genus, '/', dat.filesOrig, ' ',
   '# ', dat.files.species,
