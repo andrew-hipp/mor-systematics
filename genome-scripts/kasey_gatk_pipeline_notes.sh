@@ -227,8 +227,8 @@ docker attach gatk
 # FS: fisher strand bias
 # MQRankSum: whether mapping of alternative allele is of higher quality than reference.
 #         lower = alt. allele has worse mapping
-# I have notes on what each of these filters mean, but they're in my office.
-# Please remind me to send them if I haven't by afternoon 9/23.
+# ReadPosRankSum: whether alternative alleles are at ends of reads more than reference.
+#                 negative = alt. alleles are at ends more often.
 #
 # For SNPs called with stringent parameters
 /gatk/gatk VariantFiltration -R /gatk/my_data/Q_macrocarpa_MOR-672.fasta -V /gatk/my_data/hapcall/stringent/stringent_joint.vcf -O /gatk/my_data/hapcall/stringent/stringent_joint_filtered.vcf -filter "MQ < 40.0" --filter-name "MQ40" -filter "FS > 60.0" --filter-name "FS60" -filter "MQRankSum < -12.5" --filter-name "MQRankSum" -filter "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum"
