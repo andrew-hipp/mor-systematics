@@ -67,10 +67,12 @@ bwa index Q_macrocarpa_MOR-672.fas
 # You can also use bowtie/SNAP/etc. for this step, but BWA-MEM is recommended by GATK Best Practices.
 # BWA documentation: http://bio-bwa.sourceforge.net/bwa.shtml
 # general command form: bwa mem [reference genome] [forward paired reads] [reverse paired reads] > [mapping alignment file]
+### could use any aligner --- you just need a SAM file out
 
 # I use a bash loop to automate the command over multiple samples, which requires that sample list file from above.
 # Documentation on bash loops here: https://www.cyberciti.biz/faq/bash-loop-over-file/
-# I map paired and unpaired reads (the orphaned ones) separately, since BWA can't map both at once. 
+# I map paired and unpaired reads (the orphaned ones) separately, since BWA can't map both at once.
+### was done for a run of ca 250-300 individuals
 while read NAME
     # paired reads
     do /home/kpham/bin/bwa/bwa mem /mnt/USERS/kpham/oaks-hybseq/gatk/Q_macrocarpa_MOR-672.fas /mnt/USERS/kpham/oaks-hybseq/gatk/qced_reads/paired/"$NAME"_R1_paired.fastq /mnt/USERS/kpham/oaks-hybseq/gatk/qced_reads/paired/"$NAME"_R2_paired.fastq > /mnt/USERS/kpham/oaks-hybseq/gatk/bwa/paired/"$NAME"_paired.sam
@@ -97,7 +99,8 @@ while read NAME; do /home/kpham/bin/gatk-4.1.2.0/gatk CleanSam -I /mnt/USERS/kph
 # convert to bam
 while read NAME; do /home/kpham/bin/gatk-4.1.2.0/gatk SamFormatConverter -I /mnt/USERS/kpham/oaks-hybseq/gatk/preproc/1_clean/"$NAME"_clean.sam -O /mnt/USERS/kpham/oaks-hybseq/gatk/preproc/2_bam/"$NAME"_clean.bam; done < /mnt/USERS/kpham/oaks-hybseq/gatk/qced_reads/gatk_samplelist.txt
 
-# add read groups 
+# add read groups
+### both Kasey and Nisa have had difficulties getting the headers fixed up for readgroup... because we are doing
 # These are identifiers stored for each read in the SAM file. GATK may throw an error if you don't fill these in.
 # I wrote custom python scripts to extract read groups from my reads. Your data may be in a different format and
 # may not work with my scripts, but feel free to copy and tweak my them if they work for you.
@@ -129,9 +132,9 @@ python /mnt/USERS/kpham/oaks-hybseq/scripts/validation_summary.py /mnt/USERS/kph
 # Rationale: This is the step where GATK actually identifies sequence variants among mapped reads.
 # We're actually going to do this in two parts -- first I use the HaplotypeCaller tool to call
 # bases and variants within each sample, then I use GenotypeGVCFs to estimate likely SNPs among
-# *all* samples. 
-# This is better than consolidating reads from all samples into one SAM file and trying to make 
-# the HaplotypeCaller guess which variants are heterozygosity/alignment error and which are 
+# *all* samples.
+# This is better than consolidating reads from all samples into one SAM file and trying to make
+# the HaplotypeCaller guess which variants are heterozygosity/alignment error and which are
 # inter-sample variation.
 # It's important to note that my samples were all haploid, so the program tossed any intrasample
 # variants. You'll need to specify ploidy level, and I think HaplotypeCaller requires they all be
@@ -219,7 +222,7 @@ docker attach gatk
 /gatk/gatk ValidateVariants -R /gatk/my_data/Q_macrocarpa_MOR-672.fasta -V /gatk/my_data/hapcall/default/default_joint.vcf --validation-type-to-exclude ALL
 
 # filter variants based on GenotypeGVCFs-assigned quality scores
-# I have notes on what each of these filters mean, but they're in my office. 
+# I have notes on what each of these filters mean, but they're in my office.
 # Please remind me to send them if I haven't by afternoon 9/23.
 #
 # For SNPs called with stringent parameters
@@ -235,7 +238,7 @@ docker attach gatk
 /gatk/gatk ValidateVariants -R /gatk/my_data/Q_macrocarpa_MOR-672.fasta -V /gatk/my_data/hapcall/stringent/stringent_joint_snps.vcf --validation-type-to-exclude ALL
 /gatk/gatk ValidateVariants -R /gatk/my_data/Q_macrocarpa_MOR-672.fasta -V /gatk/my_data/hapcall/default/default_joint_snps.vcf --validation-type-to-exclude ALL
 
-# I decided here to just go with the stringent parameter SNP set. 
+# I decided here to just go with the stringent parameter SNP set.
 
 # filter SNPs by % missing data (meaning the sample did not have sufficient reads to make a call at the position)
 # <50% missing data
@@ -265,14 +268,14 @@ grep -v "^#" /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringe
 # This applies the SNPs for each sample to the "background" of the reference genome.
 # Later I remove the "background" sequence, leaving only the SNPs. This seems roundabout,
 # but the alternative was custom-coding a python script to do this, and I was too lazy.
-while read NAME; do /home/kpham/bin/bcftools/bcftools consensus -f /mnt/USERS/kpham/oaks-hybseq/gatk/Q_macrocarpa_MOR-672.fasta -I -M "N" -o /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/ind_fastas/"$NAME".fas  -s "$NAME" /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringent_joint_snps_20.vcf.gz; done < /mnt/USERS/kpham/oaks-hybseq/gatk/qced_reads/gatk_samplelist.txt 
+while read NAME; do /home/kpham/bin/bcftools/bcftools consensus -f /mnt/USERS/kpham/oaks-hybseq/gatk/Q_macrocarpa_MOR-672.fasta -I -M "N" -o /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/ind_fastas/"$NAME".fas  -s "$NAME" /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringent_joint_snps_20.vcf.gz; done < /mnt/USERS/kpham/oaks-hybseq/gatk/qced_reads/gatk_samplelist.txt
 
 # Rename headers of individual FASTAs
 # I needed to do this because BCFtools consensus just applies the reference genome's name
 # to the FASTA file, and I want each individual sample to have its own name.
 while read NAME; do sed "s/>macrocarpa_|_MOR672_|_USANM/>${NAME}/" /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/ind_fastas/"$NAME".fas > /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/ind_fastas_renamed/"$NAME".fas; done < /mnt/USERS/kpham/oaks-hybseq/gatk/qced_reads/gatk_samplelist.txt
 
-# Extract position of SNPs in genomic reference from column 2 of VCF 
+# Extract position of SNPs in genomic reference from column 2 of VCF
 cut -f 2 /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringent_joint_snps_20.vcf > /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringent_joint_snps_20_pos.txt
 # manually removed VCF header lines from stringent_joint_snps_20_pos.txt
 
@@ -286,7 +289,7 @@ find /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/ind_fastas_rena
 python /mnt/USERS/kpham/oaks-hybseq/scripts/make_mult_align.py /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringent_joint_snps_20_pos.txt /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/ind_fastas_renamed/ind_fastas_list.txt /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/stringent_snps.fas
 # manually substituted * for Ns using cntrl+f in Notepad++
 
-# Maximum likelihood phylogenetic analysis 
+# Maximum likelihood phylogenetic analysis
 # RAXML manual recommends using the ASC versions of all models for SNP-only data, as it will try
 # to correct for ascertainment bias in the model from not having any invariable sites.
 #
