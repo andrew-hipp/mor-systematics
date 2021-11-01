@@ -125,6 +125,8 @@ python /mnt/USERS/kpham/oaks-hybseq/scripts/validation_summary.py /mnt/USERS/kph
 # GATK Best Practices suggests doing indel realignment, but I don't do it
 # because I'm using HaplotypeCaller instead of UnifiedGenotyper
 # source: https://gatkforums.broadinstitute.org/gatk/discussion/3151/
+### -- link broken as of 11/1/21, but recommendation to use HaplotypeCaller instead
+### HaplotypeCaller should be distinguishing between sequencing error and heterozygosity
 
 ####################
 # CALLING VARIANTS #
