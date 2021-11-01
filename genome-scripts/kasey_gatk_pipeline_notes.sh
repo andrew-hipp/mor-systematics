@@ -139,7 +139,7 @@ python /mnt/USERS/kpham/oaks-hybseq/scripts/validation_summary.py /mnt/USERS/kph
 # It's important to note that my samples were all haploid, so the program tossed any intrasample
 # variants. You'll need to specify ploidy level, and I think HaplotypeCaller requires they all be
 # the same, though I might be wrong on that.
-
+### FreeBayes does calling all at once across all individuals; in the GATK pipeline, you call variants w/in individuals first.
 
 # index reference genome for GATK
 /home/kpham/bin/gatk-4.1.2.0/gatk CreateSequenceDictionary -R /mnt/USERS/kpham/oaks-hybseq/gatk/Q_macrocarpa_MOR-672.fasta -O /mnt/USERS/kpham/oaks-hybseq/gatk/Q_macrocarpa_MOR-672.dict
@@ -171,6 +171,7 @@ docker run --name gatk -v /mnt/USERS/kpham/oaks-hybseq/gatk:/gatk/my_data -it br
 # could have prevented this.
 while read NAME; do ln -s /gatk/my_data/preproc/5_markdupes/"$NAME"_dupe.bam ./"$NAME".bam; ln -s /gatk/my_data/preproc/6_index/"$NAME".bai .; done < /mnt/USERS/kpham/oaks-hybseq/gatk/qced_reads/gatk_samplelist.txt
 
+### this is where the SNP-calling happens
 # Run HaplotypeCaller for all samples using different sets of parameters
 # I wasn't sure which parameters would be the best for my dataset, so I did two different sets:
 # 1. Stringent calling using parameters from Robin Buell's Genomics course at MSU
@@ -222,6 +223,10 @@ docker attach gatk
 /gatk/gatk ValidateVariants -R /gatk/my_data/Q_macrocarpa_MOR-672.fasta -V /gatk/my_data/hapcall/default/default_joint.vcf --validation-type-to-exclude ALL
 
 # filter variants based on GenotypeGVCFs-assigned quality scores
+# MQ: mapping quality
+# FS: fisher strand bias
+# MQRankSum: whether mapping of alternative allele is of higher quality than reference.
+#         lower = alt. allele has worse mapping
 # I have notes on what each of these filters mean, but they're in my office.
 # Please remind me to send them if I haven't by afternoon 9/23.
 #
@@ -263,6 +268,10 @@ grep -v "^#" /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringe
 /home/kpham/bin/htslib/bgzip -c /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringent_joint_snps_20.vcf > /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringent_joint_snps_20.vcf.gz
 # Index final VCF file for BCFtools
 /home/kpham/bin/bcftools/bcftools index /mnt/USERS/kpham/oaks-hybseq/gatk/hapcall/stringent/snpsets/stringent_joint_snps_20.vcf.gz
+
+### At this point, I have a VCF file.
+### but now I needed SNPs for a phylogenetic analysis, so the code below turns a VCF into fasta
+### very likely PGDspider would have worked
 
 # Convert VCF file to FASTA file using BCFtools consensus.
 # This applies the SNPs for each sample to the "background" of the reference genome.
