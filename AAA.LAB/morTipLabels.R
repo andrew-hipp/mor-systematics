@@ -33,7 +33,7 @@ if(!exists('dat.all'))
       setNames(dat.acer[grepIt(bindBy, names(dat.acer))], bindBy),
       setNames(dat.malus[grepIt(bindBy, names(dat.malus))], bindBy),
       setNames(dat.carex[grepIt(bindBy, names(dat.carex))], bindBy),
-      setNames(dat.quercus[grepIt(bindBy, names(dat.quercus))], bindBy),
+      # setNames(dat.quercus[grepIt(bindBy, names(dat.quercus))], bindBy),
       setNames(dat.ulmus[grepIt(bindBy, names(dat.ulmus))], bindBy),
       setNames(dat.tilia[grepIt(bindBy, names(dat.tilia))], bindBy)
     ) # close list
