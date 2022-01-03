@@ -11,6 +11,8 @@ require(openxlsx)
 if(!exists('tidyName')) source('https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.LAB/tidyName.R')
 if(!exists('grepIt')) source('https://raw.githubusercontent.com/andrew-hipp/mor-systematics/master/AAA.LAB/grepIt.R')
 
+## ah to add a fix so that if the columns aren't found, it sends an error but doesn't fail
+
 bindBy <-
   c("TAXA-Current_determination",
     "State", "Country","Collector_no",
