@@ -4,8 +4,9 @@
 
 #input a gene alignment
 aln=$1
+tMax = $2 # added argument for maximum number of threads
 
-iqtree -s $aln -B 1000 -T AUTO --threads-max 4 # AH modified to use iqtree instead of iqtree2
+iqtree -s $aln -B 1000 -T AUTO --threads-max $tMax # AH modified to use iqtree instead of iqtree2
 
 for suf in ckp.gz mldist bionj model.gz ; do
     if [ -e $aln.$suf ] ; then

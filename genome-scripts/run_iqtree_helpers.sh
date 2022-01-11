@@ -1,6 +1,6 @@
 #!/bin/bash
 ## source: Ryan Fuller, 2021-12-17
-parallel --jobs 3 "./runiqt.sh {}.algn.fasta" :::: alignments.txt
+parallel --jobs 3 "./runiqt.sh {}.algn.fasta 1" :::: alignments.txt
 
 #!/bin/bash
 # this script will extract the TreeFile from each iqtree archive resulting from the GNU parallel run of 'runiqtree.sh'
