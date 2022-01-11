@@ -1,5 +1,5 @@
 #!/bin/bash
-
+## source: Ryan Fuller, 2021-12-17
 parallel --jobs 3 "./runiqt.sh {}.algn.fasta" :::: alignments.txt
 
 #!/bin/bash
