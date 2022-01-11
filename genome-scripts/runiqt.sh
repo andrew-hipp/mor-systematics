@@ -3,10 +3,14 @@
 #usage: ./runiqtree your.algn.fila.fasta
 
 #input a gene alignment
-aln=$1
-tMax=$2 # added argument for maximum number of threads
+aln=$1 # alignment (file)
+tMax=$2 # maximum number of threads
+boots=$3 # bootstraps
+prefix=$4 # prefix for files out
 
-iqtree -s $aln -B 1000 -T AUTO --threads-max $tMax # AH modified to use iqtree instead of iqtree2
+# AH modified to use iqtree instead of iqtree2
+# AH modified to add arguments for threads, boots, prefix
+iqtree -s $aln -B $boots -T AUTO --threads-max $tMax -pre $prefix
 
 for suf in ckp.gz mldist bionj model.gz ; do
     if [ -e $aln.$suf ] ; then
