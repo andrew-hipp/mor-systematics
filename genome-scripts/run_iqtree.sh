@@ -5,7 +5,7 @@
 #input a gene alignment
 aln=$1
 
-iqtree2 -s $aln -B 1000 -T AUTO --threads-max 4
+iqtree -s $aln -B 1000 -T AUTO --threads-max 4 # AH modified to use iqtree instead of iqtree2
 
 for suf in ckp.gz mldist bionj model.gz ; do
     if [ -e $aln.$suf ] ; then
