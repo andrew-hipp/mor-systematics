@@ -4,7 +4,7 @@
 
 #input a gene alignment
 aln=$1
-tMax = $2 # added argument for maximum number of threads
+tMax=$2 # added argument for maximum number of threads
 
 iqtree -s $aln -B 1000 -T AUTO --threads-max $tMax # AH modified to use iqtree instead of iqtree2
 
