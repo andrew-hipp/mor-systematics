@@ -91,7 +91,7 @@ morTipLabels <- function(
           as.character
         } # close outgroup
         if(!is.na(outgroup[1])) {
-          treesOut[[i]] <- try(root(treesOut[[i]], outgroup, edgelabel = TRUE))
+          treesOut[[i]] <- try(root(treesOut[[i]], outgroup, edgelabel = TRUE, resolve.root = TRUE))
           message('Rooting by this outgroup:')
           message(outgroup)}
         } # close isNameVect
