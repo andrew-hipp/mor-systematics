@@ -87,7 +87,7 @@ morTipLabels <- function(
     if(!isNameVect) {
       if(ladder) treesOut[[i]] <- ladderize(treesOut[[i]])
       if(outgroupGrep & !is.na(outgroup[1])) {
-        outgroup = grep(outgroup, treesOut[[1]]$tip.label, value = T) %>%
+        outgroup = grep(outgroup, treesOut[[i]]$tip.label, value = T) %>%
           as.character
         } # close outgroup
         if(!is.na(outgroup[1])) {
