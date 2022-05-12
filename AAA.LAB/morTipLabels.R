@@ -87,13 +87,13 @@ morTipLabels <- function(
     if(!isNameVect) {
       if(ladder) treesOut[[i]] <- ladderize(treesOut[[i]])
       if(outgroupGrep & !is.na(outgroup[1])) {
-        outgroup = grep(outgroup, treesOut[[i]]$tip.label, value = T) %>%
+        outgroupRoot = grep(outgroup, treesOut[[i]]$tip.label, value = T) %>%
           as.character
         } # close outgroup
         if(!is.na(outgroup[1])) {
-          treesOut[[i]] <- try(root(treesOut[[i]], outgroup, edgelabel = TRUE, resolve.root = TRUE))
+          treesOut[[i]] <- try(root(treesOut[[i]], outgroupRoot, edgelabel = TRUE, resolve.root = TRUE))
           message('Rooting by this outgroup:')
-          message(outgroup)}
+          message(outgroupRoot)}
         } # close isNameVect
       } # close i
   if(!is.na(outfile) & !isNameVect) {
