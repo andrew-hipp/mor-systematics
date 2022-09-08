@@ -26,7 +26,7 @@ if(!exists('dat.malus')) dat.malus <-
 if(!exists('dat.ulmus')) dat.ulmus <-
   read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.Ulmus_Specimen_Database.xlsx') %>% try
 if(!exists('dat.quercus')) dat.quercus <-
-  read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.Quercus_Specimen_Database_SNAPSHOT.xlsx') %>% try
+  read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.Quercus_Specimen_Database_LIVE.xlsx') %>% try
 if(!exists('dat.carex')) dat.carex <-
   read.xlsx('T:/Systematics/DNA_DATABASES-LIVE/AAA.ArizonaCarex_Specimen_Database_RADSEQsubset.xlsx') %>% try
 if(!exists('dat.all'))
