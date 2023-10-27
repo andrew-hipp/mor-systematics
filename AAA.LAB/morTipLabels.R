@@ -47,7 +47,7 @@ morTipLabels <- function(
     labelCols = bindBy,
     matchCol = 'RAD-SEQ-FLORAGENEX',
     grepCols = FALSE,
-    tipRemovals = '.fq.gzbarcodeStripped|.fq.barcodeStripped',
+    tipRemovals = '.fq.gzbarcodeStripped',
     outgroup = NA,
     outgroupGrep = TRUE,
     delim = '|',
